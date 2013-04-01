@@ -1,1 +1,5 @@
-Well --- this is just a test...
+How to compile threads:
+g++ PreparePairIDs.cpp -o main -I /usr/local/include -L /usr/local/lib -lboost_thread
+
+Updated:
+g++ RecordPair.h RecordPair.cpp Person.h Person.cpp GeneratePairs.cpp -o main -lboost_thread
