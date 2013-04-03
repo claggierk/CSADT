@@ -3,18 +3,33 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <sstream>
 
 #include "Person.h"
+#include "PersonDiff.h"
 #include "RecordPair.h"
+#include "Combination.h"
 
 using namespace std;
 using namespace boost; 
 
 const unsigned NUM_CORES = 4;
 
-void comparePairOfRecords(unsigned startIndex, unsigned num)
+unsigned gNumRecords = 0;
+unsigned gNumCombinations = 0;
+
+vector< vector<PersonDiff> > gPeopleDifferences;
+vector<Combination> gPersonCombinations;
+vector<Person> gPeople;
+
+void comparePairOfRecords(unsigned startIndex, unsigned numCombinations, unsigned peopleDifferencesIndex)
 {
-    cerr << " --- thread: " << startIndex << endl;
+    cerr << " --- startIndex     : " << startIndex << endl;
+    cerr << " --- numCombinations: " << numCombinations << endl;
+    for(unsigned i = startIndex; i < (startIndex+numCombinations); i++)
+    {
+        gPeopleDifferences.at(peopleDifferencesIndex).push_back(PersonDiff(gPeople.at(gPersonCombinations.at(i).getIndex1()), gPeople.at(gPersonCombinations.at(i).getIndex2())));
+    }
 }
 
 Person CreatePerson(string personRecord)
@@ -42,41 +57,93 @@ Person CreatePerson(string personRecord)
 	return Person(personInfo);
 }
 
-vector<Person> PopulatePeople(string fileName)
+void PopulatePeople(const string& fileName)
 {
     ifstream recordsFileHandler;
 	recordsFileHandler.open(fileName.c_str());
-    
-	vector<Person> people;
-	string personStr = "";
+	
 	if(recordsFileHandler.is_open())
     {
+        string personStr = "";
         while(!recordsFileHandler.eof())
         {
             getline(recordsFileHandler, personStr);
-            people.push_back(CreatePerson(personStr));
+            gPeople.push_back(CreatePerson(personStr));
         }
         recordsFileHandler.close();
     }
-	cout << people.at(0);
-	cout << people.back();
-    
-	return people;
+    else
+    {
+        cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
+    }
+	//cout << people.at(0);
+	//cout << people.back();
 }
 
-int main (int argc, char ** argv)
+void PopulatePeopleCombinations(const string& fileName)
 {
-    vector<Person> people = PopulatePeople("100LinesPreProcessed.txt");
+    ifstream peopleCombinationsFileHandler;
+	peopleCombinationsFileHandler.open(fileName.c_str());
     
-    unsigned numRecords = 100;
-    unsigned recordsPerCore = numRecords / NUM_CORES;
+    if(peopleCombinationsFileHandler.is_open())
+    {
+        string combinationStr1 = "";
+        getline(peopleCombinationsFileHandler, combinationStr1);
+        gNumRecords = atoi(combinationStr1.c_str());
+        
+        // initialize this vector so no resize is ever required
+        gPeople.reserve(gNumRecords);
+        
+        getline(peopleCombinationsFileHandler, combinationStr1);
+        gNumCombinations = atoi(combinationStr1.c_str());
+        
+        // initialize this vector so no resize is ever required
+        gPersonCombinations.reserve(gNumCombinations);
+        
+        cerr << endl << gNumCombinations;
+        
+        string combinationStr2 = "";
+        string combinationStr3 = "";
+        getline(peopleCombinationsFileHandler, combinationStr1);
+        while(!peopleCombinationsFileHandler.eof())
+        {
+            stringstream line(combinationStr1);
+            line >> combinationStr2;
+            line >> combinationStr3;
+            cerr << endl << combinationStr2 << " " << combinationStr3;
+            gPersonCombinations.push_back(Combination(atoi(combinationStr2.c_str()), atoi(combinationStr3.c_str())));
+            getline(peopleCombinationsFileHandler, combinationStr1);
+        }
+        peopleCombinationsFileHandler.close();
+        
+        if(gPersonCombinations.size() != gNumCombinations)
+        {
+            cerr << endl << " ##### ERROR: number of combinations did not match what was expected";
+            cerr << endl << " gPersonCombinations.size(): " << gPersonCombinations.size();
+            cerr << endl << " gNumCombinations          : " << gNumCombinations;
+        }
+    }
+    else
+    {
+        cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
+    }
+}
+
+int main(int argc, char ** argv)
+{
+    PopulatePeopleCombinations("Pair_IDs.txt");
+    unsigned comparisonsPerCore = gNumCombinations / NUM_CORES;
     
-    vector<thread*> threadPtrs(NUM_CORES);    
+    PopulatePeople("100LinesPreProcessed.txt");
+    
+    gPeopleDifferences.resize(NUM_CORES);
+    vector<thread*> threadPtrs(NUM_CORES);
     unsigned offset = 0;
     for(unsigned i = 0; i < NUM_CORES; i++)
     {
-        threadPtrs.at(i) = new thread(comparePairOfRecords, offset, recordsPerCore);
-        offset += recordsPerCore;
+        gPeopleDifferences.at(i).reserve(comparisonsPerCore);
+        threadPtrs.at(i) = new thread(comparePairOfRecords, offset, comparisonsPerCore, i);
+        offset += comparisonsPerCore;
     }
     
     // do other stuff
@@ -87,6 +154,12 @@ int main (int argc, char ** argv)
         delete threadPtrs.at(i);
         threadPtrs.at(i) = NULL;
     }
-
+    
+    for(unsigned i = 0; i < NUM_CORES; i++)
+    {
+        cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
+    }
+    
+    cout << endl << endl;
     return EXIT_SUCCESS;
 }

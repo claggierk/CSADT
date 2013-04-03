@@ -1,6 +1,10 @@
 #ifndef __RECORD_PAIR__
 #define __RECORD_PAIR__
 
+#include <vector>
+
+using namespace std;
+
 class RecordPair
 {
 public:
