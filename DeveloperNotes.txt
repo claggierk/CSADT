@@ -3,3 +3,7 @@ g++ PreparePairIDs.cpp -o main -I /usr/local/include -L /usr/local/lib -lboost_t
 
 Updated:
 g++ RecordPair.h RecordPair.cpp Person.h Person.cpp GeneratePairs.cpp -o main -lboost_thread
+
+Updated again:
+g++ *.h *.cpp -o csadt -lboost_thread
+./csadt
