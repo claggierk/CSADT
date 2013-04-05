@@ -22,6 +22,6 @@ private:
 };
 
 ostream& operator<<(ostream& out, const PersonDiff& p);
-unsigned ComputeLevenshteinDistance(string s1, string s2);
+unsigned ComputeLevenshteinDistance(string s, string t);
 
 #endif

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <sstream>
+#include <ctime>
 
 #include "Person.h"
 #include "PersonDiff.h"
@@ -24,8 +25,10 @@ vector<Person> gPeople;
 
 void comparePairOfRecords(unsigned startIndex, unsigned numCombinations, unsigned peopleDifferencesIndex)
 {
-    cerr << " --- startIndex     : " << startIndex << endl;
-    cerr << " --- numCombinations: " << numCombinations << endl;
+    cout << endl;
+    cout << " ***** Starting Thread" << endl;
+    cout << "    --- startIndex     : " << startIndex << endl;
+    cout << "    --- numCombinations: " << numCombinations << endl;
     for(unsigned i = startIndex; i < (startIndex+numCombinations); i++)
     {
         gPeopleDifferences.at(peopleDifferencesIndex).push_back(PersonDiff(gPeople.at(gPersonCombinations.at(i).getIndex1()), gPeople.at(gPersonCombinations.at(i).getIndex2())));
@@ -65,6 +68,7 @@ void PopulatePeople(const string& fileName)
 	if(recordsFileHandler.is_open())
     {
         string personStr = "";
+        getline(recordsFileHandler, personStr); // dont want to store the FIRST one...
         while(!recordsFileHandler.eof())
         {
             getline(recordsFileHandler, personStr);
@@ -93,6 +97,7 @@ void PopulatePeopleCombinations(const string& fileName)
         
         // initialize this vector so no resize is ever required
         gPeople.reserve(gNumRecords);
+        cout << "Number of records    : " << gNumRecords << endl;
         
         getline(peopleCombinationsFileHandler, combinationStr1);
         gNumCombinations = atoi(combinationStr1.c_str());
@@ -100,7 +105,7 @@ void PopulatePeopleCombinations(const string& fileName)
         // initialize this vector so no resize is ever required
         gPersonCombinations.reserve(gNumCombinations);
         
-        cerr << endl << gNumCombinations;
+        cout << "Number of record pairs: " << gNumCombinations << endl;
         
         string combinationStr2 = "";
         string combinationStr3 = "";
@@ -110,7 +115,7 @@ void PopulatePeopleCombinations(const string& fileName)
             stringstream line(combinationStr1);
             line >> combinationStr2;
             line >> combinationStr3;
-            cerr << endl << combinationStr2 << " " << combinationStr3;
+            ////cout << endl << combinationStr2 << " " << combinationStr3;
             gPersonCombinations.push_back(Combination(atoi(combinationStr2.c_str()), atoi(combinationStr3.c_str())));
             getline(peopleCombinationsFileHandler, combinationStr1);
         }
@@ -119,8 +124,8 @@ void PopulatePeopleCombinations(const string& fileName)
         if(gPersonCombinations.size() != gNumCombinations)
         {
             cerr << endl << " ##### ERROR: number of combinations did not match what was expected";
-            cerr << endl << " gPersonCombinations.size(): " << gPersonCombinations.size();
-            cerr << endl << " gNumCombinations          : " << gNumCombinations;
+            cerr << endl << "              gPersonCombinations.size(): " << gPersonCombinations.size();
+            cerr << endl << "              gNumCombinations          : " << gNumCombinations;
         }
     }
     else
@@ -139,11 +144,14 @@ int main(int argc, char ** argv)
     gPeopleDifferences.resize(NUM_CORES);
     vector<thread*> threadPtrs(NUM_CORES);
     unsigned offset = 0;
+    
+    const clock_t begin_time = clock();
     for(unsigned i = 0; i < NUM_CORES; i++)
     {
         gPeopleDifferences.at(i).reserve(comparisonsPerCore);
         threadPtrs.at(i) = new thread(comparePairOfRecords, offset, comparisonsPerCore, i);
         offset += comparisonsPerCore;
+        usleep(1000); // microseconds
     }
     
     // do other stuff
@@ -154,11 +162,17 @@ int main(int argc, char ** argv)
         delete threadPtrs.at(i);
         threadPtrs.at(i) = NULL;
     }
+    cout << "All threads complete" << endl;
+    cout << "Seconds required for comparing records: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << endl;
     
     for(unsigned i = 0; i < NUM_CORES; i++)
     {
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
+    
+    cout << "gPeople[0]: " << gPeople.at(0) << endl;
+    cout << "gPeople[1]: " << gPeople.at(1) << endl;
+    cout << "gPeopleDifferences[0][0]: " << gPeopleDifferences.at(0).at(0) << endl;
     
     cout << endl << endl;
     return EXIT_SUCCESS;
