@@ -18,3 +18,9 @@ unsigned Combination::getIndex2() const
 {
     return i2;
 }
+
+void Combination::setIndices(unsigned index1, unsigned index2)
+{
+	i1 = index1;
+	i2 = index2;
+}

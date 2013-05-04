@@ -10,6 +10,7 @@ public:
 
 	unsigned getIndex1() const;
     unsigned getIndex2() const;
+    void setIndices(unsigned index1, unsigned index2);
 
 private:
 	unsigned i1;

@@ -11,9 +11,42 @@ PersonDiff::PersonDiff(const PersonDiff & p)
 	{
 		differences.push_back(p.differences.at(i));
 	}
+	i1 = p.getIndex1();
+    i2 = p.getIndex2();
 }
 
 PersonDiff::PersonDiff(const Person& p1, const Person &p2)
+{
+	setDifferences(p1, p2);
+}
+
+PersonDiff::PersonDiff(unsigned index1, unsigned index2) : i1(index1), i2(index2)
+{}
+
+unsigned PersonDiff::getIndex1() const
+{
+    return i1;
+}
+
+unsigned PersonDiff::getIndex2() const
+{
+    return i2;
+}
+
+void PersonDiff::setIndices(unsigned index1, unsigned index2)
+{
+	i1 = index1;
+	i2 = index2;
+}
+
+// -----------------------------------------------------------------------
+
+vector<unsigned> PersonDiff::getDifferences() const
+{
+	return differences;
+}
+
+void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 {
     for(unsigned i = 0; i < eSizePersonAttributes; i++)
 	{
@@ -25,11 +58,17 @@ PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 		*/
         differences.push_back(ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i)));
 	}
+	
+	match = false;
+	if(p1.getAttributes().at(eID) == p1.getAttributes().at(eID))
+	{
+		match = true;
+	}
 }
 
-vector<unsigned> PersonDiff::getDifferences() const
+bool PersonDiff::isMatch() const
 {
-	return differences;
+	return match;
 }
 
 ostream& operator<<(ostream& out, const PersonDiff& p)

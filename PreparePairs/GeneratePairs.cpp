@@ -14,7 +14,7 @@
 using namespace std;
 using namespace boost; 
 
-const unsigned NUM_CORES = 4;
+const unsigned NUM_THREADS = 4;
 
 unsigned gNumRecords = 0;
 unsigned gNumCombinations = 0;
@@ -119,7 +119,6 @@ void PopulatePeopleCombinations(const string& fileName)
             gPersonCombinations.push_back(Combination(atoi(combinationStr2.c_str()), atoi(combinationStr3.c_str())));
             getline(peopleCombinationsFileHandler, combinationStr1);
         }
-        peopleCombinationsFileHandler.close();
         
         if(gPersonCombinations.size() != gNumCombinations)
         {
@@ -132,21 +131,54 @@ void PopulatePeopleCombinations(const string& fileName)
     {
         cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
     }
+    peopleCombinationsFileHandler.close();
+}
+
+void OutputPeopleDifferences(string fileName)
+{
+	ofstream fout;
+	fout.open(fileName.c_str());
+    
+    if(fout.is_open())
+    {
+        for(unsigned i = 0; i < NUM_THREADS; i++)
+        {
+			for(unsigned j = 0; j < gPeopleDifferences.at(i).size(); j++)
+			{
+				if(gPeopleDifferences.at(i).at(j).isMatch())
+					fout << "T ";
+				else
+					fout << "F ";
+				
+				vector<unsigned> temp = gPeopleDifferences.at(i).at(j).getDifferences();
+				for(unsigned k = 0; k < temp.size(); k++)
+					fout << temp.at(k) << " ";
+				
+				fout << endl;
+			}
+		}
+	}
+	else
+	{
+		cerr << " ##### ERROR: Unable to open " << fileName << "!";
+	}
+	
+	fout.close();
 }
 
 int main(int argc, char ** argv)
 {
     PopulatePeopleCombinations("Pair_IDs.txt");
-    unsigned comparisonsPerCore = gNumCombinations / NUM_CORES;
+    unsigned comparisonsPerCore = gNumCombinations / NUM_THREADS;
     
     PopulatePeople("100LinesPreProcessed.txt");
     
-    gPeopleDifferences.resize(NUM_CORES);
-    vector<thread*> threadPtrs(NUM_CORES);
+    gPeopleDifferences.resize(NUM_THREADS);
+    vector<thread*> threadPtrs(NUM_THREADS);
     unsigned offset = 0;
     
     const clock_t begin_time = clock();
-    for(unsigned i = 0; i < NUM_CORES; i++)
+    for(unsigned i = 0; i < NUM_THREADS; i++)
     {
         gPeopleDifferences.at(i).reserve(comparisonsPerCore);
         threadPtrs.at(i) = new thread(comparePairOfRecords, offset, comparisonsPerCore, i);
@@ -156,7 +188,7 @@ int main(int argc, char ** argv)
     
     // do other stuff
 
-    for(unsigned i = 0; i < NUM_CORES; i++)
+    for(unsigned i = 0; i < NUM_THREADS; i++)
     {
         threadPtrs.at(i)->join();
         delete threadPtrs.at(i);
@@ -165,7 +197,7 @@ int main(int argc, char ** argv)
     cout << "All threads complete" << endl;
     cout << "Seconds required for comparing records: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << endl;
     
-    for(unsigned i = 0; i < NUM_CORES; i++)
+    for(unsigned i = 0; i < NUM_THREADS; i++)
     {
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
@@ -173,6 +205,8 @@ int main(int argc, char ** argv)
     cout << "gPeople[0]: " << gPeople.at(0) << endl;
     cout << "gPeople[1]: " << gPeople.at(1) << endl;
     cout << "gPeopleDifferences[0][0]: " << gPeopleDifferences.at(0).at(0) << endl;
+    
+    OutputPeopleDifferences("PersonToPersonComparisons.txt");
     
     cout << endl << endl;
     return EXIT_SUCCESS;
