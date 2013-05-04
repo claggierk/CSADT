@@ -15,8 +15,10 @@ public:
 	PersonDiff(const PersonDiff & p);
 	PersonDiff(const Person& p1, const Person &p2);
 	PersonDiff(unsigned index1, unsigned index2);
+	PersonDiff(const vector<unsigned>& v, const bool& isMatch);
 
 	vector<unsigned> getDifferences() const;
+	void setDifferencesDirectly(const vector<unsigned>& v);
 	void setDifferences(const Person& p1, const Person &p2);
 	
 	unsigned getIndex1() const;

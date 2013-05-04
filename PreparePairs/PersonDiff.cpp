@@ -23,6 +23,16 @@ PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 PersonDiff::PersonDiff(unsigned index1, unsigned index2) : i1(index1), i2(index2)
 {}
 
+PersonDiff::PersonDiff(const vector<unsigned>& v, const bool& isMatch)
+{
+    setDifferencesDirectly(v);
+    match = false;
+    if(isMatch)
+    {
+        match = true;
+    }
+}
+
 unsigned PersonDiff::getIndex1() const
 {
     return i1;
@@ -44,6 +54,13 @@ void PersonDiff::setIndices(unsigned index1, unsigned index2)
 vector<unsigned> PersonDiff::getDifferences() const
 {
 	return differences;
+}
+
+void PersonDiff::setDifferencesDirectly(const vector<unsigned>& v)
+{
+    differences.clear();
+    differences.reserve(v.size());
+    copy(v.begin(), v.end(), back_inserter(differences));
 }
 
 void PersonDiff::setDifferences(const Person& p1, const Person &p2)
