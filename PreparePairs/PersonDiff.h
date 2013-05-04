@@ -23,6 +23,8 @@ public:
 	
 	unsigned getIndex1() const;
     unsigned getIndex2() const;
+    float getWeight() const;
+    void setWeight(float w);
     
     void setIndices(unsigned index1, unsigned index2);
     
@@ -34,6 +36,7 @@ private:
     unsigned i2;
     
     bool match;
+    float weight;
 };
 
 ostream& operator<<(ostream& out, const PersonDiff& p);

@@ -23,11 +23,11 @@ PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 PersonDiff::PersonDiff(unsigned index1, unsigned index2) : i1(index1), i2(index2)
 {}
 
-PersonDiff::PersonDiff(const vector<unsigned>& v, const bool& isMatch)
+PersonDiff::PersonDiff(const vector<unsigned>& v, const bool& isM)
 {
     setDifferencesDirectly(v);
     match = false;
-    if(isMatch)
+    if(isM)
     {
         match = true;
     }
@@ -41,6 +41,16 @@ unsigned PersonDiff::getIndex1() const
 unsigned PersonDiff::getIndex2() const
 {
     return i2;
+}
+
+float PersonDiff::getWeight() const
+{
+    return weight;
+}
+
+void PersonDiff::setWeight(float w)
+{
+    weight = w;
 }
 
 void PersonDiff::setIndices(unsigned index1, unsigned index2)
@@ -93,34 +103,35 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
 	out << endl << "Requested PersonDiff:";
 	if(p.getDifferences().size() == eSizePersonAttributes)
     {
-        out << endl << stringify(eID) << ": " << p.getDifferences().at(eID);
-        out << endl << stringify(eFullName) << ": " << p.getDifferences().at(eFullName);
-        out << endl << stringify(eFirstName) << ": " << p.getDifferences().at(eFirstName);
-        out << endl << stringify(eLastName) << ": " << p.getDifferences().at(eLastName);
-        out << endl << stringify(eMiddleName) << ": " << p.getDifferences().at(eMiddleName);
-        out << endl << stringify(eAge) << ": " << p.getDifferences().at(eAge);
-        out << endl << stringify(eFullAddress) << ": " << p.getDifferences().at(eFullAddress);
-        out << endl << stringify(eStreetAddress) << ": " << p.getDifferences().at(eStreetAddress);
-        out << endl << stringify(eApt) << ": " << p.getDifferences().at(eApt);
-        out << endl << stringify(eCity) << ": " << p.getDifferences().at(eCity);
-        out << endl << stringify(eState) << ": " << p.getDifferences().at(eState);
-        out << endl << stringify(eZipCode) << ": " << p.getDifferences().at(eZipCode);
-        out << endl << stringify(dPhone) << ": " << p.getDifferences().at(dPhone);
-        out << endl << stringify(eDate) << ": " << p.getDifferences().at(eDate);
-        out << endl << stringify(eDob) << ": " << p.getDifferences().at(eDob);
-        out << endl << stringify(eAge1) << ": " << p.getDifferences().at(eAge1);
-        out << endl << stringify(eSource) << ": " << p.getDifferences().at(eSource);
-        out << endl << stringify(eRelatives) << ": " << p.getDifferences().at(eRelatives);
-        out << endl << stringify(eScore) << ": " << p.getDifferences().at(eScore);
-        out << endl << stringify(eLabel) << ": " << p.getDifferences().at(eLabel);
-        out << endl << stringify(eAreaCode) << ": " << p.getDifferences().at(eAreaCode);
-        out << endl << stringify(eExchange) << ": " << p.getDifferences().at(eExchange);
-        out << endl << stringify(eSubscriber) << ": " << p.getDifferences().at(eSubscriber);
-        out << endl;
+        out << endl << "   " << stringify(eID) << ": " << p.getDifferences().at(eID);
+        out << endl << "   " << stringify(eFullName) << ": " << p.getDifferences().at(eFullName);
+        out << endl << "   " << stringify(eFirstName) << ": " << p.getDifferences().at(eFirstName);
+        out << endl << "   " << stringify(eLastName) << ": " << p.getDifferences().at(eLastName);
+        out << endl << "   " << stringify(eMiddleName) << ": " << p.getDifferences().at(eMiddleName);
+        out << endl << "   " << stringify(eAge) << ": " << p.getDifferences().at(eAge);
+        out << endl << "   " << stringify(eFullAddress) << ": " << p.getDifferences().at(eFullAddress);
+        out << endl << "   " << stringify(eStreetAddress) << ": " << p.getDifferences().at(eStreetAddress);
+        out << endl << "   " << stringify(eApt) << ": " << p.getDifferences().at(eApt);
+        out << endl << "   " << stringify(eCity) << ": " << p.getDifferences().at(eCity);
+        out << endl << "   " << stringify(eState) << ": " << p.getDifferences().at(eState);
+        out << endl << "   " << stringify(eZipCode) << ": " << p.getDifferences().at(eZipCode);
+        out << endl << "   " << stringify(dPhone) << ": " << p.getDifferences().at(dPhone);
+        out << endl << "   " << stringify(eDate) << ": " << p.getDifferences().at(eDate);
+        out << endl << "   " << stringify(eDob) << ": " << p.getDifferences().at(eDob);
+        out << endl << "   " << stringify(eAge1) << ": " << p.getDifferences().at(eAge1);
+        out << endl << "   " << stringify(eSource) << ": " << p.getDifferences().at(eSource);
+        out << endl << "   " << stringify(eRelatives) << ": " << p.getDifferences().at(eRelatives);
+        out << endl << "   " << stringify(eScore) << ": " << p.getDifferences().at(eScore);
+        out << endl << "   " << stringify(eLabel) << ": " << p.getDifferences().at(eLabel);
+        out << endl << "   " << stringify(eAreaCode) << ": " << p.getDifferences().at(eAreaCode);
+        out << endl << "   " << stringify(eExchange) << ": " << p.getDifferences().at(eExchange);
+        out << endl << "   " << stringify(eSubscriber) << ": " << p.getDifferences().at(eSubscriber);
+        out << endl << "   " << "Match : " << p.isMatch() ? "T" : "F";
+        out << endl << "   " << "Weight: " << p.getWeight();
     }
     else
     {
-        out << endl << "Requested PersonDiff's differences are not yet populated.";
+        out << endl << "Requested PersonDiff's differences are not yet populated... only " << p.getDifferences().size() << " of " << eSizePersonAttributes;
     }
 	
 	return out;
