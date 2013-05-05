@@ -11,9 +11,18 @@ Person::Person(const Person & p)
 	{
 		attributes.push_back(p.attributes.at(i));
 	}
+
+    // fast deep copy
+    vector<string> pAttributes = p.getAttributes();
+    attributes.clear();
+    attributes.reserve(pAttributes.size());
+    copy(pAttributes.begin(), pAttributes.end(), back_inserter(attributes));
+
+    id = p.getID();
+    index = p.getIndex();
 }
 
-Person::Person(vector<string> personInfo)
+Person::Person(vector<string> personInfo, unsigned myIndex, unsigned myID)
 {
 	if(personInfo.size() != eSizePersonAttributes)
 	{
@@ -21,10 +30,13 @@ Person::Person(vector<string> personInfo)
 		return;
 	}
 
-    for(unsigned i = 0; i < personInfo.size(); i++)
-	{
-		attributes.push_back(personInfo.at(i));
-	}
+    // fast deep copy
+    attributes.clear();
+    attributes.reserve(personInfo.size());
+    copy(personInfo.begin(), personInfo.end(), back_inserter(attributes));
+
+    index = myIndex;
+    id = myID;
 }
 
 void Person::setID(unsigned i)
@@ -37,6 +49,16 @@ unsigned Person::getID() const
     return id;
 }
 
+unsigned Person::getIndex() const
+{
+    return index;    
+}
+
+void Person::setIndex(unsigned i)
+{
+    index = i;
+}
+
 vector<string> Person::getAttributes() const
 {
 	return attributes;
@@ -44,7 +66,7 @@ vector<string> Person::getAttributes() const
 
 ostream& operator<<(ostream& out, const Person& p)
 {
-	out << endl << "Requested Person: " << p.getID();
+	out << endl << "Requested Person: people[" << p.getIndex() << "] (ID: " << p.getID() << ")";
 	if(p.getAttributes().size() == eSizePersonAttributes)
     {
         //out << endl << stringify(eID) << ": " << p.getAttributes().at(eID);

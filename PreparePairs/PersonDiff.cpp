@@ -11,23 +11,31 @@ PersonDiff::PersonDiff(const PersonDiff & p)
 	{
 		differences.push_back(p.differences.at(i));
 	}
+
 	i1 = p.getIndex1();
     i2 = p.getIndex2();
+
+    id1 = p.getID1();
+    id2 = p.getID2();
+
+    match = p.isMatch();
+    weight = p.getWeight();
 }
 
 PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 {
 	setDifferences(p1, p2);
+    i1 = p1.getIndex();
+    i2 = p2.getIndex();
+    id1 = p1.getID();
+    id2 = p2.getID();
+    deduceMatch();
 }
 
-PersonDiff::PersonDiff(unsigned index1, unsigned index2) : i1(index1), i2(index2)
-{}
-
-PersonDiff::PersonDiff(const vector<unsigned>& v, const bool& isM)
+void PersonDiff::deduceMatch()
 {
-    setDifferencesDirectly(v);
     match = false;
-    if(isM)
+    if(id1 == id2)
     {
         match = true;
     }
@@ -94,6 +102,7 @@ vector<unsigned> PersonDiff::getDifferences() const
 
 void PersonDiff::setDifferencesDirectly(const vector<unsigned>& v)
 {
+    // fast deep copy
     differences.clear();
     differences.reserve(v.size());
     copy(v.begin(), v.end(), back_inserter(differences));
@@ -111,12 +120,6 @@ void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 		*/
         differences.push_back(ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i)));
 	}
-	
-	match = false;
-	if(p1.getID() == p1.getID())
-	{
-		match = true;
-	}
 }
 
 bool PersonDiff::isMatch() const
@@ -126,7 +129,12 @@ bool PersonDiff::isMatch() const
 
 ostream& operator<<(ostream& out, const PersonDiff& p)
 {
-	out << endl << "Requested PersonDiff:";
+    string matchStr = "non-match";
+    if(p.isMatch())
+    {
+        matchStr = "match";
+    }
+	out << endl << "Requested PersonDiff: people[" << p.getIndex1() << "] cmp people[" << p.getIndex2() << "] (" << matchStr << ")";
 	if(p.getDifferences().size() == eSizePersonAttributes)
     {
         //out << endl << "   " << stringify(eID) << ": " << p.getDifferences().at(eID);
@@ -152,9 +160,6 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
         out << endl << "   " << stringify(eAreaCode) << ": " << p.getDifferences().at(eAreaCode);
         out << endl << "   " << stringify(eExchange) << ": " << p.getDifferences().at(eExchange);
         out << endl << "   " << stringify(eSubscriber) << ": " << p.getDifferences().at(eSubscriber);
-        out << endl << "   " << "ID 1  : " << p.getID1();
-        out << endl << "   " << "ID 2  : " << p.getID2();
-        out << endl << "   " << "Match : " << p.isMatch() ? "T" : "F";
         out << endl << "   " << "Weight: " << p.getWeight();
         out << endl;
     }

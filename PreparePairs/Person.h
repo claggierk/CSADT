@@ -11,16 +11,20 @@ class Person
 public:
 	Person();
 	Person(const Person & p);
-	Person(vector<string> personInfo);
+	Person(vector<string> personInfo, unsigned myIndex, unsigned myID);
 
 	unsigned getID() const;
 	void setID(unsigned id);
+
+	unsigned getIndex() const;
+	void setIndex(unsigned i);
 
 	vector<string> getAttributes() const;
 
 private:
 	vector<string> attributes;
 	unsigned id;
+	unsigned index;
 };
 
 ostream& operator<<(ostream& out, const Person& p);
@@ -51,7 +55,7 @@ enum PersonIndex
 	eAreaCode,		// 20 // 19
 	eExchange,		// 21 // 20
 	eSubscriber,	// 22 // 21
-	eSizePersonAttributes	// !
+	eSizePersonAttributes // !
 };
 
 #endif

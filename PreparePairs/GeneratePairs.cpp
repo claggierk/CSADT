@@ -35,18 +35,20 @@ void comparePairOfRecords(unsigned startIndex, unsigned numCombinations, unsigne
     }
 }
 
-Person CreatePerson(string personRecord)
+Person CreatePerson(string personRecord, unsigned index)
 {
 	vector<string> personInfo;
 	
     unsigned id = 0;
+    string idStr = "";
     unsigned first = 0;
 	unsigned found = unsigned(string::npos);
 
 	found = personRecord.find("|", first);
     if(found != std::string::npos) // found a '|'
     {
-        id = atoi(personRecord.substr(first, found-first).c_str());
+        idStr = personRecord.substr(first, found-first);
+        id = atoi(idStr.c_str());
         first = found + 1;
     }
     do
@@ -64,8 +66,7 @@ Person CreatePerson(string personRecord)
 		}
 	} while(found != unsigned(string::npos));
 
-	Person person(personInfo);
-    person.setID(id);
+	Person person(personInfo, index, id);
     return person;
 }
 
@@ -78,11 +79,12 @@ void PopulatePeople(const string& fileName)
     {
         string personStr = "";
         getline(recordsFileHandler, personStr); // dont want to store the FIRST one...
+        unsigned personIndex = 0;
         while(!recordsFileHandler.eof())
         {
             getline(recordsFileHandler, personStr);
-            gPeople.push_back(CreatePerson(personStr));
-            cout << gPeople.back().getID() << endl;
+            gPeople.push_back(CreatePerson(personStr, personIndex));
+            personIndex++;
         }
         recordsFileHandler.close();
     }
@@ -216,9 +218,11 @@ int main(int argc, char ** argv)
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
     
-    cout << "gPeople[0]: " << gPeople.at(0) << endl;
-    cout << "gPeople[1]: " << gPeople.at(1) << endl;
-    cout << "gPeopleDifferences[0][0]: " << gPeopleDifferences.at(0).at(0) << endl;
+    cout << gPeople.at(0) << endl;
+    cout << gPeople.at(1) << endl;
+    cout << gPeople.at(2) << endl;
+    cout << gPeopleDifferences.at(0).at(0) << endl;
+    cout << gPeopleDifferences.at(0).at(1) << endl;
     
     OutputPeopleDifferences("PersonToPersonComparisons.txt");
     
