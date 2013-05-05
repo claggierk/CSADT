@@ -6,23 +6,25 @@
 
 #include "PersonDiff.h"
 #include "Person.h"
+#include "Instance.h"
 
 using namespace std;
 
-vector<PersonDiff> PersonPairsCompared;
+vector<Instance> gInstances;
 
 void PopulatePersonPairsCompared(string fileName)
 {
 	ifstream fin;
 	fin.open(fileName.c_str());
 
-    vector<unsigned> tempDifferences;
-    tempDifferences.reserve(eSizePersonAttributes);
+    vector<unsigned> inputData;
+    inputData.reserve(eSizePersonAttributes);
 	
 	if(fin.is_open())
     {
     	string line = "";
         getline(fin, line);
+        unsigned currentIndex = 0;
         do
         {
             istringstream iss(line);
@@ -40,20 +42,20 @@ void PopulatePersonPairsCompared(string fileName)
         		if(tempStr == "T")
         		{
         			match = true;
-                    cout << "MATCH" << endl;
         		}
         	}
             
-            tempDifferences.clear();
+            inputData.clear();
             iss >> tempStr;
             do
             {
-            	tempDifferences.push_back(atoi(tempStr.c_str()));
+            	inputData.push_back(atoi(tempStr.c_str()));
                 iss >> tempStr;
             } while(iss);
             
-            PersonPairsCompared.push_back(PersonDiff(tempDifferences, match));
+            gInstances.push_back(Instance(inputData, currentIndex, match));
             getline(fin, line);
+            currentIndex++;
         } while(!fin.eof());
     }
     else
@@ -66,43 +68,43 @@ void PopulatePersonPairsCompared(string fileName)
 
 void SetInitialWeights()
 {
-    // PersonPairsCompared is m
+    // gInstances is m
     unsigned totalMatches = 0;
-    for(unsigned i = 0; i < PersonPairsCompared.size(); i++)
+    for(unsigned i = 0; i < gInstances.size(); i++)
     {
-        if(PersonPairsCompared.at(i).isMatch())
+        if(gInstances.at(i).isMatch())
         {
             totalMatches++;
         }
     }
 
-    float matchWeight = (float)totalMatches / (float)PersonPairsCompared.size();
-    float nonMatchWeight = ((float)PersonPairsCompared.size() - (float)totalMatches) / (float)PersonPairsCompared.size();
+    float matchWeight = (float)totalMatches / (float)gInstances.size();
+    float nonMatchWeight = ((float)gInstances.size() - (float)totalMatches) / (float)gInstances.size();
     cout << "totalMatches  : " << totalMatches << endl;
     cout << "matchWeight   : " << matchWeight << endl;
     cout << "nonMatchWeight: " << nonMatchWeight << endl;
     float currentWeight = 0.0f;
-    for(unsigned i = 0; i < PersonPairsCompared.size(); i++)
+    for(unsigned i = 0; i < gInstances.size(); i++)
     {
         currentWeight = nonMatchWeight;
-        if(PersonPairsCompared.at(i).isMatch())
+        if(gInstances.at(i).isMatch())
         {
             currentWeight = matchWeight;
         }
-        PersonPairsCompared.at(i).setWeight(currentWeight);
+        gInstances.at(i).setWeight(currentWeight);
     }
 }
 
 void GenerateADT()
 {
     SetInitialWeights();
-    cout << PersonPairsCompared.at(0);
+    cout << gInstances.at(0) << endl;
 }
 
 int main(int argc, char* argv[])
 {
-	PopulatePersonPairsCompared("PersonToPersonComparisons.txt");
-	cout << "PersonPairsCompared size: " << PersonPairsCompared.size();
+	PopulatePersonPairsCompared("input.txt");
+	cout << "gInstances size: " << gInstances.size() << endl;
 
     GenerateADT();
 

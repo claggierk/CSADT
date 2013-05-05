@@ -224,7 +224,7 @@ int main(int argc, char ** argv)
     cout << gPeopleDifferences.at(0).at(0) << endl;
     cout << gPeopleDifferences.at(0).at(1) << endl;
     
-    OutputPeopleDifferences("PersonToPersonComparisons.txt");
+    OutputPeopleDifferences("input.txt");
     
     cout << endl << endl;
     return EXIT_SUCCESS;
