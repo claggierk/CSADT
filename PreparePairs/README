@@ -1,1 +1,1 @@
-g++ *.h *.cpp -o csadt -I /usr/local/include -L /usr/local/lib -lboost_thread
+g++ *.h *.cpp -o prepare-2person-diffs -I /usr/local/include -L /usr/local/lib -lboost_thread

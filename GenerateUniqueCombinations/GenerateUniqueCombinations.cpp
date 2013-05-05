@@ -29,7 +29,7 @@ int main (int argc, char ** argv)
 {
     unsigned numRecords = 100;
     unsigned numPairs = numRecords * (numRecords - 1) / 2;
-    string fileName = "Pair_IDs.txt";
+    string fileName = "UniqueCombinations.txt";
     outputPairs(fileName, numRecords, numPairs);
 
     cout << "Number of records: " << numRecords << endl;

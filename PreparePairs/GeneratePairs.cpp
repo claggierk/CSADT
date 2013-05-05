@@ -38,12 +38,20 @@ void comparePairOfRecords(unsigned startIndex, unsigned numCombinations, unsigne
 Person CreatePerson(string personRecord)
 {
 	vector<string> personInfo;
-	unsigned first = 0;
+	
+    unsigned id = 0;
+    unsigned first = 0;
 	unsigned found = unsigned(string::npos);
-	do
+
+	found = personRecord.find("|", first);
+    if(found != std::string::npos) // found a '|'
+    {
+        id = atoi(personRecord.substr(first, found-first).c_str());
+        first = found + 1;
+    }
+    do
 	{
 		found = personRecord.find("|", first);
-		//cout << endl << "found: " << found;
 		if(found != std::string::npos) // found a '|'
 		{
 			personInfo.push_back(personRecord.substr(first, found-first));
@@ -54,10 +62,11 @@ Person CreatePerson(string personRecord)
             cout << endl << "last one...";
 			personInfo.push_back(personRecord.substr(first, personRecord.size()-1));
 		}
-        //cin >> first;
 	} while(found != unsigned(string::npos));
 
-	return Person(personInfo);
+	Person person(personInfo);
+    person.setID(id);
+    return person;
 }
 
 void PopulatePeople(const string& fileName)
@@ -73,12 +82,15 @@ void PopulatePeople(const string& fileName)
         {
             getline(recordsFileHandler, personStr);
             gPeople.push_back(CreatePerson(personStr));
+            cout << gPeople.back().getID() << endl;
         }
         recordsFileHandler.close();
     }
     else
     {
         cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
+        cerr << endl;
+        exit(1);
     }
 	//cout << people.at(0);
 	//cout << people.back();
@@ -130,6 +142,8 @@ void PopulatePeopleCombinations(const string& fileName)
     else
     {
         cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
+        cerr << endl;
+        exit(1);
     }
     peopleCombinationsFileHandler.close();
 }
@@ -168,7 +182,7 @@ void OutputPeopleDifferences(string fileName)
 
 int main(int argc, char ** argv)
 {
-    PopulatePeopleCombinations("Pair_IDs.txt");
+    PopulatePeopleCombinations("UniqueCombinations.txt");
     unsigned comparisonsPerCore = gNumCombinations / NUM_THREADS;
     
     PopulatePeople("100LinesPreProcessed.txt");

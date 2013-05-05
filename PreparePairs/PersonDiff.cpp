@@ -53,6 +53,32 @@ void PersonDiff::setWeight(float w)
     weight = w;
 }
 
+unsigned PersonDiff::getID1() const
+{
+    return id1;
+}
+
+void PersonDiff::setID1(unsigned id)
+{
+    id1 = id;
+}
+
+unsigned PersonDiff::getID2() const
+{
+    return id2;
+}
+
+void PersonDiff::setID2(unsigned id)
+{
+    id2 = id;
+}
+
+void PersonDiff::setIDs(unsigned i1, unsigned i2)
+{
+    id1 = i1;
+    id2 = i2;
+}
+
 void PersonDiff::setIndices(unsigned index1, unsigned index2)
 {
 	i1 = index1;
@@ -87,7 +113,7 @@ void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 	}
 	
 	match = false;
-	if(p1.getAttributes().at(eID) == p1.getAttributes().at(eID))
+	if(p1.getID() == p1.getID())
 	{
 		match = true;
 	}
@@ -103,7 +129,7 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
 	out << endl << "Requested PersonDiff:";
 	if(p.getDifferences().size() == eSizePersonAttributes)
     {
-        out << endl << "   " << stringify(eID) << ": " << p.getDifferences().at(eID);
+        //out << endl << "   " << stringify(eID) << ": " << p.getDifferences().at(eID);
         out << endl << "   " << stringify(eFullName) << ": " << p.getDifferences().at(eFullName);
         out << endl << "   " << stringify(eFirstName) << ": " << p.getDifferences().at(eFirstName);
         out << endl << "   " << stringify(eLastName) << ": " << p.getDifferences().at(eLastName);
@@ -126,8 +152,11 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
         out << endl << "   " << stringify(eAreaCode) << ": " << p.getDifferences().at(eAreaCode);
         out << endl << "   " << stringify(eExchange) << ": " << p.getDifferences().at(eExchange);
         out << endl << "   " << stringify(eSubscriber) << ": " << p.getDifferences().at(eSubscriber);
+        out << endl << "   " << "ID 1  : " << p.getID1();
+        out << endl << "   " << "ID 2  : " << p.getID2();
         out << endl << "   " << "Match : " << p.isMatch() ? "T" : "F";
         out << endl << "   " << "Weight: " << p.getWeight();
+        out << endl;
     }
     else
     {

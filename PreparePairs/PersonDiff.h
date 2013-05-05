@@ -23,6 +23,13 @@ public:
 	
 	unsigned getIndex1() const;
     unsigned getIndex2() const;
+
+	unsigned getID1() const;
+	void setID1(unsigned id);
+	unsigned getID2() const;
+	void setID2(unsigned id);
+	void setIDs(unsigned i1, unsigned i2);
+
     float getWeight() const;
     void setWeight(float w);
     
@@ -34,6 +41,9 @@ private:
 	vector<unsigned> differences;
 	unsigned i1;
     unsigned i2;
+
+    unsigned id1;
+    unsigned id2;
     
     bool match;
     float weight;
