@@ -4,21 +4,25 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "PersonDiff.h"
-#include "Person.h"
 #include "Instance.h"
+#include "Condition.h"
+#include "FeatureStats.h"
 
 using namespace std;
 
-vector<Instance> gInstances;
+const unsigned MAX_FEATURE_COUNT = 128;
 
-void PopulatePersonPairsCompared(string fileName)
+vector<Instance> gMatches;
+vector<Instance> gNonMatches;
+vector<Condition> gConditions;
+
+void PopulateInstances(string fileName)
 {
 	ifstream fin;
 	fin.open(fileName.c_str());
 
     vector<unsigned> inputData;
-    inputData.reserve(eSizePersonAttributes);
+    inputData.reserve(MAX_FEATURE_COUNT);
 	
 	if(fin.is_open())
     {
@@ -32,14 +36,14 @@ void PopulatePersonPairsCompared(string fileName)
             bool match = false;
             string tempStr = "";
             iss >> tempStr;
-            if(tempStr != "T" && tempStr != "F")
+            if(tempStr != "0" && tempStr != "1")
             {
             	cerr << " ##### ERROR: Invalid line: \"" << line << "\" in input file: " << fileName << endl;
             	continue;
         	}
         	else
         	{
-        		if(tempStr == "T")
+        		if(tempStr == "1")
         		{
         			match = true;
         		}
@@ -53,7 +57,17 @@ void PopulatePersonPairsCompared(string fileName)
                 iss >> tempStr;
             } while(iss);
             
-            gInstances.push_back(Instance(inputData, currentIndex, match));
+            if(match)
+            {
+                // only the match instances
+                gMatches.push_back(Instance(inputData, currentIndex, match));
+            }
+            else
+            {
+                // only the non match instances
+                gNonMatches.push_back(Instance(inputData, currentIndex, match));
+            }
+            
             getline(fin, line);
             currentIndex++;
         } while(!fin.eof());
@@ -68,44 +82,104 @@ void PopulatePersonPairsCompared(string fileName)
 
 void SetInitialWeights()
 {
-    // gInstances is m
-    unsigned totalMatches = 0;
-    for(unsigned i = 0; i < gInstances.size(); i++)
+    float matchWeight = (double)gMatches.size() / ((double)gMatches.size() + (double)gNonMatches.size());
+    float nonMatchWeight = (double)gNonMatches.size() / ((double)gMatches.size() + (double)gNonMatches.size());
+    cout << "Initial match weight    : " << matchWeight << endl;
+    cout << "Initial non-match weight: " << nonMatchWeight << endl;
+    
+    for(unsigned i = 0; i < gMatches.size(); i++)
     {
-        if(gInstances.at(i).isMatch())
+        gMatches.at(i).setWeight(matchWeight);
+    }
+
+    for(unsigned i = 0; i < gMatches.size(); i++)
+    {
+        gNonMatches.at(i).setWeight(nonMatchWeight);
+    }
+}
+
+void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStats>& fs)
+{
+    vector<unsigned> attributes = instances.at(0).getAttributes();
+    for(unsigned j = 0; j < attributes.size(); j++)
+    {
+                                                //myIndex, mySum,      mySqSum,                             myMin             myMax,            myMean, myStdDev
+        fs.push_back(FeatureStats(j, attributes.at(j), attributes.at(j) * attributes.at(j), attributes.at(j), attributes.at(j), 0.0f, 0.0f));
+    }
+
+    for(unsigned i = 1; i < instances.size(); i++)
+    {
+        vector<unsigned> attributes = instances.at(i).getAttributes();
+        for(unsigned j = 0; j < attributes.size(); j++)
         {
-            totalMatches++;
+            // update the sum
+            fs.at(j).setSum(fs.at(j).getSum() + attributes.at(j));
+
+            // update the squared sum
+            fs.at(j).setSqSum(fs.at(j).getSqSum() + attributes.at(j) * attributes.at(j));            
+
+            // update the min (if its smaller)
+            if(attributes.at(j) < fs.at(j).getMin())
+            {
+                fs.at(j).setMin(attributes.at(j));
+            }
+
+            // update the max (if its smaller)
+            if(attributes.at(j) > fs.at(j).getMax())
+            {
+                fs.at(j).setMax(attributes.at(j));
+            }
         }
     }
 
-    float matchWeight = (float)totalMatches / (float)gInstances.size();
-    float nonMatchWeight = ((float)gInstances.size() - (float)totalMatches) / (float)gInstances.size();
-    cout << "totalMatches  : " << totalMatches << endl;
-    cout << "matchWeight   : " << matchWeight << endl;
-    cout << "nonMatchWeight: " << nonMatchWeight << endl;
-    float currentWeight = 0.0f;
-    for(unsigned i = 0; i < gInstances.size(); i++)
+    for(unsigned i = 0; i < fs.size(); i++)
     {
-        currentWeight = nonMatchWeight;
-        if(gInstances.at(i).isMatch())
-        {
-            currentWeight = matchWeight;
-        }
-        gInstances.at(i).setWeight(currentWeight);
+        fs.at(i).setMean((double)fs.at(i).getSum() / (double)instances.size());
+        fs.at(i).setStdDev((double)fs.at(i).getSqSum() / (double)instances.size());
+    }
+}
+
+void GenerateConditions()
+{
+    vector<FeatureStats> matchFeatureStats;
+    PopulateFeatureStatus(gMatches, matchFeatureStats);
+    cout << matchFeatureStats.at(0);
+    for(unsigned i = 0; i < matchFeatureStats.size(); i++)
+    {
+        gConditions.push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), '=', i));
+        gConditions.push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), '<', i));
+        gConditions.push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), '>', i));
+    }
+
+    vector<FeatureStats> nonMatchFeatureStats;
+    PopulateFeatureStatus(gNonMatches, nonMatchFeatureStats);
+    cout << nonMatchFeatureStats.at(0);
+    for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
+    {
+        gConditions.push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), '=', i));
+        gConditions.push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), '<', i));
+        gConditions.push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), '>', i));
     }
 }
 
 void GenerateADT()
 {
     SetInitialWeights();
-    cout << gInstances.at(0) << endl;
+    cout << gMatches.at(0) << endl;
+    cout << gNonMatches.at(0) << endl;
 }
 
 int main(int argc, char* argv[])
 {
-	PopulatePersonPairsCompared("input.txt");
-	cout << "gInstances size: " << gInstances.size() << endl;
+	PopulateInstances("input.txt");
+	cout << "gMatches size   : " << gMatches.size() << endl;
+    cout << "gNonMatches size: " << gNonMatches.size() << endl;
 
+    GenerateConditions();
+    for(unsigned i = 0; i < gConditions.size(); i++)
+    {
+        cout << gConditions.at(i);
+    }
     GenerateADT();
 
 	cout << endl << endl;

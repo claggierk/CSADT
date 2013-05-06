@@ -161,15 +161,13 @@ void OutputPeopleDifferences(string fileName)
         {
 			for(unsigned j = 0; j < gPeopleDifferences.at(i).size(); j++)
 			{
-				if(gPeopleDifferences.at(i).at(j).isMatch())
-					fout << "T ";
-				else
-					fout << "F ";
+				fout << gPeopleDifferences.at(i).at(j).isMatch() << " ";
 				
 				vector<unsigned> temp = gPeopleDifferences.at(i).at(j).getDifferences();
 				for(unsigned k = 0; k < temp.size(); k++)
+                {
 					fout << temp.at(k) << " ";
-				
+				}
 				fout << endl;
 			}
 		}
