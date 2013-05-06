@@ -92,7 +92,7 @@ void SetInitialWeights()
         gMatches.at(i).setWeight(matchWeight);
     }
 
-    for(unsigned i = 0; i < gMatches.size(); i++)
+    for(unsigned i = 0; i < gNonMatches.size(); i++)
     {
         gNonMatches.at(i).setWeight(nonMatchWeight);
     }
@@ -103,7 +103,7 @@ void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStat
     vector<unsigned> attributes = instances.at(0).getAttributes();
     for(unsigned j = 0; j < attributes.size(); j++)
     {
-                                                //myIndex, mySum,      mySqSum,                             myMin             myMax,            myMean, myStdDev
+                                //myIndex, mySum,      mySqSum,                             myMin             myMax,            myMean, myStdDev
         fs.push_back(FeatureStats(j, attributes.at(j), attributes.at(j) * attributes.at(j), attributes.at(j), attributes.at(j), 0.0f, 0.0f));
     }
 
@@ -165,8 +165,8 @@ void GenerateConditions()
 void GenerateADT()
 {
     SetInitialWeights();
-    cout << gMatches.at(0) << endl;
-    cout << gNonMatches.at(0) << endl;
+    //cout << gMatches.at(0) << endl;
+    //cout << gNonMatches.at(0) << endl;
 }
 
 int main(int argc, char* argv[])
@@ -174,12 +174,16 @@ int main(int argc, char* argv[])
 	PopulateInstances("input.txt");
 	cout << "gMatches size   : " << gMatches.size() << endl;
     cout << "gNonMatches size: " << gNonMatches.size() << endl;
+    cout << gMatches.at(0);
+    cout << gNonMatches.at(0);
 
     GenerateConditions();
+    /*
     for(unsigned i = 0; i < gConditions.size(); i++)
     {
         cout << gConditions.at(i);
     }
+    */
     GenerateADT();
 
 	cout << endl << endl;
