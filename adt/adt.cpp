@@ -3,10 +3,12 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <cmath>
 
 #include "Instance.h"
 #include "Condition.h"
 #include "FeatureStats.h"
+#include "Rule.h"
 
 using namespace std;
 
@@ -80,24 +82,6 @@ void PopulateInstances(string fileName)
 	fin.close();
 }
 
-void SetInitialWeights()
-{
-    float matchWeight = (double)gMatches.size() / ((double)gMatches.size() + (double)gNonMatches.size());
-    float nonMatchWeight = (double)gNonMatches.size() / ((double)gMatches.size() + (double)gNonMatches.size());
-    cout << "Initial match weight    : " << matchWeight << endl;
-    cout << "Initial non-match weight: " << nonMatchWeight << endl;
-    
-    for(unsigned i = 0; i < gMatches.size(); i++)
-    {
-        gMatches.at(i).setWeight(matchWeight);
-    }
-
-    for(unsigned i = 0; i < gNonMatches.size(); i++)
-    {
-        gNonMatches.at(i).setWeight(nonMatchWeight);
-    }
-}
-
 void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStats>& fs)
 {
     vector<unsigned> attributes = instances.at(0).getAttributes();
@@ -162,11 +146,33 @@ void GenerateConditions()
     }
 }
 
+double SetInitialWeights()
+{   
+    double totalInstances = static_cast<double>(gMatches.size()) + static_cast<double>(gNonMatches.size());
+    double initialWeight = 1.0 / totalInstances;
+    for(unsigned i = 0; i < gMatches.size(); i++)
+    {
+        gMatches.at(i).setWeight(initialWeight);
+    }
+
+    for(unsigned i = 0; i < gNonMatches.size(); i++)
+    {
+        gNonMatches.at(i).setWeight(initialWeight);
+    }
+
+    return initialWeight;
+}
+
 void GenerateADT()
 {
-    SetInitialWeights();
+    double initialWeight = SetInitialWeights();
     //cout << gMatches.at(0) << endl;
     //cout << gNonMatches.at(0) << endl;
+    double wPlus = initialWeight * static_cast<double>(gMatches.size());
+    double wMinus = initialWeight * static_cast<double>(gNonMatches.size());
+    double a = 0.5 * log(wPlus / wMinus);
+
+    vector<Rule> rules;
 }
 
 int main(int argc, char* argv[])
@@ -178,12 +184,6 @@ int main(int argc, char* argv[])
     cout << gNonMatches.at(0);
 
     GenerateConditions();
-    /*
-    for(unsigned i = 0; i < gConditions.size(); i++)
-    {
-        cout << gConditions.at(i);
-    }
-    */
     GenerateADT();
 
 	cout << endl << endl;
