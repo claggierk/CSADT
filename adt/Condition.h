@@ -11,6 +11,7 @@ class Condition
 public:
 	Condition();
 	Condition(const Condition& p);
+	Condition(const bool& myBypass);
 	Condition(const unsigned& myValue, const char& myComparison, const unsigned& myIndex);
 
 	unsigned getValue() const;
@@ -22,10 +23,14 @@ public:
 	unsigned getIndex() const;
 	void setIndex(const unsigned& i);
 
+	bool isBypass() const;
+
 private:
 	unsigned value;
 	char comparison;
 	unsigned index;
+
+	bool bypass;
 };
 
 ostream& operator<<(ostream& out, const Condition& i);

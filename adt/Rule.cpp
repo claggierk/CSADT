@@ -6,7 +6,7 @@ Rule::Rule()
 Rule::Rule(const Rule& fs)
 {}
 
-Rule::Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueWeight, const float& myFalseWeight)
+Rule::Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
 {
 	precondition.setValue(myPrecondition.getValue());
 	precondition.setComparison(myPrecondition.getComparison());
@@ -16,8 +16,8 @@ Rule::Rule(const Condition& myPrecondition, const Condition& myCondition, const 
 	condition.setComparison(myCondition.getComparison());
 	condition.setIndex(myCondition.getIndex());
 
-	trueWeight = myTrueWeight;
-	falseWeight = myFalseWeight;
+	trueScore = myTrueScore;
+	falseScore = myFalseScore;
 }
 
 Condition Rule::getPrecondition() const
@@ -44,24 +44,24 @@ void Rule::setCondition(const Condition& myCondition)
 	condition.setIndex(myCondition.getIndex());
 }
 
-float Rule::getTrueWeight() const
+float Rule::getTrueScore() const
 {
-	return trueWeight;
+	return trueScore;
 }
 
-void Rule::setTrueWeight(const float& myTrueWeight)
+void Rule::setTrueScore(const float& myTrueScore)
 {
-	trueWeight = myTrueWeight;
+	trueScore = myTrueScore;
 }
 
-float Rule::getFalseWeight() const
+float Rule::getFalseScore() const
 {
-	return falseWeight;
+	return falseScore;
 }
 
-void Rule::setFalseWeight(const float& myFalseWeight)
+void Rule::setFalseScore(const float& myFalseScore)
 {
-	falseWeight = myFalseWeight;
+	falseScore = myFalseScore;
 }
 
 ostream& operator<<(ostream& out, const Rule& fs)

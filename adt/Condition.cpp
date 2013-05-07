@@ -1,16 +1,21 @@
 #include "Condition.h"
 
-Condition::Condition()
+Condition::Condition() : bypass(false)
 {}
 
-Condition::Condition(const Condition& p)
+Condition::Condition(const Condition& p) : bypass(false)
 {
 	value = p.getValue();
 	comparison = p.getComparison();
 	index = p.getIndex();
+
+	bypass = p.isBypass();
 }
 
-Condition::Condition(const unsigned& myValue, const char& myComparison, const unsigned& myIndex)
+Condition::Condition(const bool& myBypass) : bypass(true)
+{}
+
+Condition::Condition(const unsigned& myValue, const char& myComparison, const unsigned& myIndex) : bypass(false)
 {
 	value = myValue;
 	comparison = myComparison;
@@ -45,6 +50,11 @@ unsigned Condition::getIndex() const
 void Condition::setIndex(const unsigned& i)
 {
 	index = i;
+}
+
+bool Condition::isBypass() const
+{
+	return bypass;
 }
 
 ostream& operator<<(ostream& out, const Condition& i)

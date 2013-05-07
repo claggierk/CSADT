@@ -170,9 +170,10 @@ void GenerateADT()
     //cout << gNonMatches.at(0) << endl;
     double wPlus = initialWeight * static_cast<double>(gMatches.size());
     double wMinus = initialWeight * static_cast<double>(gNonMatches.size());
-    double a = 0.5 * log(wPlus / wMinus);
+    float a = 0.5 * log(wPlus / wMinus);
 
     vector<Rule> rules;
+    rules.push_back(Rule(Condition(true), Condition(true), a, 0.0f));
 }
 
 int main(int argc, char* argv[])

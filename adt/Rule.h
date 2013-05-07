@@ -12,7 +12,7 @@ class Rule
 public:
 	Rule();
 	Rule(const Rule& fs);
-	Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueWeight, const float& myFalseWeight);
+	Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore);
 
 	Condition getPrecondition() const;
 	void setPrecondition(const Condition& myPrecondition);
@@ -20,17 +20,17 @@ public:
 	Condition getCondition() const;
 	void setCondition(const Condition& myCondition);
 
-	float getTrueWeight() const;
-	void setTrueWeight(const float& myTrueWeight);
+	float getTrueScore() const;
+	void setTrueScore(const float& myTrueScore);
 
-	float getFalseWeight() const;
-	void setFalseWeight(const float& myFalseWeight);
+	float getFalseScore() const;
+	void setFalseScore(const float& myFalseScore);
 
 private:
 	Condition precondition;
 	Condition condition;
-	float trueWeight;
-	float falseWeight; 
+	float trueScore;
+	float falseScore; 
 };
 
 ostream& operator<<(ostream& out, const Rule& fs);
