@@ -1,0 +1,14 @@
+FullName < 3
+FirstName == 0
+LastName == 0
+MiddleName == 0
+City < 3
+State < 3
+Zipcode == 0
+Age == 0
+Apt == 0
+Phone == 0
+DOB == 0
+Phone == 0
+Relatives < 3
+DOB == 0
