@@ -98,6 +98,7 @@ void PopulatePeople(const string& fileName)
 	//cout << people.back();
 }
 
+// populates gPersonCombinations
 void PopulatePeopleCombinations(const string& fileName)
 {
     ifstream peopleCombinationsFileHandler;
@@ -192,6 +193,8 @@ int main(int argc, char ** argv)
     unsigned offset = 0;
     
     const clock_t begin_time = clock();
+    
+    // kick off all the threads
     for(unsigned i = 0; i < NUM_THREADS; i++)
     {
         gPeopleDifferences.at(i).reserve(comparisonsPerCore);
@@ -200,7 +203,7 @@ int main(int argc, char ** argv)
         usleep(1000); // microseconds
     }
     
-    // do other stuff
+    // do whatever you want to while the threads are going
 
     for(unsigned i = 0; i < NUM_THREADS; i++)
     {
@@ -208,6 +211,8 @@ int main(int argc, char ** argv)
         delete threadPtrs.at(i);
         threadPtrs.at(i) = NULL;
     }
+    // at this point ... all the threads are finished!
+
     cout << "All threads complete" << endl;
     cout << "Seconds required for comparing records: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << endl;
     
