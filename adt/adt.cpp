@@ -168,12 +168,26 @@ void GenerateADT()
     double initialWeight = SetInitialWeights();
     //cout << gMatches.at(0) << endl;
     //cout << gNonMatches.at(0) << endl;
+
+
+
+
+    //------------NOTES added 7/7/13---------------
+    //it doesn't matter if conditions are capable of being compared with each other
+    //need to have a mechanism that tells me if an instance satisfies a condition (does it have something to do with features.  like instead of "FullName < 2", the condition has the fields  value = myValue; comparison = <; index = myIndex; where value can be compared to instance.attributes.at(i)? to see if the instance satisfies the condition.
+    //turn wPlus and wMinus into functions (capable of taking in either a condition or a preCondition)
+    //create a vector of conditions that's been selected to be used and a vector of preConditions that's been selected to be used---each preCondition is a vector of Conditions
+    //change rule- a precondition is not a condition, but vector of conditions
+
+
     double wPlus = initialWeight * static_cast<double>(gMatches.size());
     double wMinus = initialWeight * static_cast<double>(gNonMatches.size());
     float a = 0.5 * log(wPlus / wMinus);
 
     vector<Rule> rules;
     rules.push_back(Rule(Condition(true), Condition(true), a, 0.0f));
+
+    //
 }
 
 int main(int argc, char* argv[])
