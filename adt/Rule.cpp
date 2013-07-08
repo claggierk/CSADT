@@ -6,11 +6,12 @@ Rule::Rule()
 Rule::Rule(const Rule& fs)
 {}
 
-Rule::Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
+Rule::Rule(const vector<Condition>& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
 {
-	precondition.setValue(myPrecondition.getValue());
-	precondition.setComparison(myPrecondition.getComparison());
-	precondition.setIndex(myPrecondition.getIndex());
+	precondition = myPrecondition;
+	//setValue(myPrecondition.getValue());
+	//precondition.setComparison(myPrecondition.getComparison());
+	//precondition.setIndex(myPrecondition.getIndex());
 
 	condition.setValue(myCondition.getValue());
 	condition.setComparison(myCondition.getComparison());
@@ -20,16 +21,17 @@ Rule::Rule(const Condition& myPrecondition, const Condition& myCondition, const 
 	falseScore = myFalseScore;
 }
 
-Condition Rule::getPrecondition() const
+vector<Condition> Rule::getPrecondition() const
 {
 	return precondition;
 }
 
-void Rule::setPrecondition(const Condition& myPrecondition)
+void Rule::addPrecondition(const Condition& myPrecondition)
 {
-	precondition.setValue(myPrecondition.getValue());
-	precondition.setComparison(myPrecondition.getComparison());
-	precondition.setIndex(myPrecondition.getIndex());
+	precondition.push_back(myPrecondition);
+	//setValue(myPrecondition.getValue());
+	//precondition.setComparison(myPrecondition.getComparison());
+	//precondition.setIndex(myPrecondition.getIndex());
 }
 
 Condition Rule::getCondition() const

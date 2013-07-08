@@ -32,6 +32,11 @@ vector<unsigned> Instance::getAttributes() const
 	return attributes;
 }
 
+unsigned Instance::getAttribute(unsigned attributeIndex) const
+{
+	return attributes.at(attributeIndex);
+}
+
 bool Instance::isMatch() const
 {
 	return match;

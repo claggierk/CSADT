@@ -2,6 +2,7 @@
 #define __RULE_H__
 
 #include <iostream>
+#include <vector>
 
 #include "Condition.h"
 
@@ -12,10 +13,10 @@ class Rule
 public:
 	Rule();
 	Rule(const Rule& fs);
-	Rule(const Condition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore);
+	Rule(const vector<Condition>& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore);
 
-	Condition getPrecondition() const;
-	void setPrecondition(const Condition& myPrecondition);
+	vector<Condition> getPrecondition() const;
+	void addPrecondition(const Condition& myPrecondition);
 
 	Condition getCondition() const;
 	void setCondition(const Condition& myCondition);
@@ -27,7 +28,7 @@ public:
 	void setFalseScore(const float& myFalseScore);
 
 private:
-	Condition precondition;
+	vector<Condition> precondition;
 	Condition condition;
 	float trueScore;
 	float falseScore; 

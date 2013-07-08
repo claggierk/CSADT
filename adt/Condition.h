@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -12,22 +13,24 @@ public:
 	Condition();
 	Condition(const Condition& p);
 	Condition(const bool& myBypass);
-	Condition(const unsigned& myValue, const char& myComparison, const unsigned& myIndex);
+	Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex);
 
 	unsigned getValue() const;
 	void setValue(const unsigned& v);
 
-	char getComparison() const;
-	void setComparison(const char& c);
+	string getComparison() const;
+	void setComparison(const string& c);
 
 	unsigned getIndex() const;
 	void setIndex(const unsigned& i);
 
 	bool isBypass() const;
 
+	bool evaluate(unsigned localDiff) const;
+
 private:
 	unsigned value;
-	char comparison;
+	string comparison;
 	unsigned index;
 
 	bool bypass;

@@ -1,6 +1,17 @@
 #include "Condition.h"
 
-Condition::Condition() : bypass(false)
+enum comparisonIndices
+{
+	eLessThan,
+	eGreatherThan,
+	eEqualTo,
+	eLessThanOrEqual,
+	eGreaterThanOrEqual,
+	eNumValidComparisons
+};
+string validComparisons[eNumValidComparisons] = {"<", ">", "==", "<=", ">="};
+
+Condition::Condition() : bypass(false), value(0), comparison("=="), index(0)
 {}
 
 Condition::Condition(const Condition& p) : bypass(false)
@@ -12,14 +23,14 @@ Condition::Condition(const Condition& p) : bypass(false)
 	bypass = p.isBypass();
 }
 
-Condition::Condition(const bool& myBypass) : bypass(true)
+Condition::Condition(const bool& myBypass) : bypass(true), value(0), comparison("=="), index(0)
 {}
 
-Condition::Condition(const unsigned& myValue, const char& myComparison, const unsigned& myIndex) : bypass(false)
+Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex) : bypass(false)
 {
-	value = myValue;
-	comparison = myComparison;
-	index = myIndex;
+	setValue(myValue);
+	setComparison(myComparison);
+	setIndex(myIndex);
 }
 
 unsigned Condition::getValue() const
@@ -32,14 +43,22 @@ void Condition::setValue(const unsigned& v)
 	value = v;
 }
 
-char Condition::getComparison() const
+string Condition::getComparison() const
 {
 	return comparison;
 }
 
-void Condition::setComparison(const char& c)
+void Condition::setComparison(const string& c)
 {
-	comparison = c;
+	for(unsigned i = 0; i < eNumValidComparisons; i++)
+	{
+		if(c == validComparisons[i])
+		{
+			comparison = c;
+			return;
+		}
+	}
+	cerr << "##### ERROR: Invalid comparison: " << c << endl;	
 }
 
 unsigned Condition::getIndex() const
@@ -57,8 +76,22 @@ bool Condition::isBypass() const
 	return bypass;
 }
 
+bool Condition::evaluate(unsigned localDiff) const
+{
+	if(comparison == validComparisons[eLessThan])				return (localDiff < value);
+	else if(comparison == validComparisons[eGreatherThan])		return (localDiff > value);
+	else if(comparison == validComparisons[eEqualTo])			return (localDiff == value);
+	else if(comparison == validComparisons[eLessThanOrEqual])	return (localDiff <= value);
+	else if(comparison == validComparisons[eGreaterThanOrEqual])return (localDiff >= value);
+	else
+	{
+		cerr << "##### ERROR: unknown comparison: " << comparison << endl;
+		return false;
+	}
+}
+
 ostream& operator<<(ostream& out, const Condition& i)
 {
-	out << "index: " << i.getIndex() << " " << i.getComparison() << " value: " << i.getValue() << endl;
+	out << "Condition: " << i.getComparison() << " " << i.getValue();
 	return out;
 }
