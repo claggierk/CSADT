@@ -14,6 +14,7 @@
 	$tempFileName = $_FILES["file"]["tmp_name"];
 	$allowedFileTypes = array("txt", "xlsx", "jpg");
 	$temp = explode(".", $fileName);
+	$fileText = reset($temp);
 	$extension = end($temp);
 
 	if(in_array($extension, $allowedFileTypes))
@@ -33,23 +34,29 @@
 				echo "ERROR: File \"" . $fileName . "\" not uploaded<br>";
 			}
 			
-			$destination = "uploads/" . $fileName;
-			if(file_exists($destination))
+			$uploadFilePath = "uploads/" . $fileName;
+			if(file_exists($uploadFilePath))
 			{
-				echo $destination . " already exists... overwriting<br>";
+				echo $uploadFilePath . " already exists... overwriting<br>";
 			}
 			
-			$moveResult = move_uploaded_file($tempFileName, $destination);
+			$moveResult = move_uploaded_file($tempFileName, $uploadFilePath);
 			if($moveResult == false)
 			{
-				 echo "ERROR: File\"" . $tempFileName. "\" failed to move to \"" . $destination . "\"<br>";
+				 echo "ERROR: File\"" . $tempFileName. "\" failed to move to \"" . $uploadFilePath . "\"<br>";
 			}
-			if(!file_exists($destination))
+			if(!file_exists($uploadFilePath))
 			{
-				echo "ERROR: " . $destination . " does not exist...";
+				echo "ERROR: " . $uploadFilePath . " does not exist...";
 			}
-			echo "File Stored: " . $destination . "<br>";
+			echo "File Stored: " . $uploadFilePath . "<br>";
 		}
+		
+		$preprocessedFileName = $fileText . "_Preprocessed.txt";
+		$preprocessedFilePath = "preprocessed/" . $preprocessedFileName;
+		exec("python scripts/2_TextToPreprocessedText.py " . $uploadFilePath . " preprocessed/" . $preprocessedFileName);
+		echo "<a href=" . $uploadFilePath . ">" . $fileName . "</a> <br>";
+		echo "<a href=" . $preprocessedFilePath . ">" . $preprocessedFileName . "</a> <br>";
 	}
 	else
 	{
