@@ -1,4 +1,1 @@
 g++ *.h *.cpp -o prepare-input -I /usr/local/include -L /usr/local/lib -lboost_thread
-
-
-I made my first change!
