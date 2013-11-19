@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
+#include <sstream>
 
 #include "Instance.h"
 #include "Condition.h"
@@ -444,18 +445,50 @@ int main(int argc, char* argv[])
     unsigned k = 5;
     GenerateADT(cPlus, cMinus, k);
 
+    ofstream fout;
+    string outputFileName = "Tree.txt";
+    fout.open(outputFileName.c_str());
+
     //print rules
     cerr << "\nCSADT Rules Output:";
-    for (unsigned i = 0; i < gRules.size(); i++) {  
+    for(unsigned i = 0; i < gRules.size(); i++) {  
         cerr << "\nRule " << i << ": " << endl;
-        cerr << "\tThe precondition: ";
-        for (unsigned j = 0; j < gRules.at(i).getPrecondition().size(); j++) {  
-            cerr << gRules.at(i).getPrecondition().at(j) << " ";
+        
+        ostringstream oss;
+        if(gRules.at(i).getPrecondition().size() > 0) {
+            oss << gRules.at(i).getPrecondition().at(0);
+            for(unsigned j = 1; j < gRules.at(i).getPrecondition().size(); j++) {  
+                oss << " " << gRules.at(i).getPrecondition().at(j);
+            }
         }
-        cerr << endl;
-        cerr << "\tThe condition: " << gRules.at(i).getCondition() << endl;
-        cerr << "\tThe trueScore: " << gRules.at(i).getTrueScore() << endl;
-        cerr << "\tThe falseScore: " << gRules.at(i).getFalseScore() << endl;
+        string preCondition = oss.str();
+        if(preCondition == "") {
+            preCondition = "(true)";
+        }
+
+        ostringstream oss2;
+        oss2 << gRules.at(i).getCondition();
+        string condition = oss2.str();
+        float trueScore = gRules.at(i).getTrueScore();
+        float falseScore = gRules.at(i).getFalseScore();
+        
+        cerr << "   precondition: " << preCondition << endl;
+        cerr << "   condition   : " << condition << endl;
+        cerr << "   true score  : " << trueScore << endl;
+        cerr << "   false score : " << falseScore << endl;
+
+        if(! fout.is_open()) {
+            cerr << endl << "##### ERROR: Unable to open " << outputFileName << ".";
+        }
+        else {
+            fout << preCondition << " " << condition << " " << trueScore << " " << falseScore;
+            if((i+1) != gRules.size()) {
+                fout << endl;
+            }
+        }
+    }
+    if(fout.is_open()) {
+        fout.close();
     }
 
 	cerr << endl << endl;

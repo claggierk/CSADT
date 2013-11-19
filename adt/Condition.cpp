@@ -140,6 +140,7 @@ bool Condition::evaluate(const Instance& instance) const
 
 ostream& operator<<(ostream& out, const Condition& i)
 {
-	out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
+	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
+	out << "(" << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue() << ")";
 	return out;
 }
