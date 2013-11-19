@@ -6,12 +6,12 @@ using namespace boost;
 
 void task1()
 { 
-    cout << endl << " --- task1";
+    cerr << endl << " --- task1";
 }
 
 void task2()
 { 
-    cout << endl << " --- task2";
+    cerr << endl << " --- task2";
 }
 
 int main (int argc, char ** argv)

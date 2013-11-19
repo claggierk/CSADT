@@ -69,6 +69,11 @@ ostream& operator<<(ostream& out, const Person& p)
 	out << endl << "Requested Person: people[" << p.getIndex() << "] (ID: " << p.getID() << ")";
 	if(p.getAttributes().size() == eSizePersonAttributes)
     {
+        for(unsigned attributeIndex = 0; attributeIndex < p.getAttributes().size(); attributeIndex++)
+        {
+            out << endl << "   " << sPersonConditions[attributeIndex] << ": " << p.getAttributes().at(attributeIndex);
+        }
+        /*
         //out << endl << stringify(eID) << ": " << p.getAttributes().at(eID);
         out << endl << "   " << stringify(eFullName) << ": " << p.getAttributes().at(eFullName);
         out << endl << "   " << stringify(eFirstName) << ": " << p.getAttributes().at(eFirstName);
@@ -92,6 +97,7 @@ ostream& operator<<(ostream& out, const Person& p)
         out << endl << "   " << stringify(eAreaCode) << ": " << p.getAttributes().at(eAreaCode);
         out << endl << "   " << stringify(eExchange) << ": " << p.getAttributes().at(eExchange);
         out << endl << "   " << stringify(eSubscriber) << ": " << p.getAttributes().at(eSubscriber);
+        */
         out << endl;
     }
     else

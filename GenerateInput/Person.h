@@ -20,6 +20,7 @@ public:
 	void setIndex(unsigned i);
 
 	vector<string> getAttributes() const;
+	static vector<string> PersonConditions;
 
 private:
 	vector<string> attributes;
@@ -56,6 +57,30 @@ enum PersonIndex
 	eExchange,		// 21 // 20
 	eSubscriber,	// 22 // 21
 	eSizePersonAttributes // !
+};
+
+static string sPersonConditions[] = {
+    stringify(eFullName),
+    stringify(eFirstName),
+    stringify(eLastName),
+    stringify(eMiddleName),
+    stringify(eAge),
+    stringify(eFullAddress),
+    stringify(eStreetAddress),
+    stringify(eApt),
+    stringify(eCity),
+    stringify(eState),
+    stringify(eZipCode),
+    stringify(eDate),
+    stringify(eDob),
+    stringify(eAge1),
+    stringify(eSource),
+    stringify(eRelatives),
+    stringify(eScore),
+    stringify(eLabel),
+    stringify(eAreaCode),
+    stringify(eExchange),
+    stringify(eSubscriber)
 };
 
 #endif

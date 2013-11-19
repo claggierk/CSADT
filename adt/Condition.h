@@ -1,4 +1,4 @@
- #ifndef __CONDITION_H__
+#ifndef __CONDITION_H__
 #define __CONDITION_H__
 
 #include <vector>
@@ -30,6 +30,8 @@ public:
 	string getComparison() const;
 	void setComparison(const string& c);
 
+	// This corresponds to which field is being compared
+	// index: 1 === eFullName
 	unsigned getIndex() const;
 	void setIndex(const unsigned& i);
 

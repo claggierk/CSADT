@@ -18,9 +18,9 @@ vector<Instance> gMatches;
 vector<Instance> gNonMatches;
 vector< vector<Condition> > gConditions;
 vector< vector<Condition> > gPreConditionsUsed;
-vector<Condition> gPreConditionChoosen;
-Condition gConditionChoosen;
-vector<Condition> gPAndCChoosen;
+vector<Condition> gPreConditionChosen;
+Condition gConditionChosen;
+vector<Condition> gPAndCChosen;
 vector<Condition> gPandNotCChoosen;
 vector<Rule> gRules;
 
@@ -46,7 +46,7 @@ void PopulateInstances(string fileName)
             iss >> tempStr;
             if(tempStr != "0" && tempStr != "1")
             {
-            	cerr << " ##### ERROR: Invalid line: \"" << line << "\" in input file: " << fileName << endl;
+            	cerr << "##### ERROR: Invalid line: \"" << line << "\" in input file: " << fileName << endl;
             	continue;
         	}
         	else
@@ -82,7 +82,7 @@ void PopulateInstances(string fileName)
     }
     else
     {
-    	cerr << endl << " ##### ERROR: Unable to open " << fileName << "!";
+    	cerr << endl << "##### ERROR: Unable to open " << fileName << "!";
     }
 	
 	fin.close();
@@ -133,13 +133,13 @@ void GenerateConditions()
 {
     vector<FeatureStats> matchFeatureStats;
     PopulateFeatureStatus(gMatches, matchFeatureStats);
-    cout << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
-    cout << matchFeatureStats.at(0);
+    cerr << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
+    cerr << matchFeatureStats.at(0);
 
     vector<FeatureStats> nonMatchFeatureStats;
     PopulateFeatureStatus(gNonMatches, nonMatchFeatureStats);
-    cout << "Size of nonMatchFeatureStats: " << nonMatchFeatureStats.size() << endl;
-    cout << nonMatchFeatureStats.at(0);
+    cerr << "Size of nonMatchFeatureStats: " << nonMatchFeatureStats.size() << endl;
+    cerr << nonMatchFeatureStats.at(0);
 
     if(matchFeatureStats.size() == nonMatchFeatureStats.size())
     {
@@ -334,21 +334,21 @@ void computeArgMin() {
             }
         }
     }
-    gPreConditionChoosen = bestP;
-    gConditionChoosen = bestC;
+    gPreConditionChosen = bestP;
+    gConditionChosen = bestC;
 }
 
 void createAndUpdategPAndCAndgPandNotC() {
     //Create p and c, p and not c so they can be used several times later.
     //I need to make copies. 
-    vector<Condition> pAndC = gPreConditionChoosen; //hopefully this makes a copy of all conditions
-    Condition c = gConditionChoosen;
+    vector<Condition> pAndC = gPreConditionChosen; //hopefully this makes a copy of all conditions
+    Condition c = gConditionChosen;
     pAndC.push_back(c);
-    vector<Condition> pAndNotC = gPreConditionChoosen;
-    Condition notC = gConditionChoosen;
+    vector<Condition> pAndNotC = gPreConditionChosen;
+    Condition notC = gConditionChosen;
     notC.setNotFlag(true);
     pAndNotC.push_back(notC);
-    gPAndCChoosen = pAndC;
+    gPAndCChosen = pAndC;
     gPandNotCChoosen = pAndNotC;
     //Add them to gPreconditionsUsed
     gPreConditionsUsed.push_back(pAndC);
@@ -394,9 +394,9 @@ void GenerateADT(float cPlus, float cMinus, unsigned k)
 {
     //clear global vars that will be modified and used
     gPreConditionsUsed.clear();
-    gPreConditionChoosen.clear();
-    gConditionChoosen = Condition();
-    gPAndCChoosen.clear();
+    gPreConditionChosen.clear();
+    gConditionChosen = Condition();
+    gPAndCChosen.clear();
     gPandNotCChoosen.clear();
     gRules.clear();
     //set initial weights of instances
@@ -409,16 +409,16 @@ void GenerateADT(float cPlus, float cMinus, unsigned k)
     float alpha1 = 0.5 * log((cPlus * wPlus(cAsAVector, "and") + smoothFactor) / (cMinus * wMinus(cAsAVector, "and") + smoothFactor));
     float alpha2 = 0.0;
     gRules.push_back(Rule(cAsAVector, c, alpha1, alpha2));
-    cout << "##ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
+    cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
     gPreConditionsUsed.push_back(cAsAVector);
     //create remaining rules
     for (unsigned i = 0; i < k; i++) {
         smoothFactor = .5 * (w(cAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
-        alpha1 = 0.5 * log((cPlus * wPlus(gPAndCChoosen, "and") + smoothFactor)/(cMinus * wMinus(gPAndCChoosen, "and") + smoothFactor));
+        alpha1 = 0.5 * log((cPlus * wPlus(gPAndCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPAndCChosen, "and") + smoothFactor));
         alpha2 = 0.5 * log((cPlus * wPlus(gPandNotCChoosen, "and") + smoothFactor)/(cMinus * wMinus(gPandNotCChoosen, "and") + smoothFactor));
-        gRules.push_back(Rule(gPreConditionChoosen, gConditionChoosen, alpha1, alpha2));
+        gRules.push_back(Rule(gPreConditionChosen, gConditionChosen, alpha1, alpha2));
         updateWeights(cPlus, cMinus);
     }
 }
@@ -426,17 +426,17 @@ void GenerateADT(float cPlus, float cMinus, unsigned k)
 int main(int argc, char* argv[])
 {
 	PopulateInstances("input.txt");
-	cout << "gMatches size   : " << gMatches.size() << endl;
-    cout << "gNonMatches size: " << gNonMatches.size() << endl;
-    cout << gMatches.at(0);
-    cout << gNonMatches.at(0);
+	cerr << "gMatches size   : " << gMatches.size() << endl;
+    cerr << "gNonMatches size: " << gNonMatches.size() << endl;
+    cerr << gMatches.at(0);
+    cerr << gNonMatches.at(0);
 
     GenerateConditions();
 
     //adjust gMatches, gNonMatches to have roughly a magnitude of order less number of instances (in order to speed it up)
     gMatches.resize(9);
     gNonMatches.resize(480);
-    cout << "##WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
+    cerr << " ## WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
 
     //prepare input for GenerateADT and run it.
     float cPlus = 2.0;
@@ -445,19 +445,19 @@ int main(int argc, char* argv[])
     GenerateADT(cPlus, cMinus, k);
 
     //print rules
-    cout << "\nCSADT Rules Output:";
+    cerr << "\nCSADT Rules Output:";
     for (unsigned i = 0; i < gRules.size(); i++) {  
-        cout << "\nRule " << i << ": " << endl;
-        cout << "\tThe precondition: ";
+        cerr << "\nRule " << i << ": " << endl;
+        cerr << "\tThe precondition: ";
         for (unsigned j = 0; j < gRules.at(i).getPrecondition().size(); j++) {  
-            cout << gRules.at(i).getPrecondition().at(j) << " ";
+            cerr << gRules.at(i).getPrecondition().at(j) << " ";
         }
-        cout << endl;
-        cout << "\tThe condition: " << gRules.at(i).getCondition() << endl;
-        cout << "\tThe trueScore: " << gRules.at(i).getTrueScore() << endl;
-        cout << "\tThe falseScore: " << gRules.at(i).getFalseScore() << endl;
+        cerr << endl;
+        cerr << "\tThe condition: " << gRules.at(i).getCondition() << endl;
+        cerr << "\tThe trueScore: " << gRules.at(i).getTrueScore() << endl;
+        cerr << "\tThe falseScore: " << gRules.at(i).getFalseScore() << endl;
     }
 
-	cout << endl << endl;
+	cerr << endl << endl;
 	return EXIT_SUCCESS;
 }
