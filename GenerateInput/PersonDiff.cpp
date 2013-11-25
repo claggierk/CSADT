@@ -149,7 +149,7 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
         out << endl << "   " << stringify(eCity) << ": " << p.getDifferences().at(eCity);
         out << endl << "   " << stringify(eState) << ": " << p.getDifferences().at(eState);
         out << endl << "   " << stringify(eZipCode) << ": " << p.getDifferences().at(eZipCode);
-        out << endl << "   " << stringify(dPhone) << ": " << p.getDifferences().at(dPhone);
+        out << endl << "   " << stringify(ePhone) << ": " << p.getDifferences().at(ePhone);
         out << endl << "   " << stringify(eDate) << ": " << p.getDifferences().at(eDate);
         out << endl << "   " << stringify(eDob) << ": " << p.getDifferences().at(eDob);
         out << endl << "   " << stringify(eAge1) << ": " << p.getDifferences().at(eAge1);

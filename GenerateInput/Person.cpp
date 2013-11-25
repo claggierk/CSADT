@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Person.h"
 
 Person::Person()

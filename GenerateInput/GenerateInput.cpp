@@ -15,6 +15,7 @@ using namespace std;
 using namespace boost; 
 
 const unsigned NUM_THREADS = 4;
+const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
 
 unsigned gNumRecords = 0;
 unsigned gNumCombinations = 0;
@@ -181,12 +182,50 @@ void OutputPeopleDifferences(string fileName)
 	fout.close();
 }
 
-int main(int argc, char ** argv)
+void usage()
 {
-    PopulatePeopleCombinations("UniqueCombinations.txt");
+    cerr << "Usage" << endl
+        << "./prepare-input [combinations_input_file.txt] [data_input_file.txt] [output_file.txt]" << endl
+        << "./prepare-input UniqueCombinations.txt 100LinesPreProcessed.txt ADT_ready.txt" << endl;
+}
+
+void exit_now()
+{
+    cerr << endl
+        << "Exiting..." << endl
+        << endl;
+    exit(EXIT_FAILURE);
+}
+
+vector<string> DeriveCommandLineArguments(int argc, char** argv, unsigned requiredCommandLineArgs)
+{
+    vector<string> commandLineArgs;
+    for(int i = 1; i < argc; i++)
+    {
+        commandLineArgs.push_back(argv[i]);
+        cerr << endl << commandLineArgs.back() << endl;
+    }
+    if(commandLineArgs.size() != requiredCommandLineArgs)
+    {
+        cerr << "Expected " << requiredCommandLineArgs << " command line arguments, but received " << commandLineArgs.size() << "..." << endl;
+        usage();
+        exit_now();
+    }
+    return commandLineArgs;
+}
+
+int main(int argc, char** argv)
+{
+    vector<string> commandLineArgs = DeriveCommandLineArguments(argc, argv, NUM_COMMAND_LINE_ARGUMENTS);
+
+    string combinationsFileName = commandLineArgs[0];
+    string dataInputFileName = commandLineArgs[1];
+    string outputFileName = commandLineArgs[2];
+
+    PopulatePeopleCombinations(combinationsFileName);
     unsigned comparisonsPerCore = gNumCombinations / NUM_THREADS;
     
-    PopulatePeople("100LinesPreProcessed.txt");
+    PopulatePeople(dataInputFileName);
     
     gPeopleDifferences.resize(NUM_THREADS);
     vector<thread*> threadPtrs(NUM_THREADS);
@@ -221,13 +260,13 @@ int main(int argc, char ** argv)
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
     
-    cout << gPeople.at(0) << endl;
-    cout << gPeople.at(1) << endl;
-    cout << gPeople.at(2) << endl;
-    cout << gPeopleDifferences.at(0).at(0) << endl;
-    cout << gPeopleDifferences.at(0).at(1) << endl;
+    cerr << gPeople.at(0) << endl;
+    cerr << gPeople.at(1) << endl;
+    cerr << gPeople.at(2) << endl;
+    cerr << gPeopleDifferences.at(0).at(0) << endl;
+    cerr << gPeopleDifferences.at(0).at(1) << endl;
     
-    OutputPeopleDifferences("input.txt");
+    OutputPeopleDifferences(outputFileName);
     
     cout << endl << endl;
     return EXIT_SUCCESS;

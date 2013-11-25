@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -45,7 +46,7 @@ enum PersonIndex
 	eCity,			// 9  // 8
 	eState,			// 10 // 9
 	eZipCode,		// 11 // 10
-	dPhone,			// 12 // 11
+	ePhone,			// 12 // 11
 	eDate,			// 13 // 12
 	eDob,			// 14 // 13
 	eAge1,			// 15 // 14
@@ -71,6 +72,7 @@ static string sPersonConditions[] = {
     stringify(eCity),
     stringify(eState),
     stringify(eZipCode),
+    stringify(ePhone),
     stringify(eDate),
     stringify(eDob),
     stringify(eAge1),
