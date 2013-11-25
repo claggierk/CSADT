@@ -14,6 +14,7 @@
 using namespace std;
 
 const unsigned MAX_FEATURE_COUNT = 128;
+const unsigned NUM_COMMAND_LINE_ARGUMENTS = 2;
 
 vector<Instance> gMatches;
 vector<Instance> gNonMatches;
@@ -24,6 +25,14 @@ Condition gConditionChosen;
 vector<Condition> gPAndCChosen;
 vector<Condition> gPandNotCChoosen;
 vector<Rule> gRules;
+
+void exit_now()
+{
+    cerr << endl
+        << "Exiting..." << endl
+        << endl;
+    exit(EXIT_FAILURE);
+}
 
 void PopulateInstances(string fileName)
 {
@@ -84,6 +93,7 @@ void PopulateInstances(string fileName)
     else
     {
     	cerr << endl << "##### ERROR: Unable to open " << fileName << "!";
+        exit_now();
     }
 	
 	fin.close();
@@ -154,6 +164,7 @@ void GenerateConditions()
     else
     {
         cerr << "##### ERROR: number of attributes disagreement" << endl;
+        exit_now();
     }
 
 
@@ -424,9 +435,38 @@ void GenerateADT(float cPlus, float cMinus, unsigned k)
     }
 }
 
+void usage()
+{
+    cerr << "Usage" << endl
+        << "./adt [data_input_file.txt] [output_file.txt]" << endl
+        << "./prepare-input ADT_ready.txt Tree.txt" << endl;
+}
+
+vector<string> DeriveCommandLineArguments(int argc, char** argv, unsigned requiredCommandLineArgs)
+{
+    vector<string> commandLineArgs;
+    for(int i = 1; i < argc; i++)
+    {
+        commandLineArgs.push_back(argv[i]);
+        cerr << endl << commandLineArgs.back() << endl;
+    }
+    if(commandLineArgs.size() != requiredCommandLineArgs)
+    {
+        cerr << "Expected " << requiredCommandLineArgs << " command line arguments, but received " << commandLineArgs.size() << "..." << endl;
+        usage();
+        exit_now();
+    }
+    return commandLineArgs;
+}
+
 int main(int argc, char* argv[])
 {
-	PopulateInstances("input.txt");
+    vector<string> commandLineArgs = DeriveCommandLineArguments(argc, argv, NUM_COMMAND_LINE_ARGUMENTS);
+
+    string dataInputFileName = commandLineArgs[0];
+    string outputFileName = commandLineArgs[1];
+
+	PopulateInstances(dataInputFileName);
 	cerr << "gMatches size   : " << gMatches.size() << endl;
     cerr << "gNonMatches size: " << gNonMatches.size() << endl;
     cerr << gMatches.at(0);
@@ -446,7 +486,6 @@ int main(int argc, char* argv[])
     GenerateADT(cPlus, cMinus, k);
 
     ofstream fout;
-    string outputFileName = "Tree.txt";
     fout.open(outputFileName.c_str());
 
     //print rules
@@ -479,6 +518,7 @@ int main(int argc, char* argv[])
 
         if(! fout.is_open()) {
             cerr << endl << "##### ERROR: Unable to open " << outputFileName << ".";
+            exit_now();
         }
         else {
             fout << preCondition << " " << condition << " " << trueScore << " " << falseScore;
