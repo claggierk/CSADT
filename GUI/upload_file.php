@@ -16,6 +16,8 @@
 	$temp = explode(".", $fileName);
 	$fileText = reset($temp);
 	$extension = end($temp);
+	
+	$output = "output/";
 
 	if(in_array($extension, $allowedFileTypes))
 	{
@@ -53,10 +55,13 @@
 		}
 		
 		$preprocessedFileName = $fileText . "_Preprocessed.txt";
-		$preprocessedFilePath = "preprocessed/" . $preprocessedFileName;
-		exec("python scripts/2_TextToPreprocessedText.py " . $uploadFilePath . " preprocessed/" . $preprocessedFileName);
+		$preprocessedFilePath = $output . $preprocessedFileName;
+		exec("python scripts/2_TextToPreprocessedText.py " . $uploadFilePath . " " . $preprocessedFilePath);
 		echo "<a href=" . $uploadFilePath . ">" . $fileName . "</a> <br>";
 		echo "<a href=" . $preprocessedFilePath . ">" . $preprocessedFileName . "</a> <br>";
+		
+		$treeFile = $output . "Tree.txt";
+		//exec("scripts/adt " . $preprocessedFilePath . " " . $treeFile);
 	}
 	else
 	{
