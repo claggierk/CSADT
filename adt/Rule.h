@@ -27,6 +27,8 @@ public:
 	float getFalseScore() const;
 	void setFalseScore(const float& myFalseScore);
 
+	Rule& operator=(const Rule& c);
+
 private:
 	vector<Condition> precondition;
 	Condition condition;

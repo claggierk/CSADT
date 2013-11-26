@@ -16,13 +16,7 @@ public:
 	Condition(const Condition& p);
 	Condition(const bool& myTrueFlag);
 	Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex);
-
-	bool getNotFlag() const;
-	void setNotFlag(const bool& n);
-	bool considerNotFlag(const bool& c) const;
-
-	bool getTrueFlag() const;
-	void setTrueFlag(const bool& t);
+	Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex, const bool& myNotFlag, const bool& myTrueFlag);
 
 	unsigned getValue() const;
 	void setValue(const unsigned& v);
@@ -35,18 +29,23 @@ public:
 	unsigned getIndex() const;
 	void setIndex(const unsigned& i);
 
-	bool isBypass() const;
+	bool getNotFlag() const;
+	void setNotFlag(const bool& n);
+	bool considerNotFlag(const bool& c) const;
+
+	bool getTrueFlag() const;
+	void setTrueFlag(const bool& t);
 
 	bool evaluate(const Instance& instance) const;
 
+	Condition& operator=(const Condition& c);
+
 private:
-	bool notFlag;
-	bool trueFlag;
 	unsigned value;
 	string comparison;
 	unsigned index;
-
-	bool bypass;
+	bool notFlag;
+	bool trueFlag;
 };
 
 ostream& operator<<(ostream& out, const Condition& i);

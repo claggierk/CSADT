@@ -6,6 +6,9 @@ from types import NoneType
 
 global trainingDataSet, allConditions, testDataSet, weights, featuresInDataSet
 
+SAME = "SAME"
+DIFFERENT = "DIFFERENT"
+
 class sNodeAndItsAssociatedPNodes():
     def __init__(self, preCondition, condition, alpha1, alpha2):
         self.preCondition = preCondition
@@ -59,7 +62,7 @@ def weightPlus(condition):
     #second: out of those examples get just the positively labeled ones
     positivelyLabeledExamples = []
     for example in examplesThatSatisfyCondition:
-        if trainingDataSet[example]['class'] == 'same':
+        if trainingDataSet[example]['class'] == SAME:
             positivelyLabeledExamples.append(example)
     #add up the weights of all positively labeled examples
     weightPlus = 0
@@ -73,7 +76,7 @@ def weightMinus(condition):
     #second: out of those examples get just the negatively labeled ones
     negativelyLabeledExamples = []
     for example in examplesThatSatisfyCondition:
-        if trainingDataSet[example]['class'] == 'different':
+        if trainingDataSet[example]['class'] == DIFFERENT:
             negativelyLabeledExamples.append(example)
     #add up the weights of all negatively labeled examples
     weightMinus = 0
@@ -136,7 +139,7 @@ def updateWeights(rule, costPlus, costMinus):
     for exampleIdentifier in trainingDataSet.keys():
         score = getScoreOfExample(rule, trainingDataSet[exampleIdentifier])
         classification = trainingDataSet[exampleIdentifier]['class']
-        if classification == 'yes':
+        if classification == SAME:
             yi = 1
         else:
             yi = -1
@@ -150,9 +153,9 @@ def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
         for condition in dictOfNodeAndItsConditions[key]:
             if condition == d1:
                 if count == 0:
-                    return key, 'yes'
+                    return key, SAME
                 else:
-                    return key, 'no'
+                    return key, DIFFERENT
             count += 1
 
 def adt(costPlus, costMinus, k, smoothFactor, graph_identifier):
@@ -223,14 +226,14 @@ def evaluate(parmTestDataSet, rule):
     testDataSet = parmTestDataSet
     featuresInDataSet = getFeatures(testDataSet)
     #Run through rule and see if the conditions are met. Along the way add up the scores.
-    outputDatabase = {} #ex. outputDatabase['1-2']['classification'] == 'yes' and outputDatabase['1-2']['score'] == -0.37
+    outputDatabase = {} #ex. outputDatabase['1-2']['classification'] == SAME and outputDatabase['1-2']['score'] == -0.37
     for exampleIdentifier in testDataSet.keys():
         score = getScoreOfExample(rule, testDataSet[exampleIdentifier])
         #If total Score is negative, return negative classification or visa versa 
         if score >= 0:
-            outputDatabase[exampleIdentifier] = {'classification':'yes', 'score':score}
+            outputDatabase[exampleIdentifier] = {'classification':SAME, 'score':score}
         else:
-            outputDatabase[exampleIdentifier] = {'classification':'no', 'score':score}
+            outputDatabase[exampleIdentifier] = {'classification':DIFFERENT, 'score':score}
     return outputDatabase
 
 def classifier(parmTrainingDataSet, parmAllConditions, graph_identifier):

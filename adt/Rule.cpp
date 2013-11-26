@@ -4,7 +4,12 @@ Rule::Rule()
 {}
 
 Rule::Rule(const Rule& fs)
-{}
+{
+	precondition = fs.getPrecondition();
+	condition = fs.getCondition();
+	trueScore = fs.getTrueScore();
+	falseScore = fs.getFalseScore();
+}
 
 Rule::Rule(const vector<Condition>& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
 {
@@ -66,7 +71,32 @@ void Rule::setFalseScore(const float& myFalseScore)
 	falseScore = myFalseScore;
 }
 
+Rule& Rule::operator=(const Rule& r)
+{
+	precondition = r.getPrecondition();
+	condition = r.getCondition();
+	trueScore = r.getTrueScore();
+	falseScore = r.getFalseScore();
+	
+	return *this;
+}
+
 ostream& operator<<(ostream& out, const Rule& fs)
 {
+	out << endl;
+	out << "Precondition: ";
+	if(fs.getPrecondition().size() > 0)
+	{
+		out << fs.getPrecondition().at(0);
+	}
+	for(unsigned i = 1; i < fs.getPrecondition().size(); i++)
+	{
+		out << " and " << fs.getPrecondition().at(i);
+	}
+	out << endl;
+	out << "Condition   : " << fs.getCondition() << endl;
+	out << "trueScore   : " << fs.getTrueScore() << endl;
+	out << "falseScore  : " << fs.getFalseScore() << endl;
+	out << endl;
 	return out;
 }

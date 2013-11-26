@@ -12,6 +12,9 @@ import adt_infrastructure
 
 global trainingDataSet
 
+SAME = "SAME"
+DIFFERENT = "DIFFERENT"
+
 def Usage():
 	print "**************************************************"
 	print "Usage  : python %s [text (.txt) input file] [text (.txt) input file]" % sys.argv[0]
@@ -65,10 +68,10 @@ def main():
 			print " ***** %.2f%% complete ----- total processed: %s" % (percent_complete, total_processed)
 			for combination_2 in range(combination_1+1, num_records):
 				tempDictionary = {}
-				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["ID"], records[combination_2]["ID"]) == 0:
-					tempDictionary['class'] = 'same'
+				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eID"], records[combination_2]["eID"]) == 0:
+					tempDictionary['class'] = SAME
 				else:
-					tempDictionary['class'] = 'different'
+					tempDictionary['class'] = DIFFERENT
 				for key in keys[1:]:					
 					levenshtein_distance = levenshtein.Compute_Levenshtein_Distance(records[combination_1][key], records[combination_2][key])
 					tempDictionary[key] = levenshtein_distance
@@ -86,20 +89,20 @@ def main():
 		false_negatives = 0
 		for combination_pair in outputDatabase.keys():
 			pair = combination_pair.split("-")
-			if records[int(pair[0])]["ID"] == records[int(pair[1])]["ID"] and outputDatabase[combination_pair]["classification"] == "same":
+			if records[int(pair[0])]["eID"] == records[int(pair[1])]["eID"] and outputDatabase[combination_pair]["classification"] == SAME:
 				correct_classifications = correct_classifications + 1
-			elif records[int(pair[0])]["ID"] != records[int(pair[1])]["ID"] and outputDatabase[combination_pair]["classification"] == "different":
+			elif records[int(pair[0])]["eID"] != records[int(pair[1])]["eID"] and outputDatabase[combination_pair]["classification"] == DIFFERENT:
 				correct_classifications = correct_classifications + 1
 			else:
-				if outputDatabase[combination_pair]["classification"] == "same":
+				if outputDatabase[combination_pair]["classification"] == SAME:
 					print "False Positive:"
 					false_positives = false_positives + 1
-				elif outputDatabase[combination_pair]["classification"] == "different":
+				elif outputDatabase[combination_pair]["classification"] == DIFFERENT:
 					print "False Negative:"
 					false_negatives = false_negatives + 1
 				
-				print "   record[%s][ID] = %s --- address: %s" % (pair[0], records[int(pair[0])]["ID"], records[int(pair[0])]["FullAddres"])
-				print "   record[%s][ID] = %s --- address: %s" % (pair[1], records[int(pair[1])]["ID"], records[int(pair[1])]["FullAddres"])
+				print "   record[%s][ID] = %s --- address: %s" % (pair[0], records[int(pair[0])]["eID"], records[int(pair[0])]["eFullAddress"])
+				print "   record[%s][ID] = %s --- address: %s" % (pair[1], records[int(pair[1])]["eID"], records[int(pair[1])]["eFullAddress"])
 				print "   classification = %s" % outputDatabase[combination_pair]["classification"]
 				
 				incorrect_classifications = incorrect_classifications + 1

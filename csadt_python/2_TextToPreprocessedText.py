@@ -4,9 +4,9 @@ import copy
 import string
 import re
 
-AREA_CODE_STR = "area_code"
-EXCHANGE_STR = "exchange"
-SUBSCRIBER_STR = "subscriber"
+AREA_CODE_STR = "AreaCode"
+EXCHANGE_STR = "Exchange"
+SUBSCRIBER_STR = "Subscriber"
 
 BLANK = "" #"bl@nk"
 
@@ -22,8 +22,10 @@ def WritePreprocessedRecords(output_file, keys, preprocessed_records):
 	keys.append(SUBSCRIBER_STR)
 	
 	output_list = []
-	
-	output_list.append("|".join(keys))
+
+	# add prefix "e" to support the C++ enum...
+	first_line = ["e" + key for key in keys]
+	output_list.append("|".join(first_line))
 	for record in preprocessed_records:
 		record_information = []
 		for key in keys:

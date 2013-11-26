@@ -13,64 +13,43 @@ enum comparisonIndices
 };
 string validComparisons[eNumValidComparisons] = {"<", ">", "==", "<=", ">="};
 
-Condition::Condition() : bypass(false), value(0), comparison("=="), index(0), trueFlag(false), notFlag(false)
+Condition::Condition() : value(0), comparison("=="), index(0), trueFlag(false), notFlag(false)
 {}
 
-Condition::Condition(const Condition& p) : bypass(false)
+Condition::Condition(const Condition& p)
 {
 	value = p.getValue();
 	comparison = p.getComparison();
 	index = p.getIndex();
 	trueFlag = p.getTrueFlag();
 	notFlag = p.getNotFlag();
-
-	bypass = p.isBypass();
 }
 
-Condition::Condition(const bool& myTrueFlag) : bypass(false)
+Condition::Condition(const bool& myTrueFlag)
 {
-	setValue(0);
-	setComparison("==");
-	setIndex(0);
-	setTrueFlag(myTrueFlag);
-	setNotFlag(false);
+	value = 0;
+	comparison = "==";
+	index = 0;
+	notFlag = myTrueFlag;
+	trueFlag = false;
 }
 
-Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex) : bypass(false)
+Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex)
 {
-	setValue(myValue);
-	setComparison(myComparison);
-	setIndex(myIndex);
-	setTrueFlag(false);
-	setNotFlag(false);
-}
-bool Condition::getNotFlag() const
-{
-	return notFlag;
+	value = myValue;
+	comparison = myComparison;
+	index = myIndex;
+	notFlag = false;
+	trueFlag = false;
 }
 
-void Condition::setNotFlag(const bool& n)
+Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex, const bool& myNotFlag, const bool& myTrueFlag)
 {
-	notFlag = n;
-}
-
-bool Condition::considerNotFlag(const bool& c) const
-{
-	if (notFlag) {
-		return not c;
-	} else {
-		return c;
-	}
-}
-
-bool Condition::getTrueFlag() const
-{
-	return trueFlag;
-}
-
-void Condition::setTrueFlag(const bool& t)
-{
-	trueFlag = t;
+	value = myValue;
+	comparison = myComparison;
+	index = myIndex;
+	notFlag = myNotFlag;
+	trueFlag = myTrueFlag;
 }
 
 unsigned Condition::getValue() const
@@ -111,9 +90,36 @@ void Condition::setIndex(const unsigned& i)
 	index = i;
 }
 
-bool Condition::isBypass() const
+bool Condition::getNotFlag() const
 {
-	return bypass;
+	return notFlag;
+}
+
+void Condition::setNotFlag(const bool& n)
+{
+	notFlag = n;
+}
+
+bool Condition::considerNotFlag(const bool& c) const
+{
+	if (notFlag)
+	{
+		return not c;
+	}
+	else
+	{
+		return c;
+	}
+}
+
+bool Condition::getTrueFlag() const
+{
+	return trueFlag;
+}
+
+void Condition::setTrueFlag(const bool& t)
+{
+	trueFlag = t;
 }
 
 bool Condition::evaluate(const Instance& instance) const
@@ -138,9 +144,20 @@ bool Condition::evaluate(const Instance& instance) const
 	}
 }
 
+Condition& Condition::operator=(const Condition& c)
+{
+	value = c.getValue();
+	comparison = c.getComparison();
+	index = c.getIndex();
+	trueFlag = c.getTrueFlag();
+	notFlag = getNotFlag();
+	
+	return *this;
+}
+
 ostream& operator<<(ostream& out, const Condition& i)
 {
 	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
-	out << "(" << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue() << ")";
+	out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
 	return out;
 }

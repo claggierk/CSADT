@@ -22,6 +22,7 @@ vector< vector<Condition> > gConditions;
 vector< vector<Condition> > gPreConditionsUsed;
 vector<Condition> gPreConditionChosen;
 Condition gConditionChosen;
+vector<Condition> gConditionsAlreadySelected;
 vector<Condition> gPAndCChosen;
 vector<Condition> gPandNotCChoosen;
 vector<Rule> gRules;
@@ -218,29 +219,41 @@ bool checkIfInstanceSatisfiesCondition(Instance myInstance, vector<Condition> co
     }
 }
 
-vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> conditionVector, string logicalOperator) {
+vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> conditionVector, string logicalOperator)
+{
     vector<Instance> instancesThatSatisfy;
     bool satisfy = false;
-    for (unsigned i = 0; i < gNonMatches.size(); i++) {
-        for (unsigned j = 0; j < conditionVector.size(); j++) {
-            if (logicalOperator == "and") {  //used when an instance needs to satisfy more than one condition (ex. Both condition1 and conditon2 have to be true)
-                if (conditionVector.at(j).evaluate(gNonMatches.at(i))) { 
+    for (unsigned i = 0; i < gNonMatches.size(); i++)
+    {
+        for (unsigned j = 0; j < conditionVector.size(); j++)
+        {
+            if (logicalOperator == "and")
+            {  //used when an instance needs to satisfy more than one condition (ex. Both condition1 and conditon2 have to be true)
+                if (conditionVector.at(j).evaluate(gNonMatches.at(i)))
+                { 
                     satisfy = true;          
-                } else {
+                }
+                else
+                {
                     satisfy = false;
                     break;
                 }
             }
-            else if (logicalOperator == "or") { //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:  if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
-                if (conditionVector.at(j).evaluate(gNonMatches.at(i))) { 
+            else if (logicalOperator == "or")
+            { //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:  if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
+                if (conditionVector.at(j).evaluate(gNonMatches.at(i)))
+                { 
                     satisfy = true; 
                     break;         
-                } else {
+                }
+                else
+                {
                     satisfy = false;
                 }
             }
         }
-        if (satisfy) {
+        if (satisfy)
+        {
             instancesThatSatisfy.push_back(gNonMatches.at(i)); 
         }
         satisfy = false;
@@ -248,29 +261,44 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
     return instancesThatSatisfy;
 }
 
-vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> conditionVector, string logicalOperator) {
+vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> conditionVector, string logicalOperator)
+{
     vector<Instance> instancesThatSatisfy;
     bool satisfy = false;
-    for (unsigned i = 0; i < gMatches.size(); i++) {
-        for (unsigned j = 0; j < conditionVector.size(); j++) {
-            if (logicalOperator == "and") {  //used when an instance needs to satisfy more than one condition (ex. Both condition1 and conditon2 have to be true)
-                if (conditionVector.at(j).evaluate(gMatches.at(i))) { 
+    for (unsigned i = 0; i < gMatches.size(); i++)
+    {
+        for (unsigned j = 0; j < conditionVector.size(); j++)
+        {
+            //used when an instance needs to satisfy more than one condition (ex. Both condition1 and conditon2 have to be true)
+            if (logicalOperator == "and")
+            {
+                if (conditionVector.at(j).evaluate(gMatches.at(i)))
+                { 
                     satisfy = true;          
-                } else {
+                }
+                else
+                {
                     satisfy = false;
                     break;
                 }
             }
-            else if (logicalOperator == "or") { //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:  if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
-                if (conditionVector.at(j).evaluate(gMatches.at(i))) { 
+            //used only for "not p" where each condition of p is negated and joined by an or
+            //    (De Morgan's Law:  if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
+            else if (logicalOperator == "or")
+            {
+                if (conditionVector.at(j).evaluate(gMatches.at(i)))
+                { 
                     satisfy = true; 
                     break;         
-                } else {
+                }
+                else
+                {
                     satisfy = false;
                 }
             }
         }
-        if (satisfy) {
+        if(satisfy)
+        {
             instancesThatSatisfy.push_back(gMatches.at(i)); 
         }
         satisfy = false;
@@ -278,29 +306,45 @@ vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> condition
     return instancesThatSatisfy;
 }
 
-float wMinus(vector<Condition> conditionVector, string logicalOperator) {
+float wMinus(vector<Condition> conditionVector, string logicalOperator)
+{
     vector<Instance> instancesThatSatisfy = getNegInstancesThatSatisfyCondition(conditionVector, logicalOperator);
     float sumOfWeights = 0.0;
-    for (unsigned i = 0; i < instancesThatSatisfy.size(); i++) {
-        sumOfWeights += sumOfWeights + instancesThatSatisfy.at(i).getWeight();
+    for(unsigned i = 0; i < instancesThatSatisfy.size(); i++)
+    {
+        sumOfWeights += instancesThatSatisfy.at(i).getWeight();
     }
     return sumOfWeights;
 }
 
-float wPlus(vector<Condition> conditionVector, string logicalOperator) {
+float wPlus(vector<Condition> conditionVector, string logicalOperator)
+{
     vector<Instance> instancesThatSatisfy = getPosInstancesThatSatisfyCondition(conditionVector, logicalOperator);
     float sumOfWeights = 0.0;
-    for (unsigned i = 0; i < instancesThatSatisfy.size(); i++) {
-        sumOfWeights += sumOfWeights + instancesThatSatisfy.at(i).getWeight();
+    for(unsigned i = 0; i < instancesThatSatisfy.size(); i++)
+    {
+        sumOfWeights += instancesThatSatisfy.at(i).getWeight();
     }
     return sumOfWeights;
 }
 
-float w(vector<Condition> conditionVector, string logicalOperator) {
+float w(vector<Condition> conditionVector, string logicalOperator)
+{
     return wPlus(conditionVector, logicalOperator) + wMinus(conditionVector, logicalOperator);
 }
+/*
+def calculateZ(d1, d2):
+    #d1 is ex. True or a condition which can be evaluated to True
+    firstPart = math.sqrt( weightPlus( andConditions(d1, d2) ) * weightMinus( andConditions(d1, d2) ) )
+    secondPart = math.sqrt( weightPlus( andConditions( d1, notCondition(d2) ) ) * weightMinus( andConditions( d1, notCondition(d2) ) ) )
+    thirdPart = weight( notCondition(d1) )
+    z = ( 2 * ( firstPart + secondPart ) ) + thirdPart
+    return z
+*/
 
-float calcZ(vector<Condition> p, Condition c) {  // p = d1 ; c = d2
+float calcZ(const vector<Condition>& p, Condition c)
+{
+    // p = d1 ; c = d2
     //prepare w, wPlus, and wMinus input
     vector<Condition> pAndC = p;
     pAndC.push_back(c);
@@ -309,38 +353,83 @@ float calcZ(vector<Condition> p, Condition c) {  // p = d1 ; c = d2
     notC.setNotFlag(true);
     pAndNotC.push_back(notC);
     vector<Condition> notP = p;
-    for (unsigned i = 0; i < notP.size(); i++) {
+    for (unsigned i = 0; i < notP.size(); i++)
+    {
         notP.at(i).setNotFlag(true);
     }
+
     //calculate z equation
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
     float thirdPart = w(notP, "or");
     float z = (2 * (firstPart + secondPart)) + thirdPart;
+
     return z;
 }
 
-void computeArgMin() {
+void PrintConditionInfo()
+{
+    unsigned numConditions = 0;
+    for(unsigned j = 0; j < gConditions.size(); j++)
+    {
+        numConditions += gConditions.at(j).size();
+    }
+    cerr << "Considering " << numConditions << " conditions... " << endl;
+
+    for(unsigned j = 0; j < gConditions.size(); j++)
+    {
+        numConditions = numConditions + gConditions.at(j).size();
+        cerr <<  "*****";
+        for(unsigned k = 0; k < gConditions.at(j).size(); k++)
+        {
+            cerr << gConditions.at(j).at(k) << " ";
+        }
+        cerr << endl;
+    }
+}
+
+void computeArgMin()
+{
     //Thanks for saying I had a shitty initialization :)
     float lowestZValue = 1000000.0;
     vector<Condition> bestP;
     Condition bestC;
     bool setMin = true;
+    unsigned bestCIndex1 = 0;
+    unsigned bestCIndex2 = 0;
+
+    PrintConditionInfo();
+
     //find best preCondition and condition
-    for (unsigned i = 0; i < gPreConditionsUsed.size(); i++) {
-        for (unsigned j = 0; j < gConditions.size(); j++) {
-            for (unsigned k = 0; k < gConditions.at(j).size(); k++) {
-                if (setMin) {
+    for(unsigned i = 0; i < gPreConditionsUsed.size(); i++)
+    {
+        setMin = true;
+        bestCIndex1 = 0;
+        bestCIndex2 = 0;
+        for(unsigned j = 0; j < gConditions.size(); j++)
+        {
+            for(unsigned k = 0; k < gConditions.at(j).size(); k++)
+            {
+                if(setMin)
+                {
                     lowestZValue = calcZ(gPreConditionsUsed.at(i), gConditions.at(j).at(k));
                     bestP = gPreConditionsUsed.at(i);
                     bestC = gConditions.at(j).at(k);
-                    setMin = false;                
-                } else {
+                    bestCIndex1 = j;
+                    bestCIndex2 = k;
+                    setMin = false;
+                }
+                else
+                {
                     float z = calcZ(gPreConditionsUsed.at(i), gConditions.at(j).at(k));
-                    if (z < lowestZValue) {
+                    //cerr << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
+                    if (z < lowestZValue)
+                    {
                         lowestZValue = z;
                         bestP = gPreConditionsUsed.at(i);
                         bestC = gConditions.at(j).at(k);
+                        bestCIndex1 = j;
+                        bestCIndex2 = k;
                     }
                 }
             }
@@ -348,6 +437,12 @@ void computeArgMin() {
     }
     gPreConditionChosen = bestP;
     gConditionChosen = bestC;
+    gConditionsAlreadySelected.push_back(gConditionChosen);
+    cerr << "JUST ADDED: " << gConditionsAlreadySelected.back() << endl;
+    
+    gConditions.at(bestCIndex1).erase(gConditions.at(bestCIndex1).begin() + bestCIndex2);
+    cerr << "Selected " << gConditionChosen << "... " << endl;
+    cerr << endl << endl;
 }
 
 void createAndUpdategPAndCAndgPandNotC() {
@@ -367,20 +462,28 @@ void createAndUpdategPAndCAndgPandNotC() {
     gPreConditionsUsed.push_back(pAndNotC);
 }
 
-float getScoreOfInstance(Instance myInstance) {
+float getScoreOfInstance(Instance myInstance)
+{
     float score = 0.0;
-    for (unsigned i = 0; i < gRules.size(); i++) {
+    for (unsigned i = 0; i < gRules.size(); i++)
+    {
         vector<Condition> p = gRules.at(i).getPrecondition();
-        if (checkIfInstanceSatisfiesCondition(myInstance, p)) {
+        if (checkIfInstanceSatisfiesCondition(myInstance, p))
+        {
             vector<Condition> pAndC = p;
             Condition c = gRules.at(i).getCondition();
             pAndC.push_back(c);
-            if (checkIfInstanceSatisfiesCondition(myInstance, pAndC)) {
+            if (checkIfInstanceSatisfiesCondition(myInstance, pAndC))
+            {
                 score += gRules.at(i).getTrueScore();
-            } else {
+            }
+            else
+            {
                 score += gRules.at(i).getFalseScore();
             }
-        } else {
+        }
+        else
+        {
             score += 0;
         }
     }
@@ -402,7 +505,7 @@ void updateWeights(float cPlus, float cMinus) {
     }    
 }
 
-void GenerateADT(float cPlus, float cMinus, unsigned k)
+void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
 {
     //clear global vars that will be modified and used
     gPreConditionsUsed.clear();
@@ -424,15 +527,26 @@ void GenerateADT(float cPlus, float cMinus, unsigned k)
     cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
     gPreConditionsUsed.push_back(cAsAVector);
     //create remaining rules
-    for (unsigned i = 0; i < k; i++) {
+    for (unsigned i = 0; i < numTreeNodes; i++)
+    {
         smoothFactor = .5 * (w(cAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
         alpha1 = 0.5 * log((cPlus * wPlus(gPAndCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPAndCChosen, "and") + smoothFactor));
         alpha2 = 0.5 * log((cPlus * wPlus(gPandNotCChoosen, "and") + smoothFactor)/(cMinus * wMinus(gPandNotCChoosen, "and") + smoothFactor));
-        gRules.push_back(Rule(gPreConditionChosen, gConditionChosen, alpha1, alpha2));
+        cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
+        gRules.push_back(Rule(gPreConditionChosen, gConditionsAlreadySelected.back(), alpha1, alpha2));
+        cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
         updateWeights(cPlus, cMinus);
     }
+
+    cerr << endl;
+    cerr << " ***** Selected Conditions:" << endl;
+    for(unsigned i = 0; i < gConditionsAlreadySelected.size(); i++)
+    {
+        cerr << " ***** " << gConditionsAlreadySelected.at(i) << endl;
+    }
+    cerr << endl;
 }
 
 void usage()
@@ -482,27 +596,31 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float cPlus = 2.0;
     float cMinus = 1.0;
-    unsigned k = 5;
-    GenerateADT(cPlus, cMinus, k);
+    unsigned numTreeNodes = 5;
+    GenerateADT(cPlus, cMinus, numTreeNodes);
 
     ofstream fout;
     fout.open(outputFileName.c_str());
 
     //print rules
     cerr << "\nCSADT Rules Output:";
-    for(unsigned i = 0; i < gRules.size(); i++) {  
+    for(unsigned i = 0; i < gRules.size(); i++)
+    {  
         cerr << "\nRule " << i << ": " << endl;
         
         ostringstream oss;
-        if(gRules.at(i).getPrecondition().size() > 0) {
+        if(gRules.at(i).getPrecondition().size() > 0)
+        {
             oss << gRules.at(i).getPrecondition().at(0);
-            for(unsigned j = 1; j < gRules.at(i).getPrecondition().size(); j++) {  
-                oss << " " << gRules.at(i).getPrecondition().at(j);
+            for(unsigned j = 1; j < gRules.at(i).getPrecondition().size(); j++)
+            {  
+                oss << "and" << gRules.at(i).getPrecondition().at(j);
             }
         }
         string preCondition = oss.str();
-        if(preCondition == "") {
-            preCondition = "(true)";
+        if(preCondition == "")
+        {
+            preCondition = "(True)";
         }
 
         ostringstream oss2;
@@ -516,18 +634,22 @@ int main(int argc, char* argv[])
         cerr << "   true score  : " << trueScore << endl;
         cerr << "   false score : " << falseScore << endl;
 
-        if(! fout.is_open()) {
+        if(! fout.is_open())
+        {
             cerr << endl << "##### ERROR: Unable to open " << outputFileName << ".";
             exit_now();
         }
-        else {
+        else
+        {
             fout << preCondition << " " << condition << " " << trueScore << " " << falseScore;
-            if((i+1) != gRules.size()) {
+            if((i+1) != gRules.size())
+            {
                 fout << endl;
             }
         }
     }
-    if(fout.is_open()) {
+    if(fout.is_open())
+    {
         fout.close();
     }
 
