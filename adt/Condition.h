@@ -40,6 +40,8 @@ public:
 
 	Condition& operator=(const Condition& c);
 
+	bool operator==(const Condition& c);
+
 private:
 	unsigned value;
 	string comparison;

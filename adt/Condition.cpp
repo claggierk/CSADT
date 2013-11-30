@@ -30,8 +30,8 @@ Condition::Condition(const bool& myTrueFlag)
 	value = 0;
 	comparison = "==";
 	index = 0;
-	notFlag = myTrueFlag;
-	trueFlag = false;
+	notFlag = false;
+	trueFlag = myTrueFlag;
 }
 
 Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex)
@@ -150,14 +150,36 @@ Condition& Condition::operator=(const Condition& c)
 	comparison = c.getComparison();
 	index = c.getIndex();
 	trueFlag = c.getTrueFlag();
-	notFlag = getNotFlag();
+	notFlag = c.getNotFlag();
 	
 	return *this;
 }
 
+bool Condition::operator==(const Condition& c) {
+	if ((value == c.getValue()) and (comparison == c.getComparison()) and (index == c.getIndex()) and (trueFlag == c.getTrueFlag()) and (notFlag == c.getNotFlag())) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 ostream& operator<<(ostream& out, const Condition& i)
 {
+	/*cerr << "check-";
+	i.getTrueFlag();
+	i.getNotFlag();
+	i.getIndex();
+	i.getComparison();
+	i.getValue();
+	cerr << "checked.";*/
 	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
-	out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
+	if (i.getTrueFlag()) {
+		out << "(True)";
+	} else if (i.getNotFlag()) {
+		out << "(not (" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << "))";
+	} else {
+		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
+	}
 	return out;
+
 }

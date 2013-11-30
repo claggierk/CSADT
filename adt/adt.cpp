@@ -8,6 +8,7 @@
 
 #include "Instance.h"
 #include "Condition.h"
+#include "Precondition.h"
 #include "FeatureStats.h"
 #include "Rule.h"
 
@@ -19,12 +20,12 @@ const unsigned NUM_COMMAND_LINE_ARGUMENTS = 2;
 vector<Instance> gMatches;
 vector<Instance> gNonMatches;
 vector< vector<Condition> > gConditions;
-vector< vector<Condition> > gPreConditionsUsed;
-vector<Condition> gPreConditionChosen;
+vector<Precondition> gPreconditionsUsed;
+Precondition gPreconditionChosen;
 Condition gConditionChosen;
 vector<Condition> gConditionsAlreadySelected;
 vector<Condition> gPAndCChosen;
-vector<Condition> gPandNotCChoosen;
+vector<Condition> gPandNotCChosen;
 vector<Rule> gRules;
 
 void exit_now()
@@ -145,13 +146,13 @@ void GenerateConditions()
 {
     vector<FeatureStats> matchFeatureStats;
     PopulateFeatureStatus(gMatches, matchFeatureStats);
-    cerr << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
-    cerr << matchFeatureStats.at(0);
+    //cerr << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
+    //cerr << matchFeatureStats.at(0);
 
     vector<FeatureStats> nonMatchFeatureStats;
     PopulateFeatureStatus(gNonMatches, nonMatchFeatureStats);
-    cerr << "Size of nonMatchFeatureStats: " << nonMatchFeatureStats.size() << endl;
-    cerr << nonMatchFeatureStats.at(0);
+    //cerr << "Size of nonMatchFeatureStats: " << nonMatchFeatureStats.size() << endl;
+    //cerr << nonMatchFeatureStats.at(0);
 
     if(matchFeatureStats.size() == nonMatchFeatureStats.size())
     {
@@ -342,17 +343,17 @@ def calculateZ(d1, d2):
     return z
 */
 
-float calcZ(const vector<Condition>& p, Condition c)
+float calcZ(const Precondition& p, Condition c)
 {
     // p = d1 ; c = d2
     //prepare w, wPlus, and wMinus input
-    vector<Condition> pAndC = p;
+    vector<Condition> pAndC = p.getConditions();
     pAndC.push_back(c);
-    vector<Condition> pAndNotC = p;
+    vector<Condition> pAndNotC = p.getConditions();
     Condition notC = c;
     notC.setNotFlag(true);
     pAndNotC.push_back(notC);
-    vector<Condition> notP = p;
+    vector<Condition> notP = p.getConditions();
     for (unsigned i = 0; i < notP.size(); i++)
     {
         notP.at(i).setNotFlag(true);
@@ -392,18 +393,18 @@ void computeArgMin()
 {
     //Thanks for saying I had a shitty initialization :)
     float lowestZValue = 1000000.0;
-    vector<Condition> bestP;
+    Precondition bestP;
     Condition bestC;
     bool setMin = true;
     unsigned bestCIndex1 = 0;
     unsigned bestCIndex2 = 0;
 
-    PrintConditionInfo();
+    //PrintConditionInfo();
 
     //find best preCondition and condition
-    for(unsigned i = 0; i < gPreConditionsUsed.size(); i++)
+    for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
-        setMin = true;
+        setMin = true; //<-I don't know why you added that
         bestCIndex1 = 0;
         bestCIndex2 = 0;
         for(unsigned j = 0; j < gConditions.size(); j++)
@@ -412,8 +413,8 @@ void computeArgMin()
             {
                 if(setMin)
                 {
-                    lowestZValue = calcZ(gPreConditionsUsed.at(i), gConditions.at(j).at(k));
-                    bestP = gPreConditionsUsed.at(i);
+                    lowestZValue = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
+                    bestP = gPreconditionsUsed.at(i);
                     bestC = gConditions.at(j).at(k);
                     bestCIndex1 = j;
                     bestCIndex2 = k;
@@ -421,12 +422,12 @@ void computeArgMin()
                 }
                 else
                 {
-                    float z = calcZ(gPreConditionsUsed.at(i), gConditions.at(j).at(k));
+                    float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
                     //cerr << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
                     if (z < lowestZValue)
                     {
                         lowestZValue = z;
-                        bestP = gPreConditionsUsed.at(i);
+                        bestP = gPreconditionsUsed.at(i);
                         bestC = gConditions.at(j).at(k);
                         bestCIndex1 = j;
                         bestCIndex2 = k;
@@ -435,31 +436,47 @@ void computeArgMin()
             }
         }
     }
-    gPreConditionChosen = bestP;
-    gConditionChosen = bestC;
+    gPreconditionChosen = bestP;
+    gConditionChosen = bestC;    
+
     gConditionsAlreadySelected.push_back(gConditionChosen);
-    cerr << "JUST ADDED: " << gConditionsAlreadySelected.back() << endl;
+    //cerr << "JUST ADDED: " << gConditionsAlreadySelected.back() << endl;
     
     gConditions.at(bestCIndex1).erase(gConditions.at(bestCIndex1).begin() + bestCIndex2);
-    cerr << "Selected " << gConditionChosen << "... " << endl;
-    cerr << endl << endl;
+    //cerr << "Selected " << gConditionChosen << "... " << endl;
+    //cerr << endl << endl;
+}
+
+bool isPreconditionInVectorOfPreconditions(Precondition& p, vector<Precondition>& vp) {
+    for (unsigned i = 0; i < vp.size(); i++) {
+        if (p == vp.at(i)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void createAndUpdategPAndCAndgPandNotC() {
     //Create p and c, p and not c so they can be used several times later.
     //I need to make copies. 
-    vector<Condition> pAndC = gPreConditionChosen; //hopefully this makes a copy of all conditions
+    vector<Condition> pAndC = gPreconditionChosen.getConditions(); //hopefully this makes a copy of all conditions
     Condition c = gConditionChosen;
     pAndC.push_back(c);
-    vector<Condition> pAndNotC = gPreConditionChosen;
+    vector<Condition> pAndNotC = gPreconditionChosen.getConditions();
     Condition notC = gConditionChosen;
     notC.setNotFlag(true);
     pAndNotC.push_back(notC);
     gPAndCChosen = pAndC;
-    gPandNotCChoosen = pAndNotC;
+    gPandNotCChosen = pAndNotC;
     //Add them to gPreconditionsUsed
-    gPreConditionsUsed.push_back(pAndC);
-    gPreConditionsUsed.push_back(pAndNotC);
+    Precondition pAndCAsPrecondition = Precondition(pAndC);
+    Precondition pAndNotCAsPrecondition = Precondition(pAndNotC);
+    if (not isPreconditionInVectorOfPreconditions(pAndCAsPrecondition, gPreconditionsUsed)) {
+        gPreconditionsUsed.push_back(pAndCAsPrecondition);
+    }
+    if (not isPreconditionInVectorOfPreconditions(pAndNotCAsPrecondition, gPreconditionsUsed)) {
+        gPreconditionsUsed.push_back(pAndNotCAsPrecondition);
+    }
 }
 
 float getScoreOfInstance(Instance myInstance)
@@ -467,7 +484,7 @@ float getScoreOfInstance(Instance myInstance)
     float score = 0.0;
     for (unsigned i = 0; i < gRules.size(); i++)
     {
-        vector<Condition> p = gRules.at(i).getPrecondition();
+        vector<Condition> p = gRules.at(i).getPrecondition().getConditions();
         if (checkIfInstanceSatisfiesCondition(myInstance, p))
         {
             vector<Condition> pAndC = p;
@@ -508,38 +525,48 @@ void updateWeights(float cPlus, float cMinus) {
 void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
 {
     //clear global vars that will be modified and used
-    gPreConditionsUsed.clear();
-    gPreConditionChosen.clear();
+    gPreconditionsUsed.clear();
+    gPreconditionChosen.clear();
     gConditionChosen = Condition();
     gPAndCChosen.clear();
-    gPandNotCChoosen.clear();
+    gPandNotCChosen.clear();
     gRules.clear();
     //set initial weights of instances
     double initialWeight = SetInitialWeights();
     //create initial rule
-    Condition c = Condition(true);
-    vector<Condition> cAsAVector;
-    cAsAVector.push_back(c);
-    float smoothFactor = .5 * (w(cAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
-    float alpha1 = 0.5 * log((cPlus * wPlus(cAsAVector, "and") + smoothFactor) / (cMinus * wMinus(cAsAVector, "and") + smoothFactor));
+    Condition t = Condition(true);
+    vector<Condition> tAsAVector;
+    Precondition tAsAPrecondition;
+    tAsAPrecondition.addCondition(t);
+    tAsAVector.push_back(t);
+    float smoothFactor = .5 * (w(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
+    float alpha1 = 0.5 * log((cPlus * wPlus(tAsAVector, "and") + smoothFactor) / (cMinus * wMinus(tAsAVector, "and") + smoothFactor));
     float alpha2 = 0.0;
-    gRules.push_back(Rule(cAsAVector, c, alpha1, alpha2));
-    cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
-    gPreConditionsUsed.push_back(cAsAVector);
+
+    gRules.push_back(Rule(tAsAPrecondition, t, alpha1, alpha2));
+    //cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
+    gPreconditionsUsed.push_back(tAsAPrecondition);
     //create remaining rules
     for (unsigned i = 0; i < numTreeNodes; i++)
     {
-        smoothFactor = .5 * (w(cAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
+        smoothFactor = .5 * (w(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
         alpha1 = 0.5 * log((cPlus * wPlus(gPAndCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPAndCChosen, "and") + smoothFactor));
-        alpha2 = 0.5 * log((cPlus * wPlus(gPandNotCChoosen, "and") + smoothFactor)/(cMinus * wMinus(gPandNotCChoosen, "and") + smoothFactor));
-        cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
-        gRules.push_back(Rule(gPreConditionChosen, gConditionsAlreadySelected.back(), alpha1, alpha2));
-        cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
+        alpha2 = 0.5 * log((cPlus * wPlus(gPandNotCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPandNotCChosen, "and") + smoothFactor));
+        //cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
+        //gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
+        gRules.push_back(Rule(gPreconditionChosen, gConditionsAlreadySelected.back(), alpha1, alpha2));
+        //cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
         updateWeights(cPlus, cMinus);
+
+        //for (unsigned j = 0; j < gPreconditionsUsed.size(); j++) {
+        //    cerr << i << "th iteration: gPreconditionsUsed[" << j << "]: " << gPreconditionsUsed.at(j) << endl;
+        //}
+        
     }
 
+    
     cerr << endl;
     cerr << " ***** Selected Conditions:" << endl;
     for(unsigned i = 0; i < gConditionsAlreadySelected.size(); i++)
@@ -547,6 +574,7 @@ void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
         cerr << " ***** " << gConditionsAlreadySelected.at(i) << endl;
     }
     cerr << endl;
+    
 }
 
 void usage()
@@ -595,7 +623,7 @@ int main(int argc, char* argv[])
 
     //prepare input for GenerateADT and run it.
     float cPlus = 2.0;
-    float cMinus = 1.0;
+    float cMinus = 1.0; 
     unsigned numTreeNodes = 5;
     GenerateADT(cPlus, cMinus, numTreeNodes);
 
@@ -609,12 +637,12 @@ int main(int argc, char* argv[])
         cerr << "\nRule " << i << ": " << endl;
         
         ostringstream oss;
-        if(gRules.at(i).getPrecondition().size() > 0)
+        if(gRules.at(i).getPrecondition().getConditions().size() > 0)
         {
-            oss << gRules.at(i).getPrecondition().at(0);
-            for(unsigned j = 1; j < gRules.at(i).getPrecondition().size(); j++)
+            oss << gRules.at(i).getPrecondition().getConditions().at(0);
+            for(unsigned j = 1; j < gRules.at(i).getPrecondition().getConditions().size(); j++)
             {  
-                oss << "and" << gRules.at(i).getPrecondition().at(j);
+                oss << "and" << gRules.at(i).getPrecondition().getConditions().at(j);
             }
         }
         string preCondition = oss.str();

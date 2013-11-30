@@ -11,7 +11,7 @@ Rule::Rule(const Rule& fs)
 	falseScore = fs.getFalseScore();
 }
 
-Rule::Rule(const vector<Condition>& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
+Rule::Rule(const Precondition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore)
 {
 	precondition = myPrecondition;
 	//setValue(myPrecondition.getValue());
@@ -26,14 +26,14 @@ Rule::Rule(const vector<Condition>& myPrecondition, const Condition& myCondition
 	falseScore = myFalseScore;
 }
 
-vector<Condition> Rule::getPrecondition() const
+Precondition Rule::getPrecondition() const
 {
 	return precondition;
 }
 
 void Rule::addPrecondition(const Condition& myPrecondition)
 {
-	precondition.push_back(myPrecondition);
+	precondition.addCondition(myPrecondition);
 	//setValue(myPrecondition.getValue());
 	//precondition.setComparison(myPrecondition.getComparison());
 	//precondition.setIndex(myPrecondition.getIndex());
@@ -85,13 +85,13 @@ ostream& operator<<(ostream& out, const Rule& fs)
 {
 	out << endl;
 	out << "Precondition: ";
-	if(fs.getPrecondition().size() > 0)
+	if(fs.getPrecondition().getConditions().size() > 0)
 	{
-		out << fs.getPrecondition().at(0);
+		out << fs.getPrecondition().getConditions().at(0);
 	}
-	for(unsigned i = 1; i < fs.getPrecondition().size(); i++)
+	for(unsigned i = 1; i < fs.getPrecondition().getConditions().size(); i++)
 	{
-		out << " and " << fs.getPrecondition().at(i);
+		out << " and " << fs.getPrecondition().getConditions().at(i);
 	}
 	out << endl;
 	out << "Condition   : " << fs.getCondition() << endl;

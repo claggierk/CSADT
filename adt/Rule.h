@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Condition.h"
+#include "Precondition.h"
 
 using namespace std;
 
@@ -13,9 +14,9 @@ class Rule
 public:
 	Rule();
 	Rule(const Rule& fs);
-	Rule(const vector<Condition>& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore);
+	Rule(const Precondition& myPrecondition, const Condition& myCondition, const float& myTrueScore, const float& myFalseScore);
 
-	vector<Condition> getPrecondition() const;
+	Precondition getPrecondition() const;
 	void addPrecondition(const Condition& myPrecondition);
 
 	Condition getCondition() const;
@@ -30,7 +31,7 @@ public:
 	Rule& operator=(const Rule& c);
 
 private:
-	vector<Condition> precondition;
+	Precondition precondition;
 	Condition condition;
 	float trueScore;
 	float falseScore; 
