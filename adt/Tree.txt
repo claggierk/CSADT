@@ -1,0 +1,6 @@
+(True) (eFullName==0) -1.62853 0
+(True) (eFirstName==0) 1.80546 -3.43399
+(True)and(not (eFirstName==0)) (eFullName==1) 0 -3.29099
+(True)and(not (eFirstName==0))and(not (eFullName==1)) (eFullName<1) 0 -0.825935
+(True)and(not (eFirstName==0))and(not (eFullName==1))and(not (eFullName<1)) (eFullName>1) -0.00134709 0
+(True)and(not (eFirstName==0))and(not (eFullName==1))and(not (eFullName<1))and(not (eFullName>1)) (eFullName==9) 0 0

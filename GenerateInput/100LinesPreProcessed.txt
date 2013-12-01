@@ -1,0 +1,101 @@
+ID|FullName|FirstName|LastName|MiddleName|Age|FullAddres|StreetAddr|Apt|City|State|Zipcode|Phone|Date|DOB|Age1|Source|Relatives|Score|Label|area_code|exchange|subscriber
+1|Alex H Nguyen|Alex|Nguyen|H|45-49|15319 Golden Eagle Dr|15319 Golden Eagle Dr||Humble|TX|||||0|Whitepage|Xuan N Nguyen,...||D|||
+1|Alex H Nguyen|Alex|Nguyen|H|45-49|15319 Golden Eagle Dr|15319 Golden Eagle Dr||Humble|TX|97262||||0|Whitepage|Xuan N Nguyen,...||U|||
+2|Alice P Lu|Alice|Lu|P|50-54|5211 Sandy Point Dr|5211 Sandy Point Dr||Arlington|TX|||||0|Whitepage|Phuc Lu||D|||
+2|Alice P Lu|Alice|Lu|P|50-54|5211 Sandy Point Dr|5211 Sandy Point Dr||Arlington|TX|97477||||0|Whitepage|Phuc Lu||U|||
+3|An Ly|An|Ly||65+|1511 Holbech Ln|1511 Holbech Ln||Channelview|TX|77530|(281) 452-5263|03/2004|Oct 1932|77|Zabasearch|||D|281|452|5263
+3|An N Ly|An|Ly|N|65+|1511 Holbech Ln|1511 Holbech Ln||Channelview|TX|98154||||0|Whitepage|Van T Ly, Hong...||U|||
+4|Andre T Le|Andre|Le|T|45-49|621 Teakwood Dr|621 Teakwood Dr||Flower Mound|TX|||||0|Whitepage|||D|||
+4|Andre T Le|Andre|Le|T|45-49|621 Teakwood Dr|621 Teakwood Dr||Flower Mound|TX|98502||||0|Whitepage|||U|||
+5|Andy Nguyen|Andy|Nguyen|||18342 Farriswood Ct|18342 Farriswood Ct||Cypress|TX||||||Whitepage|Jenny T Nguyen||D|||
+5|Andy Nguyen|Andy|Nguyen|||18342 Farriswood Ct|18342 Farriswood Ct||Cypress|TX|77433|(281) 856-6556||||Addresses.com|||D|281|856|6556
+5|Andy Nguyen|Andy|Nguyen||45-49|18342 Farriswood Ct|18342 Farriswood Ct||Cypress|TX|77433|(281) 225-3015||Oct 1964|45|Zabasearch|||D|281|225|3015
+5|Andy T Nguyen|Andy|Nguyen|T|45-49|18342 Farriswood Ct|18342 Farriswood Ct||Cypress|TX|98984||||0|Whitepage|Nicol Nguyen, Jenny...||U|||
+6|Anh A Diep|Anh|Diep|A||2109 Canyon Creek Dr|2109 Canyon Creek Dr||Garland|TX|75042|(972) 485-6690||||Addresses.com|||D|972|485|6690
+6|Anh A Diep|Anh|Diep|A|55-59|2109 Canyon Creek Dr|2109 Canyon Creek Dr||Garland|TX|||||0|Whitepage|||D|||
+6|Anh A Diep|Anh|Diep|A|55-59|2109 Canyon Creek Dr|2109 Canyon Creek Dr||Garland|TX|99243||||0|Whitepage|||U|||
+7|Anh Phan|Anh|Phan||35-39|181 Wagon Bow Dr|181 Wagon Bow Dr||Kyle|TX|78640|(512) 268-6543|11/2003|May 1974|35|Zabasearch|||D|512|268|6543
+7|Anh T Phan|Anh|Phan|T|35-39|181 Wagon Bow Dr|181 Wagon Bow Dr||Kyle|TX|100108||||0|Whitepage|||U|||
+8|Anh Tran|Anh|Tran||60-64|1519 Jeanette Way|1519 Jeanette Way||Carrollton|TX|75006|(972) 245-4882|01/2004|Oct 1948|61|Zabasearch|||D|972|245|4882
+8|Anh K Tran|Anh|Tran|K|60-64|1519 Jeanette Way|1519 Jeanette Way||Carrollton|TX|99505||||0|Whitepage|Ky T Tran, Min...||U|||
+9|Ann B Du|Ann|Du|B|35-39|1301 Malone St|1301 Malone St||Houston|TX|||||0|Whitepage|Hung V Du||D|||
+9|Ann B Du|Ann|Du|B|35-39|1301 Malone St|1301 Malone St||Houston|TX|100480||||0|Whitepage|Hung V Du||U|||
+10|Ann H Quach|Ann|Quach|H|55-59|2534 Pear Tree Ln|2534 Pear Tree Ln||Garland|TX|||||0|Whitepage|Charles C Hoac...||D|||
+10|Ann H Quach|Ann|Quach|H|55-59|2534 Pear Tree Ln|2534 Pear Tree Ln||Garland|TX|100517||||0|Whitepage|Charles C Hoac...||U|||
+11|Anthony V Huynh|Anthony|Huynh|V|35-39|609 Maydelle Ln|609 Maydelle Ln||Garland|TX|||||0|Whitepage|||D|||
+11|Anthony V Huynh|Anthony|Huynh|V|35-39|609 Maydelle Ln|609 Maydelle Ln||Garland|TX|101411||||0|Whitepage|||U|||
+12|Anthony M Nguyen|Anthony|Nguyen|M|30-34|555 Village Green Dr|555 Village Green Dr||Coppell|TX|||||0|Whitepage|||D|||
+12|Anthony M Nguyen|Anthony|Nguyen|M|30-34|555 Village Green Dr|555 Village Green Dr||Coppell|TX|101251||||0|Whitepage|||U|||
+13|Ben C Luong|Ben|Luong|C|65+|3415 Shea Ct|3415 Shea Ct||Arlington|TX|||||0|Whitepage|Ping Liang, Tri ...||D|||
+13|Ben C Luong|Ben|Luong|C|65+|3415 Shea Ct|3415 Shea Ct||Arlington|TX|102931||||0|Whitepage|Ping Liang, Tri ...||U|||
+14|Betty L Lieu|Betty|Lieu|L|55-59|6419 Saffron Hills Dr|6419 Saffron Hills Dr||Spring|TX|||||0|Whitepage|Richard H Lieu||D|||
+14|Betty L Lieu|Betty|Lieu|L|55-59|6419 Saffron Hills Dr|6419 Saffron Hills Dr||Spring|TX|103149||||0|Whitepage|Richard H Lieu||U|||
+15|Bing L Lu|Bing|Lu|L|40-44|4127 Peace Dr|4127 Peace Dr||Frisco|TX|||||0|Whitepage|Min Lu, Wei Do...||D|||
+15|Bing L Lu|Bing|Lu|L|40-44|4127 Peace Dr|4127 Peace Dr||Frisco|TX|103763||||0|Whitepage|Min Lu, Wei Do...||U|||
+16|Binh T Le|Binh|Le|T|40-44|5537 Dunn Hill Dr|5537 Dunn Hill Dr||Fort Worth|TX|||||0|Whitepage|Thomas R Nguye...||D|||
+16|Binh T Le|Binh|Le|T|40-44|5537 Dunn Hill Dr|5537 Dunn Hill Dr||Fort Worth|TX|104108||||0|Whitepage|Thomas R Nguye...||U|||
+17|Brenda A Vo|Brenda|Vo|A|55-59|710 Spring Hollow Dr|710 Spring Hollow Dr||Leander|TX|||||0|Whitepage|Ba V Vo, Kim ...||D|||
+17|Brenda A Vo|Brenda|Vo|A|55-59|710 Spring Hollow Dr|710 Spring Hollow Dr||Leander|TX|104690||||0|Whitepage|Ba V Vo, Kim ...||U|||
+18|Brian K Vu|Brian|Vu|K|65+|2605 Northridge Dr|2605 Northridge Dr||Longview|TX|||||0|Whitepage|Thang D Vu, To...||D|||
+18|Brian K Vu|Brian|Vu|K|65+|2605 Northridge Dr|2605 Northridge Dr||Longview|TX|104776||||0|Whitepage|Thang D Vu, To...||U|||
+19|Cang M Mai|Cang|Mai|M|45-49|1136 Lakeway Dr|1136 Lakeway Dr||Irving|TX|||||0|Whitepage|||D|||
+19|Cang M Mai|Cang|Mai|M|45-49|1136 Lakeway Dr|1136 Lakeway Dr||Irving|TX|105649||||0|Whitepage|||U|||
+20|Chalong L Ho|Chalong|Ho|L|60-64|3905 Runge Ct W|3905 Runge Ct W||Irving|TX|||||0|Whitepage|||D|||
+20|Chalong L Ho|Chalong|Ho|L|60-64|3905 Runge Ct W|3905 Runge Ct W||Irving|TX|106354||||0|Whitepage|||U|||
+21|Charles Tu|Charles|Tu||45-49|5114 Autumn Forest Dr|5114 Autumn Forest Dr||Houston|TX|77091|(713) 812-1942||Dec 1964|45|Zabasearch|||D|713|812|1942
+21|Charles C Tu|Charles|Tu|C|45-49|5114 Autumn Forest Dr|5114 Autumn Forest Dr||Houston|TX|106610||||0|Whitepage|||U|||
+22|Chau V Pham|Chau|Pham|V|65+|331 Pinyon Ln|331 Pinyon Ln||Coppell|TX|||||0|Whitepage|Tran T Pham, S...||D|||
+22|Chau V Pham|Chau|Pham|V|65+|331 Pinyon Ln|331 Pinyon Ln||Coppell|TX|107291||||0|Whitepage|Tran T Pham, S...||U|||
+23|Chau Phan|Chau|Phan|||6619 Fairglen Dr|6619 Fairglen Dr||Arlington|TX|76002|(817) 465-0300||||Addresses.com|||D|817|465|0300
+23|Chau Phan|Chau|Phan||55-59|6619 Fairglen Dr|6619 Fairglen Dr||Arlington|TX|76002|(817) 465-0300|03/2005|Jan 1952|57|Zabasearch|||D|817|465|0300
+23|Chau Phan|Chau|Phan||55-59|6619 Fairglen Dr|6619 Fairglen Dr||Arlington|TX|76002|(817) 465-0300|03/2005|Jan 1952|57|Zabasearch|||U|817|465|0300
+23|Chau T Phan|Chau|Phan|T|55-59|6619 Fairglen Dr|6619 Fairglen Dr||Arlington|TX|107205||||0|Whitepage|Thuy T Phan||D|||
+24|Chinh T Ly|Chinh|Ly|T|40-44|2002 Homestead Pl|2002 Homestead Pl||Garland|TX|||||0|Whitepage|||D|||
+24|Chinh T Ly|Chinh|Ly|T|40-44|2002 Homestead Pl|2002 Homestead Pl||Garland|TX|108260||||0|Whitepage|||U|||
+25|Christopher Mai|Christopher|Mai|||5704 Creekridge Dr|5704 Creekridge Dr||Arlington|TX|76018|(817) 375-9310||||Addresses.com|||D|817|375|9310
+25|Christopher Mai|Christopher|Mai||50-54|5704 Creekridge Dr|5704 Creekridge Dr||Arlington|TX|76018|||Nov 1959|50|Zabasearch|||D|||
+25|Christopher V Mai|Christopher|Mai|V|50-54|5704 Creekridge Dr|5704 Creekridge Dr||Arlington|TX|||||0|Whitepage|||D|||
+25|Christopher V Mai|Christopher|Mai|V|50-54|5704 Creekridge Dr|5704 Creekridge Dr||Arlington|TX|109066||||0|Whitepage|||U|||
+26|Congnghe Doan|Congnghe|Doan||55-59|1638 Crooked Creek Dr|1638 Crooked Creek Dr||Carrollton|TX|75007|(972) 446-1156||Oct 1950|59|Zabasearch|||D|972|446|1156
+26|Congnghe N Doan|Congnghe|Doan|N|55-59|1638 Crooked Creek Dr|1638 Crooked Creek Dr||Carrollton|TX|||||0|Whitepage|Tho Doan, Thanh ...||D|||
+26|Congnghe N Doan|Congnghe|Doan|N|55-59|1638 Crooked Creek Dr|1638 Crooked Creek Dr||Carrollton|TX|110099||||0|Whitepage|Tho Doan, Thanh ...||U|||
+27|Cuc Le|Cuc|Le||35-39|335 Cypress Creek Rd|335 Cypress Creek Rd||Cedar Park|TX|78613|(512) 250-8878|03/2006|1974|35|Zabasearch|||D|512|250|8878
+27|Cuc T Le|Cuc|Le|T||335 Cypress Creek Rd Apt 2|335 Cypress Creek Rd|Apt 2|Cedar Park|TX|78613|(512) 250-8878||||Addresses.com|||D|512|250|8878
+27|Cuc T Le|Cuc|Le|T|35-39|335 Cypress Creek Rd, Apt 2302|335 Cypress Creek Rd|Apt 2302|Cedar Park|TX|||||0|Whitepage|||D|||
+27|Cuc T Le|Cuc|Le|T|35-39|335 Cypress Creek Rd, Apt 2302|335 Cypress Creek Rd|Apt 2302|Cedar Park|TX|110455||||0|Whitepage|||U|||
+28|Cuong Vo|Cuong|Vo||30-34|1611 Lost Crossing Trl|1611 Lost Crossing Trl||Arlington|TX|76002|(817) 987-1014||Sep 1979|30|Zabasearch|||D|817|987|1014
+28|Cuong V Vo|Cuong|Vo|V|30-34|1611 Lost Crossing Trl|1611 Lost Crossing Trl||Arlington|TX|||||0|Whitepage|||D|||
+28|Cuong V Vo|Cuong|Vo|V|30-34|1611 Lost Crossing Trl|1611 Lost Crossing Trl||Arlington|TX|110991||||0|Whitepage|||U|||
+29|Dail Lu|Dail|Lu||45-49|1603 Scenic Mountain Ct|1603 Scenic Mountain Ct||Kingwood|TX|77345|(281) 360-3071||Oct 1963|46|Zabasearch|||D|281|360|3071
+29|Dail K Lu|Dail|Lu|K|45-49|1603 Scenic Mountain Ct|1603 Scenic Mountain Ct||Kingwood|TX|||||0|Whitepage|Yanli X Xu, Da...||D|||
+29|Dail Lu|Dail|Lu||45-49|1603 Scenic Mountain Ct|1603 Scenic Mountain Ct||Humble|TX|77345|(281) 360-3071|09/2005|Oct 1963|46|Zabasearch|||U|281|360|3071
+29|Dail K Lu|Dail|Lu|K|45-49|1603 Scenic Mountain Ct|1603 Scenic Mountain Ct||Kingwood|TX|111385||||0|Whitepage|Yanli X Xu, Da...||D|||
+30|Dale Vu|Dale|Vu|||19718 Campfield Dr|19718 Campfield Dr||Katy|TX|77449|(281) 492-0518||||Addresses.com|||D|281|492|0518
+30|Dale Vu|Dale|Vu||65+|19718 Campfield Dr|19718 Campfield Dr||Katy|TX|77449|(281) 829-1704||1933|76|Zabasearch|||D|281|829|1704
+30|Dale Q Vu|Dale|Vu|Q|65+|19718 Campfield Dr|19718 Campfield Dr||Katy|TX|||||0|Whitepage|Nhu Q Vu||D|||
+30|Dale Q Vu|Dale|Vu|Q|65+|19718 Campfield Dr|19718 Campfield Dr||Katy|TX|111421||||0|Whitepage|Nhu Q Vu||U|||
+31|Danh Chau|Danh|Chau||30-34|903 Red Cliff Dr|903 Red Cliff Dr||Austin|TX|78758|(512) 832-1750||Jun 1978|31|Zabasearch|||D|512|832|1750
+31|Danh T Chau|Danh|Chau|T|30-34|903 Red Cliff Dr|903 Red Cliff Dr||Austin|TX|||||0|Whitepage|Dahn Chau, Tuyet ...||D|||
+31|Danh T Chau|Danh|Chau|T|30-34|903 Red Cliff Dr|903 Red Cliff Dr||Austin|TX|111929||||0|Whitepage|Dahn Chau, Tuyet ...||U|||
+32|Dat Hoang|Dat|Hoang||35-39|1847 Migratory Ln|1847 Migratory Ln||Frisco|TX|75034|(972) 712-1701||1972|37|Zabasearch|||D|972|712|1701
+32|Dat M Hoang|Dat|Hoang|M|35-39|1847 Migratory Ln|1847 Migratory Ln||Frisco|TX|112661||||0|Whitepage|Dam J Hoang, T...||U|||
+33|Dat Le|Dat|Le||30-34|2218 Edinburgh Way|2218 Edinburgh Way||Garland|TX|75040|(972) 485-0063||Jun 1976|33|Zabasearch|||D|972|485|0063
+33|Dat T Le|Dat|Le|T|30-34|2218 Edinburgh Way|2218 Edinburgh Way||Garland|TX|||||0|Whitepage|Hoa N Le, Lai ...||D|||
+33|Dat T Le|Dat|Le|T|30-34|2218 Edinburgh Way|2218 Edinburgh Way||Garland|TX|112728||||0|Whitepage|Hoa N Le, Lai ...||U|||
+34|David Do|David|Do|||12223 Plano Rd Apt 2084|12223 Plano Rd|Apt 2084|Dallas|TX|75243|(214) 570-8533||||Addresses.com|||D|214|570|8533
+34|David Do|David|Do||65+|12223 Plano Rd|12223 Plano Rd||Dallas|TX|75243|(972) 437-4893|01/2004|Apr 1935|74|Zabasearch|||D|972|437|4893
+34|David K Do|David|Do|K|65+|12223 Plano Rd, Apt 1082|12223 Plano Rd|Apt 1082|Dallas|TX|||||0|Whitepage|||D|||
+34|David K Do|David|Do|K|65+|12223 Plano Rd, Apt 1082|12223 Plano Rd|Apt 1082|Dallas|TX|113090||||0|Whitepage|||U|||
+35|Day Vu|Day|Vu|||1000 Telluride Dr|1000 Telluride Dr||Arlington|TX|76001|(817) 779-4006||||Addresses.com|||D|817|779|4006
+35|Day Vu|Day|Vu||60-64|1000 Telluride Dr|1000 Telluride Dr||Arlington|TX|76001|(817) 779-4006||Aug 1947|62|Zabasearch|||D|817|779|4006
+35|Day T Vu|Day|Vu|T|60-64|1000 Telluride Dr|1000 Telluride Dr||Arlington|TX|||||0|Whitepage|||D|||
+35|Day Vu|Day|Vu||60-64|1000 Telluride Dr|1000 Telluride Dr||Arlington|TX|76001|(817) 779-4006||Aug 1947|62|Zabasearch|||U|817|779|4006
+35|Day T Vu|Day|Vu|T|60-64|1000 Telluride Dr|1000 Telluride Dr||Arlington|TX|113522||||0|Whitepage|||D|||
+36|Diane T Ly|Diane|Ly|T|40-44|1320 Ballantrae Dr|1320 Ballantrae Dr||Allen|TX|||||0|Whitepage|Cam H Ly||D|||
+36|Diane T Ly|Diane|Ly|T|40-44|1320 Ballantrae Dr|1320 Ballantrae Dr||Allen|TX|114093||||0|Whitepage|Cam H Ly||U|||
+37|Diem Tran|Diem|Tran|||626 Bay Oaks Dr|626 Bay Oaks Dr||Kemah|TX|77565|(281) 538-7548||||Addresses.com|||D|281|538|7548
+37|Diem Tran|Diem|Tran||30-34|626 Bay Oaks Dr|626 Bay Oaks Dr||Kemah|TX|77565|(281) 334-0715|03/2004|Jun 1977|32|Zabasearch|||D|281|334|0715
+37|Diem H Tran|Diem|Tran|H|30-34|626 Bay Oaks Dr|626 Bay Oaks Dr||Kemah|TX|114175||||0|Whitepage|Linda T Tran, ...||U|||
+38|Diemthu Luu|Diemthu|Luu|||3017 Alyssum Ct|3017 Alyssum Ct||Garland|TX|75040|(972) 675-6905||||Addresses.com|||D|972|675|6905
+38|Diemthu Luu|Diemthu|Luu||30-34|3017 Alyssum Ct|3017 Alyssum Ct||Garland|TX|75040|(972) 675-6905||Jan 1975|34|Zabasearch|||D|972|675|6905
+38|Diemthu T Luu|Diemthu|Luu|T|30-34|3017 Alyssum Ct|3017 Alyssum Ct||Garland|TX|||||0|Whitepage|Son H Luu, Tuo...||D|||
