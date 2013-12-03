@@ -395,7 +395,7 @@ void computeArgMin()
     float lowestZValue = 1000000.0;
     Precondition bestP;
     Condition bestC;
-    bool setMin = true;
+    bool setMin = false;
     unsigned bestCIndex1 = 0;
     unsigned bestCIndex2 = 0;
 
@@ -404,7 +404,7 @@ void computeArgMin()
     //find best preCondition and condition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
-        setMin = true; //<-I don't know why you added that
+        //setMin = true; //<-I don't know why you added that
         bestCIndex1 = 0;
         bestCIndex2 = 0;
         for(unsigned j = 0; j < gConditions.size(); j++)
@@ -423,7 +423,13 @@ void computeArgMin()
                 else
                 {
                     float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
-                    //cerr << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
+                    if (z < lowestZValue) {
+                        cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << " <--Current Best" << endl;
+                    } else {
+                        cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
+                    }
+
+                    
                     if (z < lowestZValue)
                     {
                         lowestZValue = z;
@@ -549,6 +555,8 @@ void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
     //create remaining rules
     for (unsigned i = 0; i < numTreeNodes; i++)
     {
+        cerr << endl << "--New tree iteration--" << endl;
+
         smoothFactor = .5 * (w(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
