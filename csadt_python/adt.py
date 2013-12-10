@@ -1,3 +1,4 @@
+import sys
 import math
 from copy import deepcopy
 import TreeIllustrator
@@ -153,16 +154,20 @@ def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
         for condition in dictOfNodeAndItsConditions[key]:
             if condition == d1:
                 if count == 0:
-                    return key, SAME
+                    return key, "yes"
                 else:
-                    return key, DIFFERENT
+                    return key, "no"
             count += 1
 
 def adt(costPlus, costMinus, k, smoothFactor, graph_identifier):
 	if (costMinus * weightMinus('True') + smoothFactor) == 0:
-		print "##### ERROR: denominator is 0 and anything / 0 is not possible..."
+		problem = "##### ERROR: denominator is 0 and anything / 0 is not possible..."
+		print problem
+		sys.exit(problem)
 	if (costPlus * weightPlus('True') + smoothFactor) == 0:
-		print "##### ERROR: numerator is zero and log(0) is not possible..."
+		problem = "##### ERROR: numerator is zero and log(0) is not possible..."
+		print problem
+		sys.exit(problem)
 	print "costMinus: %s" % costMinus
 	print "weightMinus(True): %s" % weightMinus('True')
 	print "smoothFactor: %s" % smoothFactor
