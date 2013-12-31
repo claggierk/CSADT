@@ -1,14 +1,44 @@
-eFullName < 3
-eFirstName == 0
-eLastName == 0
-eMiddleName == 0
-eCity < 3
-eState < 3
-eZipcode == 0
-eAge1 == 0
-eApt == 0
-ePhone == 0
-eDOB == 0
-ePhone == 0
-eRelatives < 3
-eDOB == 0
+FullName==1
+FullName>1
+FirstName==0
+FirstName>0
+LastName==0
+LastName>0
+MiddleName==0
+MiddleName>0
+Age==1
+Age>1
+FullAddres==1
+FullAddres>1
+StreetAddr==0
+StreetAddr>0
+Apt==1
+Apt>1
+City==0
+City>0
+State==0
+State>0
+Zipcode==5
+Zipcode>5
+Phone==8
+Phone>8
+Date==1
+Date>1
+DOB==4
+DOB>4
+Age1==1
+Age1>1
+Source==6
+Source>6
+Relatives==4
+Relatives>4
+Score==0
+Score>0 
+Label==1
+Label>1
+area_code==2
+area_code>2
+exchange==2
+exchange>2
+subscriber==2
+subscriber>2

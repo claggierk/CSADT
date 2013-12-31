@@ -71,7 +71,7 @@ def main():
 			print " ***** %.2f%% complete ----- total processed: %s" % (percent_complete, total_processed)
 			for combination_2 in range(combination_1+1, num_records):
 				tempDictionary = {}
-				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eID"], records[combination_2]["eID"]) == 0:
+				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["ID"], records[combination_2]["ID"]) == 0:
 					tempDictionary['class'] = 'SAME'
 				else:
 					tempDictionary['class'] = 'DIFFERENT'

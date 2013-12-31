@@ -3,6 +3,9 @@ import pydot
 def DrawTree(nodes, identifier):
 	graph = pydot.Dot(graph_type='digraph')
 	dictionary_of_nodes = {}
+
+	for node_index, node in enumerate(nodes):
+		print "Node %s: %s" % (node_index, node)
 	
 	root_title = "node0 = " + nodes[0]
 	node0 = pydot.Node(root_title, style="filled", fillcolor="#FFFFFF")

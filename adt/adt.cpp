@@ -173,15 +173,15 @@ void GenerateConditions()
     for(unsigned i = 0; i < matchFeatureStats.size(); i++)
     {
         gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
+        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
         gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
     }
 
     for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
     {
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
+        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
+        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
     }
 }
 
@@ -423,12 +423,13 @@ void computeArgMin()
                 else
                 {
                     float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
+                    /*
                     if (z < lowestZValue) {
                         cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << " <--Current Best" << endl;
                     } else {
                         cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
                     }
-
+                    */
                     
                     if (z < lowestZValue)
                     {
@@ -632,7 +633,8 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float cPlus = 2.0;
     float cMinus = 1.0; 
-    unsigned numTreeNodes = 5;
+    unsigned numTreeNodes = 2;
+    PrintConditionInfo();
     GenerateADT(cPlus, cMinus, numTreeNodes);
 
     ofstream fout;
