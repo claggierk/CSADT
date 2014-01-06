@@ -9,7 +9,7 @@ compiled_status=$?
 if [ $compiled_status -eq 0 ]
 then
     echo "Compilation success!"
-    command="./adt input.txt Tree.txt"
+    command="./adt ADT_ready.txt Tree.txt"
     echo $command
     $command
     command_status=$?

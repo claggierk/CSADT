@@ -159,7 +159,7 @@ void OutputPeopleDifferences(string fileName)
     
     if(fout.is_open())
     {
-        for(unsigned i = 0; i < NUM_THREADS; i++)
+        for(unsigned i = 0; i < NUM_THREADS+1; i++)
         {
 			for(unsigned j = 0; j < gPeopleDifferences.at(i).size(); j++)
 			{
