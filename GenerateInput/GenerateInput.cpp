@@ -224,27 +224,36 @@ int main(int argc, char** argv)
 
     PopulatePeopleCombinations(combinationsFileName);
     unsigned comparisonsPerCore = gNumCombinations / NUM_THREADS;
+    unsigned remainderComparisons = gNumCombinations - (comparisonsPerCore * NUM_THREADS);
     
     PopulatePeople(dataInputFileName);
     
-    gPeopleDifferences.resize(NUM_THREADS);
-    vector<thread*> threadPtrs(NUM_THREADS);
+    gPeopleDifferences.resize(NUM_THREADS+1);
+    vector<thread*> threadPtrs(NUM_THREADS+1);
     unsigned offset = 0;
     
     const clock_t begin_time = clock();
     
-    // kick off all the threads
-    for(unsigned i = 0; i < NUM_THREADS; i++)
+    // kick off all the threads that have comparisonsPerCore to do
+    unsigned i = 0;
+    for(i = 0; i < NUM_THREADS; i++)
     {
         gPeopleDifferences.at(i).reserve(comparisonsPerCore);
         threadPtrs.at(i) = new thread(comparePairOfRecords, offset, comparisonsPerCore, i);
         offset += comparisonsPerCore;
         usleep(1000); // microseconds
     }
-    
+
+    // kick off the last thread representing the remainder
+    gPeopleDifferences.at(i).reserve(comparisonsPerCore);
+    threadPtrs.at(i) = new thread(comparePairOfRecords, offset, remainderComparisons, i);
+    offset += remainderComparisons;
+    usleep(1000); // microseconds
+
     // do whatever you want to while the threads are going
 
-    for(unsigned i = 0; i < NUM_THREADS; i++)
+    // wait for all the threads to finish...
+    for(unsigned i = 0; i < NUM_THREADS+1; i++)
     {
         threadPtrs.at(i)->join();
         delete threadPtrs.at(i);
@@ -255,7 +264,7 @@ int main(int argc, char** argv)
     cout << "All threads complete" << endl;
     cout << "Seconds required for comparing records: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << endl;
     
-    for(unsigned i = 0; i < NUM_THREADS; i++)
+    for(unsigned i = 0; i < NUM_THREADS+1; i++)
     {
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
