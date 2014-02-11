@@ -91,6 +91,8 @@ void PopulateInstances(string fileName)
             getline(fin, line);
             currentIndex++;
         } while(!fin.eof());
+        cout << "Filed in " << currentIndex << " instances..." << endl;
+        cout << "Filed in " << gMatches.size() + gNonMatches.size() << " instances..." << endl;
     }
     else
     {
@@ -329,7 +331,7 @@ float wPlus(vector<Condition> conditionVector, string logicalOperator)
     return sumOfWeights;
 }
 
-float w(vector<Condition> conditionVector, string logicalOperator)
+float calculateW(vector<Condition> conditionVector, string logicalOperator)
 {
     return wPlus(conditionVector, logicalOperator) + wMinus(conditionVector, logicalOperator);
 }
@@ -362,7 +364,7 @@ float calcZ(const Precondition& p, Condition c)
     //calculate z equation
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
-    float thirdPart = w(notP, "or");
+    float thirdPart = calculateW(notP, "or");
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -514,22 +516,22 @@ float getScoreOfInstance(Instance myInstance)
     return score;
 }
 
-void updateWeights(float cPlus, float cMinus) {
+void updateWeights(float costPlus, float costMinus) {
     for (unsigned i = 0; i < gMatches.size(); i++) {
         float score = getScoreOfInstance(gMatches.at(i));
         float yi = 1.0;
-        float cost = cPlus * 1.0 + cMinus * 0.0;
+        float cost = costPlus * 1.0 + costMinus * 0.0;
         gMatches.at(i).setWeight(gMatches.at(i).getWeight()*exp(-yi*score));
     }
     for (unsigned i = 0; i < gNonMatches.size(); i++) {
         float score = getScoreOfInstance(gNonMatches.at(i));
         float yi = -1.0;
-        float cost = cPlus * 0.0 + cMinus * 1.0;
+        float cost = costPlus * 0.0 + costMinus * 1.0;
         gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * cost * exp(-yi*score));
     }    
 }
 
-void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
+void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
 {
     //clear global vars that will be modified and used
     gPreconditionsUsed.clear();
@@ -546,36 +548,45 @@ void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
     Precondition tAsAPrecondition;
     tAsAPrecondition.addCondition(t);
     tAsAVector.push_back(t);
-    float smoothFactor = .5 * (w(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
-    float alpha1 = 0.5 * log((cPlus * wPlus(tAsAVector, "and") + smoothFactor) / (cMinus * wMinus(tAsAVector, "and") + smoothFactor));
+    float smoothFactor = 0.5 * (calculateW(tAsAVector, "and") / (gMatches.size() + gNonMatches.size()));
+    cerr << "costPlus    : " << costPlus << endl;
+    cerr << "costMinus   : " << costMinus << endl;
+    cerr << "numTreeNodes: " << numTreeNodes << endl; 
+    cerr << "smoothFactor: " << smoothFactor << endl;
+    cerr << "wPlus(tAsAVector, and) : " << wPlus(tAsAVector, "and") << endl;
+    cerr << "wMinus(tAsAVector, and): " << wMinus(tAsAVector, "and") << endl;
+
+    cerr << "weight of True         : " << calculateW(tAsAVector, "and") << endl;
+    cerr << "training data set size : " << gMatches.size() + gNonMatches.size() << endl;
+    
+    float alpha1 = 0.5 * log((costPlus * wPlus(tAsAVector, "and") + smoothFactor) / (costMinus * wMinus(tAsAVector, "and") + smoothFactor));
     float alpha2 = 0.0;
+    cerr << "alpha1      : " << alpha1 << endl;
 
     gRules.push_back(Rule(tAsAPrecondition, t, alpha1, alpha2));
     //cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
     gPreconditionsUsed.push_back(tAsAPrecondition);
     //create remaining rules
-    for (unsigned i = 0; i < numTreeNodes; i++)
+    for(unsigned i = 0; i < numTreeNodes; i++)
     {
         cerr << endl << "--New tree iteration--" << endl;
 
-        smoothFactor = .5 * (w(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
+        smoothFactor = .5 * (calculateW(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
-        alpha1 = 0.5 * log((cPlus * wPlus(gPAndCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPAndCChosen, "and") + smoothFactor));
-        alpha2 = 0.5 * log((cPlus * wPlus(gPandNotCChosen, "and") + smoothFactor)/(cMinus * wMinus(gPandNotCChosen, "and") + smoothFactor));
+        alpha1 = 0.5 * log((costPlus * wPlus(gPAndCChosen, "and") + smoothFactor)/(costMinus * wMinus(gPAndCChosen, "and") + smoothFactor));
+        alpha2 = 0.5 * log((costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor)/(costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor));
         //cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
         //gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
         gRules.push_back(Rule(gPreconditionChosen, gConditionsAlreadySelected.back(), alpha1, alpha2));
         //cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
-        updateWeights(cPlus, cMinus);
+        updateWeights(costPlus, costMinus);
 
         //for (unsigned j = 0; j < gPreconditionsUsed.size(); j++) {
         //    cerr << i << "th iteration: gPreconditionsUsed[" << j << "]: " << gPreconditionsUsed.at(j) << endl;
         //}
-        
     }
 
-    
     cerr << endl;
     cerr << " ***** Selected Conditions:" << endl;
     for(unsigned i = 0; i < gConditionsAlreadySelected.size(); i++)
@@ -583,7 +594,6 @@ void GenerateADT(float cPlus, float cMinus, unsigned numTreeNodes)
         cerr << " ***** " << gConditionsAlreadySelected.at(i) << endl;
     }
     cerr << endl;
-    
 }
 
 void usage()
@@ -631,11 +641,14 @@ int main(int argc, char* argv[])
     cerr << " ## WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
 
     //prepare input for GenerateADT and run it.
-    float cPlus = 2.0;
-    float cMinus = 1.0; 
-    unsigned numTreeNodes = 2;
+    float costPlus = 2.0f;
+    float costMinus = 1.0f; 
+    unsigned numTreeNodes = 1;
     PrintConditionInfo();
-    GenerateADT(cPlus, cMinus, numTreeNodes);
+
+    //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
+    // THIS IS WHERE IT ALL HAPPENS
+    GenerateADT(costPlus, costMinus, numTreeNodes);
 
     ofstream fout;
     fout.open(outputFileName.c_str());
