@@ -14,8 +14,8 @@ global trainingDataSet
 
 def Usage():
 	print "**************************************************"
-	print "Usage  : python %s [text (.txt) input file] [text (.txt) conditions file] [text (.txt) output file]" % sys.argv[0]
-	print "Example: python %s LinesPreprocessed.txt conditions.txt Tree.txt" % sys.argv[0]
+	print "Usage  : python %s [text (.txt) input file] [text (.txt) output file]" % sys.argv[0]
+	print "Example: python %s Data.txt ComparisonRecords.txt" % sys.argv[0]
 	print "**************************************************"
 
 def run10FoldCrossValidation(inputFile, classifier):
@@ -39,13 +39,12 @@ def main():
 		print "arg: %s: %s" % (i, arg) 
 	argc = len(sys.argv)
 	
-	if argc != 4:
+	if argc != 3:
 		Usage()
 		return
 	
 	input_file = sys.argv[1]
-	conditions_file = sys.argv[2]
-	output_file = sys.argv[3]
+	output_file = sys.argv[2]
 	
 	if os.path.exists(input_file):
 		(records, keys) = adt_infrastructure.BuildDataStructure(input_file)

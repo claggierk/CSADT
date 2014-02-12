@@ -63,7 +63,7 @@ def weightPlus(condition):
     #second: out of those examples get just the positively labeled ones
     positivelyLabeledExamples = []
     for example in examplesThatSatisfyCondition:
-        if trainingDataSet[example]['class'] == SAME:
+        if trainingDataSet[example]['classification'] == SAME:
             positivelyLabeledExamples.append(example)
     #add up the weights of all positively labeled examples
     weightPlus = 0
@@ -77,7 +77,7 @@ def weightMinus(condition):
     #second: out of those examples get just the negatively labeled ones
     negativelyLabeledExamples = []
     for example in examplesThatSatisfyCondition:
-        if trainingDataSet[example]['class'] == DIFFERENT:
+        if trainingDataSet[example]['classification'] == DIFFERENT:
             negativelyLabeledExamples.append(example)
     #add up the weights of all negatively labeled examples
     weightMinus = 0
@@ -139,7 +139,7 @@ def calculateI(condition):
 def updateWeights(rule, costPlus, costMinus):
     for exampleIdentifier in trainingDataSet.keys():
         score = getScoreOfExample(rule, trainingDataSet[exampleIdentifier])
-        classification = trainingDataSet[exampleIdentifier]['class']
+        classification = trainingDataSet[exampleIdentifier]['classification']
         if classification == SAME:
             yi = 1
         else:

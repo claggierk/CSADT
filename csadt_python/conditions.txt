@@ -26,8 +26,8 @@ eDate==1
 eDate>1
 eDOB==4
 eDOB>4
-eAge1==1
-eAge1>1
+eAge==1
+eAge>1
 eSource==6
 eSource>6
 eRelatives==4

@@ -25,9 +25,36 @@ def BuildDataStructure(input_file):
 	
 	return (records, keys)
 
+def BuildComparisonPairsDataStructure(input_file):
+	file_handler = open(input_file, 'r')
+	
+	lines = file_handler.readlines()
+	
+	first_line = lines[0]
+	first_line = first_line.strip()
+	keys = first_line.split("|")
+	
+	trainingComparisonPairs = {}
+	for line_index, line in enumerate(lines[1:]):		
+		line = line.strip()
+		cell_values = line.split("|")
+
+		trainingComparisonPair = {}
+		for cell_value_index, cell_value in enumerate(cell_values[1:]):
+			currentKey = keys[cell_value_index+1] # ridiculous! ... although I told it to go from 1:END ... it starts iterating at 0!
+			trainingComparisonPair[currentKey] = cell_value
+			#print "currentKey: %s === %s" % (currentKey, cell_value)
+		comparisonRecordID = cell_values[0]
+		trainingComparisonPairs[comparisonRecordID] = trainingComparisonPair
+	
+	file_handler.close()
+	
+	return trainingComparisonPairs
+
+
 def OutputRecordsToFile(records, tabulated_file, record_pairs, features):
 	file_handler = open(tabulated_file, 'w')
-	file_handler.write("CombinationID|Classification|")
+	file_handler.write("CombinationID|classification|")
 	file_handler.write("%s\n" % "|".join(features[1:]))
 	#import pdb; pdb.set_trace()
 	for record in record_pairs:
