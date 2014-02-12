@@ -83,10 +83,10 @@ def main():
 				combination_pair = str(combination_1) + '-' + str(combination_2)
 				combination_pairs.append(combination_pair)
 				trainingDataSet[combination_pair] = tempDictionary
-		
+
 		#keys.remove("ID") # need to remove the key "ID" since it has no bearing anymore (and is not a key in the trainingDataSet dictionary)
-		#OutputRecordsToTabulatedFile(trainingDataSet, output_file, combination_pairs, keys)
-		
+		adt_infrastructure.OutputRecordsToFile(trainingDataSet, output_file, combination_pairs, keys)
+		'''
 		allConditions = PopulateConditions(conditions_file)
 		print("allConditions: %s" % allConditions)
 		
@@ -102,6 +102,7 @@ def main():
 		#print("accuracy: " + str(results))
 		stop_drawing = open("node_end.txt", 'w')
 		stop_drawing.close()
+		'''
 	else:
 		Usage()
 		return

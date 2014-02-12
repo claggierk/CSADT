@@ -45,7 +45,8 @@ def BuildDataStructure(input_file):
 	first_line = lines[0]
 	first_line = first_line.strip()
 	keys = first_line.split("|")
-	print " ***** keys: %s" % keys
+	print " ***** keys     : %s" % keys
+	print " ***** len(keys): %s" % len(keys)
 	
 	records = []
 	record = {}
@@ -56,7 +57,9 @@ def BuildDataStructure(input_file):
 	for line_index, line in enumerate(lines[1:]):		
 		line = line.strip()
 		cell_values = line.split("|")
+		print "len(cell_values): %s" % len(cell_values)
 		for cell_value_index, cell_value in enumerate(cell_values):
+			print cell_value_index
 			record[ keys[cell_value_index] ] = cell_value
 		records.append(copy.deepcopy(record))
 	

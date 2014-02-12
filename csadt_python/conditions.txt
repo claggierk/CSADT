@@ -8,10 +8,10 @@ eMiddleName==0
 eMiddleName>0
 eAge==1
 eAge>1
-eFullAddres==1
-eFullAddres>1
-eStreetAddr==0
-eStreetAddr>0
+eFullAddress==1
+eFullAddress>1
+eStreetAddress==0
+eStreetAddress>0
 eApt==1
 eApt>1
 eCity==0

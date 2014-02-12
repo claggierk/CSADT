@@ -25,31 +25,17 @@ def BuildDataStructure(input_file):
 	
 	return (records, keys)
 
-def OutputRecordsToTabulatedFile(records, tabulated_file, record_pairs, features):
+def OutputRecordsToFile(records, tabulated_file, record_pairs, features):
 	file_handler = open(tabulated_file, 'w')
-	
-	first_line = "class" + "\t"
-	for feature in features[:-1]:
-		first_line = first_line + feature + "\t"
-	first_line = first_line + features[-1] # no tab after the last "word" on the line
-	file_handler.write("%s\n" % first_line)
-	
-	second_line = "same different" + "\t"
-	for i in range(len(features)-1):
-		second_line = second_line + "d\t"
-	second_line = second_line + "d" # no tab after the last "word" on the line
-	file_handler.write("%s\n" % second_line)
-	
-	# third line
-	file_handler.write("class\n")
-	
+	file_handler.write("CombinationID|Classification|")
+	file_handler.write("%s\n" % "|".join(features[1:]))
+	#import pdb; pdb.set_trace()
 	for record in record_pairs:
-		current_record = records[record]["class"] + "\t"
-		for feature in features[:-1]:
-			current_record = current_record + str(records[record][feature]) + "\t"
-		current_record = current_record + str(records[record][features[-1]]) # no tab after the last "word" on the line
-		file_handler.write("%s\n" % current_record)
-	
+		levenshtein_distances = []
+		for feature in features[1:]:
+			levenshtein_distances.append(str(records[record][feature]))
+		file_handler.write("%s|%s|" % (record, records[record]["class"]))
+		file_handler.write("%s\n" % "|".join(levenshtein_distances))
 	file_handler.close()
 
 def WriteTreeToFile(adtClassifer, adtree_file):
