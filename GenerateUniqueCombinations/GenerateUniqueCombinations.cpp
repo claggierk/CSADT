@@ -6,6 +6,8 @@
 
 using namespace std;
 
+unsigned gNumRecords = 0;
+
 void outputPairs(string fileName, unsigned numRecords, unsigned numPairs)
 {
     ofstream fileOutPairs;
@@ -14,9 +16,9 @@ void outputPairs(string fileName, unsigned numRecords, unsigned numPairs)
     {
         fileOutPairs << numRecords << endl;
         fileOutPairs << numPairs << endl;
-        for(unsigned i = 0; i < 100; i++)
+        for(unsigned i = 0; i < gNumRecords; i++)
         {
-            for(unsigned j = i+1; j < 100; j++)
+            for(unsigned j = i+1; j < gNumRecords; j++)
             {
                 fileOutPairs << i << " " << j << endl;
             }
@@ -27,12 +29,18 @@ void outputPairs(string fileName, unsigned numRecords, unsigned numPairs)
 
 int main (int argc, char ** argv)
 {
-    unsigned numRecords = 100;
-    unsigned numPairs = numRecords * (numRecords - 1) / 2;
-    string fileName = "UniqueCombinations.txt";
-    outputPairs(fileName, numRecords, numPairs);
+    if(argc != 2)
+    {
+        cerr << endl << "Missing numRecords command line argument" << endl;
+        return EXIT_FAILURE;
+    }
+    gNumRecords = atoi(argv[1]);
 
-    cout << "Number of records: " << numRecords << endl;
+    unsigned numPairs = gNumRecords * (gNumRecords - 1) / 2;
+    string fileName = "UniqueCombinations.txt";
+    outputPairs(fileName, gNumRecords, numPairs);
+
+    cout << "Number of records: " << gNumRecords << endl;
     cout << "Number of pairs  : " << numPairs << endl;
     cout << "Output           : \"" << fileName << "\"" << endl;
 
