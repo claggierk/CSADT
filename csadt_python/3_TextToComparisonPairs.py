@@ -71,7 +71,7 @@ def main():
 			for combination_2 in range(combination_1+1, num_records):
 				tempDictionary = {}
 				#import pdb; pdb.set_trace()
-				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eID"], records[combination_2]["eID"]) == 0:
+				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eDuplicateID"], records[combination_2]["eDuplicateID"]) == 0:
 					tempDictionary['class'] = 'SAME'
 				else:
 					tempDictionary['class'] = 'DIFFERENT'

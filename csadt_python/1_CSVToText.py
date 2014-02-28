@@ -1,4 +1,5 @@
 import sys
+import csv
 
 def WriteDataToFile(file_name, list):
 	file_handler = open(file_name, 'w')
@@ -9,13 +10,22 @@ def GetData(input_file):
 	data = []
 
 	input_file_handler = open(input_file, 'r')
-	
-	for index, row in enumerate(input_file_handler):
-		cells = row.split(",")
-		cells[-1] = cells[-1].strip()
-		data.append(cells)
-	
-	#print "data: %s" % data
+	recordIDs = {}
+	with open(input_file, 'rb') as csvfile:
+		dataCSV = csv.reader(csvfile, delimiter=',', quotechar='"')
+		for row in dataCSV:
+			if row[0] in recordIDs:
+				recordIDs[row[0]] = recordIDs[row[0]] + 1
+			else:
+				recordIDs[row[0]] = 1
+			row[-1] = row[-1].strip()
+			data.append(row)
+	for recordID in recordIDs:
+		if recordIDs[recordID] != 1:
+			print "Match %s ... %s" % (recordID, recordIDs[recordID])
+		else:
+			print "Record %s has no matches" % recordID
+	print "There are %s unique records" % len(recordIDs.keys())
 	return data
 
 def main():
