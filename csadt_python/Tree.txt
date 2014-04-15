@@ -1,0 +1,3 @@
+True True -2.73591637577 0
+True eNameTitle==0 0.0 -2.73591637577
+True eNameTitle<2 0.0 3.08191563717
