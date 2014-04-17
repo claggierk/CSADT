@@ -14,18 +14,9 @@ def GetData(input_file):
 	with open(input_file, 'rb') as csvfile:
 		dataCSV = csv.reader(csvfile, delimiter=',', quotechar='"')
 		for row in dataCSV:
-			if row[0] in recordIDs:
-				recordIDs[row[0]] = recordIDs[row[0]] + 1
-			else:
-				recordIDs[row[0]] = 1
 			row[-1] = row[-1].strip()
 			data.append(row)
-	for recordID in recordIDs:
-		if recordIDs[recordID] != 1:
-			print "Match %s ... %s" % (recordID, recordIDs[recordID])
-		else:
-			print "Record %s has no matches" % recordID
-	print "There are %s unique records" % len(recordIDs.keys())
+
 	return data
 
 def main():
@@ -40,6 +31,7 @@ def main():
 	text_output_file = sys.argv[2]
 	
 	data = GetData(input_file)
+	print " ***** KEYS: %s" % data[0]
 	
 	output_txt_list = []
 	output_html_list = []

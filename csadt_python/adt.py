@@ -259,7 +259,7 @@ def classifier(parmTrainingDataSet, parmAllConditions, graph_identifier):
     featuresInDataSet = getFeatures(trainingDataSet)
     costPlus = 2
     costMinus = 1
-    numTreeNodes = 2 #numberOfIterativeRounds
+    numTreeNodes = 15 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
     rule = adt(costPlus, costMinus, numTreeNodes, graph_identifier)
     

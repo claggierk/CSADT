@@ -81,11 +81,13 @@ def main():
 				
 				combination_pair = str(combination_1) + '-' + str(combination_2)
 				combination_pairs.append(combination_pair)
-				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eLastName"], records[combination_2]["eLastName"]) < 3 or \
-					levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eFirstName"], records[combination_2]["eFirstName"]) < 3 or \
-					levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eNameTitle"], records[combination_2]["eNameTitle"]) < 3:
-					trainingDataSet[combination_pair] = tempDictionary
 
+				# must have a similar name to be considered...
+				#if tempDictionary["eLastName"] < 2 or tempDictionary["eFirstName"] < 2:
+				#######print "%s %s %s" % (tempDictionary["eLastName"], tempDictionary["eFirstName"], tempDictionary["eNameTitle"])
+				trainingDataSet[combination_pair] = tempDictionary
+
+		print " ********** Running CSADT on %s combination pairs..." % len(trainingDataSet)
 		#keys.remove("ID") # need to remove the key "ID" since it has no bearing anymore (and is not a key in the trainingDataSet dictionary)
 		adt_infrastructure.OutputRecordsToFile(trainingDataSet, output_file, combination_pairs, keys)
 		'''
