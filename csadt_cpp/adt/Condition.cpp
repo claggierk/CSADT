@@ -3,17 +3,6 @@
 #include "Person.h"
 #include "Utils.h"
 
-enum comparisonIndices
-{
-	eLessThan,
-	eGreatherThan,
-	eEqualTo,
-	eLessThanOrEqual,
-	eGreaterThanOrEqual,
-	eNumValidComparisons
-};
-string validComparisons[eNumValidComparisons] = {"<", ">", "==", "<=", ">="};
-
 Condition::Condition() : value(0), comparison("=="), index(0), trueFlag(false), notFlag(false)
 {}
 
@@ -72,7 +61,7 @@ void Condition::setComparison(const string& c)
 {
 	for(unsigned i = 0; i < eNumValidComparisons; i++)
 	{
-		if(c == validComparisons[i])
+		if(c == sValidComparisons[i])
 		{
 			comparison = c;
 			return;
@@ -133,11 +122,11 @@ bool Condition::evaluate(const Instance& instance) const
 	//use index so that I can run evaluate like conditionObject.evaluate(instanceObject) 
 	unsigned localDiff = instance.getAttribute(index);
 
-	if(comparison == validComparisons[eLessThan])				return considerNotFlag(localDiff < value);
-	else if(comparison == validComparisons[eGreatherThan])		return considerNotFlag(localDiff > value);
-	else if(comparison == validComparisons[eEqualTo])			return considerNotFlag(localDiff == value);
-	else if(comparison == validComparisons[eLessThanOrEqual])	return considerNotFlag(localDiff <= value);
-	else if(comparison == validComparisons[eGreaterThanOrEqual])return considerNotFlag(localDiff >= value);
+	if(comparison == sValidComparisons[eLessThan])				return considerNotFlag(localDiff < value);
+	else if(comparison == sValidComparisons[eGreatherThan])		return considerNotFlag(localDiff > value);
+	else if(comparison == sValidComparisons[eEqualTo])			return considerNotFlag(localDiff == value);
+	else if(comparison == sValidComparisons[eLessThanOrEqual])	return considerNotFlag(localDiff <= value);
+	else if(comparison == sValidComparisons[eGreaterThanOrEqual])return considerNotFlag(localDiff >= value);
 	else
 	{
 		cerr << "##### ERROR: unknown comparison: " << comparison << endl;

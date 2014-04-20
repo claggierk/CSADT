@@ -5,12 +5,17 @@
 #include <cstdlib>
 #include <cmath>
 #include <sstream>
+#include <algorithm>
+#include <csignal>
+#include <execinfo.h>
+#include <unistd.h>
 
 #include "Instance.h"
 #include "Condition.h"
 #include "Precondition.h"
 #include "FeatureStats.h"
 #include "Rule.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -19,7 +24,10 @@ const unsigned NUM_COMMAND_LINE_ARGUMENTS = 2;
 
 vector<Instance> gMatches;
 vector<Instance> gNonMatches;
+
+// for each attribute, there is a vector of Conditions
 vector< vector<Condition> > gConditions;
+
 vector<Precondition> gPreconditionsUsed;
 Precondition gPreconditionChosen;
 Condition gConditionChosen;
@@ -144,6 +152,91 @@ void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStat
     }
 }
 
+string DetermineUniqueConditionSymbols()
+{
+    string uniqueConditionSymbols = "";
+    for(unsigned conditionSymbol = 0; conditionSymbol < eNumValidComparisons; conditionSymbol++)
+    {
+        uniqueConditionSymbols = uniqueConditionSymbols + sValidComparisons[conditionSymbol];
+    }
+    
+    // remove duplicates
+    std::sort(uniqueConditionSymbols.begin(), uniqueConditionSymbols.end());
+    uniqueConditionSymbols.erase(std::unique(uniqueConditionSymbols.begin(), uniqueConditionSymbols.end()), uniqueConditionSymbols.end());
+    
+    return uniqueConditionSymbols;
+} 
+
+Condition ExtractCondition(const string& condition, const string& uniqueConditionSymbols)
+{
+    cerr << endl << " !!!!! Condition: " << condition;
+
+
+    size_t found = condition.find_first_of(uniqueConditionSymbols);
+    if(found == string::npos)
+    {
+        cerr << endl << "##### ERROR: Could not create condition for " << condition;
+        return Condition(0, "?", 0); 
+    }
+
+    unsigned conditionIndex = eSizePersonAttributes;
+    string conditionVariableStr = condition.substr(0, found);
+    string conditionSymbolStr = "";
+    string conditionValueStr = "";
+
+    // determine if the condition symbol is 1 or 2 characters long
+    bool conditionIsTwoCharactersLong = false;
+    for(unsigned conditionSymbol = 0; conditionSymbol < uniqueConditionSymbols.size(); conditionSymbol++)
+    {
+        if(condition[found+1] == uniqueConditionSymbols[conditionSymbol])
+        {
+            conditionIsTwoCharactersLong = true;
+            break;
+        }
+    }
+
+    if(conditionIsTwoCharactersLong)
+    {
+        conditionSymbolStr = condition.substr(found, 2);
+        conditionValueStr = condition.substr(found + 2);
+    }
+    else
+    {
+        conditionSymbolStr = condition.substr(found, 1);
+        conditionValueStr = condition.substr(found + 1);
+    }
+
+    // determine the condition index (wish we had dictionaries in C++)
+    bool foundCondition = false;
+    for(unsigned currentConditionIndex = 0; currentConditionIndex < eSizePersonAttributes; currentConditionIndex++)
+    {
+        if(conditionVariableStr == sPersonConditions[currentConditionIndex])
+        {
+            conditionIndex = currentConditionIndex;
+            foundCondition = true;
+            break;
+        }
+    }
+
+    if(!foundCondition)
+    {
+        cerr << endl << "##### ERROR: Could not create condition for " << condition << " (invalid ... was not defind in Utils.h?)";
+        return Condition(0, "?", 0); 
+    }
+
+    unsigned conditionValue = (unsigned)atoi(conditionValueStr.c_str());
+    /*
+    cerr << endl << "conditionVariableStr: " << conditionVariableStr;
+    cerr << endl << "conditionSymbolStr  : " << conditionSymbolStr;
+    cerr << endl << "conditionValueStr   : " << conditionValueStr;
+
+    cerr << endl << "conditionValue      : " << conditionValue;
+    cerr << endl << "conditionSymbolStr  : " << conditionSymbolStr;
+    cerr << endl << "conditionIndex      : " << conditionIndex;
+    */
+    return Condition(conditionValue, conditionSymbolStr, conditionIndex);
+}
+
 void GenerateConditions()
 {
     vector<FeatureStats> matchFeatureStats;
@@ -171,19 +264,56 @@ void GenerateConditions()
         exit_now();
     }
 
-
-    for(unsigned i = 0; i < matchFeatureStats.size(); i++)
+    bool populateConditionsFromFile = true;
+    if(populateConditionsFromFile)
     {
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        ifstream conditionsFileHandler;
+        string conditionsFile = "../../csadt_python/conditions.txt";
+        conditionsFileHandler.open(conditionsFile.c_str());
+
+        vector<string> conditions;
+        
+        if(conditionsFileHandler.is_open())
+        {
+            string condition = "";
+            string uniqueConditionSymbols = DetermineUniqueConditionSymbols();
+            while(!conditionsFileHandler.eof())
+            {
+                getline(conditionsFileHandler, condition);
+                Condition extractedCondition = ExtractCondition(condition, uniqueConditionSymbols);
+                if(extractedCondition.getValue() == '?')
+                {
+                    continue;
+                }
+                cerr << endl << "Adding the following condition: " << extractedCondition;
+                gConditions.at(extractedCondition.getIndex()).push_back(extractedCondition);
+            }
+        }
+        else
+        {
+            cerr << endl << "##### ERROR: failed to open " << conditionsFile;
+        }
+
+        conditionsFileHandler.close();
     }
-
-    for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
+    else
     {
-        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        for(unsigned i = 1; i < matchFeatureStats.size(); i++)
+        {
+            gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
+            cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
+            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
+            gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
+            cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
+        }
+        /*
+        for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
+        {
+            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
+            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
+            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        }
+        */
     }
 }
 
@@ -620,8 +750,23 @@ vector<string> DeriveCommandLineArguments(int argc, char** argv, unsigned requir
     return commandLineArgs;
 }
 
+void handler(int sig)
+{
+    void *array[10];
+    size_t size;
+
+    // get void*'s for all entries on the stack
+    size = backtrace(array, 10);
+
+    // print out all the frames to stderr
+    fprintf(stderr, "Error: signal %d:\n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
+
 int main(int argc, char* argv[])
 {
+    signal(SIGSEGV, handler);
     vector<string> commandLineArgs = DeriveCommandLineArguments(argc, argv, NUM_COMMAND_LINE_ARGUMENTS);
 
     string dataInputFileName = commandLineArgs[0];
@@ -638,12 +783,12 @@ int main(int argc, char* argv[])
     //adjust gMatches, gNonMatches to have roughly a magnitude of order less number of instances (in order to speed it up)
     gMatches.resize(9);
     gNonMatches.resize(480);
-    cerr << " ## WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
+    cerr << endl << "##### WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
 
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 1;
+    unsigned numTreeNodes = 2;
     PrintConditionInfo();
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))

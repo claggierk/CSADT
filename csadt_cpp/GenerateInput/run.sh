@@ -1,11 +1,11 @@
 #!/bin/bash
 
-rm -f prepare-input
+./clean.sh
+
+echo " ***** prepare-input ***********************************"
 
 g++ *.h *.cpp -o prepare-input -I /usr/local/include -L /usr/local/lib -l boost_thread -l boost_system
-
 compiled_status=$?
-
 if [ $compiled_status -eq 0 ]
 then
     echo "Compilation success!"
@@ -22,3 +22,6 @@ then
 else
     echo "failed compilation"
 fi
+
+echo " *******************************************************"
+echo ""

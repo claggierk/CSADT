@@ -75,7 +75,7 @@ void PopulatePeople(const string& fileName)
 	if(recordsFileHandler.is_open())
     {
         string personStr = "";
-        getline(recordsFileHandler, personStr); // dont want to store the FIRST one...
+        getline(recordsFileHandler, personStr); // dont want to store the FIRST one... as it is the header!
         unsigned personIndex = 0;
         while(!recordsFileHandler.eof())
         {

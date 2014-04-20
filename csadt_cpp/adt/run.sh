@@ -1,11 +1,11 @@
 #!/bin/bash
 
-rm -f adt
+./clean.sh
 
-g++ *.h *.cpp -o adt
+echo " ***** adt *********************************************"
 
+g++ -rdynamic *.h *.cpp -o adt
 compiled_status=$?
-
 if [ $compiled_status -eq 0 ]
 then
     echo "Compilation success!"
@@ -17,3 +17,6 @@ then
 else
     echo "failed compilation"
 fi
+
+echo " *******************************************************"
+echo ""

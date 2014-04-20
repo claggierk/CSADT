@@ -52,4 +52,23 @@ private:
 
 ostream& operator<<(ostream& out, const Condition& i);
 
+enum ComparisonIndices
+{
+	eLessThan = 0,
+	eGreatherThan,
+	eEqualTo,
+	eLessThanOrEqual,
+	eGreaterThanOrEqual,
+	eNumValidComparisons
+};
+
+static string sValidComparisons[eNumValidComparisons] =
+{
+	"<",
+	">",
+	"==",
+	"<=",
+	">="
+};
+
 #endif
