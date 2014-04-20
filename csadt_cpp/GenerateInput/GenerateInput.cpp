@@ -45,13 +45,6 @@ Person CreatePerson(string personRecord, unsigned index)
     unsigned first = 0;
 	unsigned found = unsigned(string::npos);
 
-	found = personRecord.find("|", first);
-    if(found != std::string::npos) // found a '|'
-    {
-        idStr = personRecord.substr(first, found-first);
-        id = atoi(idStr.c_str());
-        first = found + 1;
-    }
     do
 	{
 		found = personRecord.find("|", first);
@@ -66,6 +59,9 @@ Person CreatePerson(string personRecord, unsigned index)
 			personInfo.push_back(personRecord.substr(first, personRecord.size()-1));
 		}
 	} while(found != unsigned(string::npos));
+
+    idStr = personRecord.substr(first, found-first);
+    id = atoi(personInfo.at(personInfo.size()-1).c_str());
 
 	Person person(personInfo, index, id);
     return person;
@@ -274,6 +270,8 @@ int main(int argc, char** argv)
     cerr << gPeople.at(2) << endl;
     cerr << gPeopleDifferences.at(0).at(0) << endl;
     cerr << gPeopleDifferences.at(0).at(1) << endl;
+    cerr << gPeopleDifferences.at(0).at(2) << endl;
+    cerr << gPeopleDifferences.at(0).at(3) << endl;
     
     OutputPeopleDifferences(outputFileName);
     

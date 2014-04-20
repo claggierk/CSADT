@@ -1,3 +1,5 @@
+eID,eNameTitle,eFirstName,eMiddleName,eLastName,eNameSuffix,eAge,eDOB,ePhone,eStreet,eApt,eCity,eCounty,eState,eZIP,eZIP4,eLat,eLong,eRelatives,eRecordDate,eYearMined,eDuplicateID
+
 BEFORE
 eID|eFullName|eFirstName|eLastName|eMiddleName|eAge|eFullAddress|eStreetAddress|eApt|eCity|eState|eZipcode|ePhone|eDate|eDOB|eAge|eSource|eRelatives|eScore|eLabel|eAreaCode|eExchange|eSubscriber
 

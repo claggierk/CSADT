@@ -1,10 +1,10 @@
-#include <iostream>
-
 #include "PersonDiff.h"
+#include "Utils.h"
 
 PersonDiff::PersonDiff()
 {}
 
+// copy constructor
 PersonDiff::PersonDiff(const PersonDiff & p)
 {
     for(unsigned i = 0; i < p.differences.size(); i++)
@@ -22,6 +22,7 @@ PersonDiff::PersonDiff(const PersonDiff & p)
     weight = p.getWeight();
 }
 
+// compute the difference of two 'Person's
 PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 {
 	setDifferences(p1, p2);
@@ -112,12 +113,6 @@ void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 {
     for(unsigned i = 0; i < eSizePersonAttributes; i++)
 	{
-        /*
-        string s1 = p1.getAttributes().at(i);
-        string s2 = p2.getAttributes().at(i);
-        unsigned levenshteinDistance = ComputeLevenshteinDistance(s1, s2);
-        differences.push_back(levenshteinDistance);
-		*/
         differences.push_back(ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i)));
 	}
 }
@@ -137,29 +132,10 @@ ostream& operator<<(ostream& out, const PersonDiff& p)
 	out << endl << "Requested PersonDiff: people[" << p.getIndex1() << "] cmp people[" << p.getIndex2() << "] (" << matchStr << ")";
 	if(p.getDifferences().size() == eSizePersonAttributes)
     {
-        //out << endl << "   " << stringify(eID) << ": " << p.getDifferences().at(eID);
-        out << endl << "   " << stringify(eFullName) << ": " << p.getDifferences().at(eFullName);
-        out << endl << "   " << stringify(eFirstName) << ": " << p.getDifferences().at(eFirstName);
-        out << endl << "   " << stringify(eLastName) << ": " << p.getDifferences().at(eLastName);
-        out << endl << "   " << stringify(eMiddleName) << ": " << p.getDifferences().at(eMiddleName);
-        out << endl << "   " << stringify(eAge) << ": " << p.getDifferences().at(eAge);
-        out << endl << "   " << stringify(eFullAddress) << ": " << p.getDifferences().at(eFullAddress);
-        out << endl << "   " << stringify(eStreetAddress) << ": " << p.getDifferences().at(eStreetAddress);
-        out << endl << "   " << stringify(eApt) << ": " << p.getDifferences().at(eApt);
-        out << endl << "   " << stringify(eCity) << ": " << p.getDifferences().at(eCity);
-        out << endl << "   " << stringify(eState) << ": " << p.getDifferences().at(eState);
-        out << endl << "   " << stringify(eZipCode) << ": " << p.getDifferences().at(eZipCode);
-        out << endl << "   " << stringify(ePhone) << ": " << p.getDifferences().at(ePhone);
-        out << endl << "   " << stringify(eDate) << ": " << p.getDifferences().at(eDate);
-        out << endl << "   " << stringify(eDob) << ": " << p.getDifferences().at(eDob);
-        out << endl << "   " << stringify(eAge1) << ": " << p.getDifferences().at(eAge1);
-        out << endl << "   " << stringify(eSource) << ": " << p.getDifferences().at(eSource);
-        out << endl << "   " << stringify(eRelatives) << ": " << p.getDifferences().at(eRelatives);
-        out << endl << "   " << stringify(eScore) << ": " << p.getDifferences().at(eScore);
-        out << endl << "   " << stringify(eLabel) << ": " << p.getDifferences().at(eLabel);
-        out << endl << "   " << stringify(eAreaCode) << ": " << p.getDifferences().at(eAreaCode);
-        out << endl << "   " << stringify(eExchange) << ": " << p.getDifferences().at(eExchange);
-        out << endl << "   " << stringify(eSubscriber) << ": " << p.getDifferences().at(eSubscriber);
+        for(unsigned differenceIndex = 0; differenceIndex < p.getDifferences().size(); differenceIndex++)
+        {
+            out << endl << "   " << sPersonConditions[differenceIndex] << ": " << p.getDifferences().at(differenceIndex);
+        }
         out << endl << "   " << "Weight: " << p.getWeight();
         out << endl;
     }
@@ -212,9 +188,9 @@ unsigned ComputeLevenshteinDistance(string s, string t)
             else
             {
                 d.at(i).at(j) = min(
-                    d.at(i-1).at(j) + 1,  // a deletion
-                    min(d.at(i).at(j-1) + 1,  // an insertion
-                    d.at(i-1).at(j-1) + 1) // a substitution
+                    d.at(i-1).at(j) + 1,        // a deletion
+                    min(d.at(i).at(j-1) + 1,    // an insertion
+                    d.at(i-1).at(j-1) + 1)      // a substitution
                 );
             }
         }

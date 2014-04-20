@@ -9,11 +9,16 @@ compiled_status=$?
 if [ $compiled_status -eq 0 ]
 then
     echo "Compilation success!"
-    command="./prepare-input UniqueCombinations.txt 100LinesPreProcessed.txt ADT_ready.txt"
+    command="./prepare-input UniqueCombinations.txt ../../csadt_python/Training.txt ADT_ready.txt"
     echo $command
     $command
     command_status=$?
     echo "Command status: $command_status"
+    if [ $command_status -eq 0 ]
+    then
+    	cp ADT_ready.txt ../adt/
+    	echo "Copied ADT_ready.txt into ../adt/"
+	fi
 else
     echo "failed compilation"
 fi
