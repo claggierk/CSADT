@@ -1,6 +1,7 @@
 #include "Condition.h"
 #include "Instance.h"
 #include "Person.h"
+#include "Utils.h"
 
 enum comparisonIndices
 {
