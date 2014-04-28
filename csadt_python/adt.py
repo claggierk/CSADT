@@ -160,6 +160,7 @@ def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
             count += 1
 
 def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
+    print "Number of training record pairs: ", len(trainingDataSet)
     smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     if (costMinus * weightMinus('True') + smoothFactor) == 0:
         problem = "##### ERROR: denominator is 0 and anything / 0 is not possible..."
@@ -184,6 +185,10 @@ def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
     
     initialAlpha2 = 0
     initialSplitterAndAssociatedPNodes = sNodeAndItsAssociatedPNodes('True', 'True', initialAlpha1, initialAlpha2)
+
+    print "initialAlpha1    : %s" % initialAlpha1
+    print "initialAlpha2    : %s" % initialAlpha2
+
     latestRule = [initialSplitterAndAssociatedPNodes]
     preConditionsUsed = {'True'}
     dictOfNodeAndItsConditions = {0: ['True']}
@@ -259,7 +264,7 @@ def classifier(parmTrainingDataSet, parmAllConditions, graph_identifier):
     featuresInDataSet = getFeatures(trainingDataSet)
     costPlus = 2
     costMinus = 1
-    numTreeNodes = 15 #numberOfIterativeRounds
+    numTreeNodes = 1 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
     rule = adt(costPlus, costMinus, numTreeNodes, graph_identifier)
     

@@ -1,0 +1,3 @@
+1. The CSV file needs to have the last column be eDuplicateID
+2. The FIRST element in a row in ADT_ready.txt is the classification (1 = match, 0 = non match)
+3. There needs to be a column in the CSV titled eTrue containing all 1s (1s for every record)

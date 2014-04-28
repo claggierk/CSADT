@@ -29,7 +29,7 @@ def PopulateConditions(conditions_file):
 	for line in conditions_file_handler:
 		line = line.strip()
 		conditions_list.append(line)
-        conditions_file_handler.close()  
+	conditions_file_handler.close()
 	print "##### conditions_list: %s" % conditions_list
 	return conditions_list
 
@@ -75,7 +75,7 @@ def main():
 					tempDictionary['class'] = 'SAME'
 				else:
 					tempDictionary['class'] = 'DIFFERENT'
-				for key in keys[1:]:					
+				for key in keys:
 					levenshtein_distance = levenshtein.Compute_Levenshtein_Distance(records[combination_1][key], records[combination_2][key])
 					tempDictionary[key] = levenshtein_distance
 				
@@ -90,23 +90,6 @@ def main():
 		print " ********** Running CSADT on %s combination pairs..." % len(trainingDataSet)
 		#keys.remove("ID") # need to remove the key "ID" since it has no bearing anymore (and is not a key in the trainingDataSet dictionary)
 		adt_infrastructure.OutputRecordsToFile(trainingDataSet, output_file, combination_pairs, keys)
-		'''
-		allConditions = PopulateConditions(conditions_file)
-		print("allConditions: %s" % allConditions)
-		
-		#Produce trained tree and results
-		adtClassifier = adt.classifier(trainingDataSet, allConditions, "people")
-		print("adtClassifier: %s" % adtClassifier)
-		
-		adt_infrastructure.WriteTreeToFile(adtClassifier, output_file)
-		outputDatabase = adt.evaluate(trainingDataSet, adtClassifier)
-		
-		#adtClassifier = adt.classifier(trainingDataSet, allConditions)
-		#results = run10FoldCrossValidation(output_file, adtClassifier)
-		#print("accuracy: " + str(results))
-		stop_drawing = open("node_end.txt", 'w')
-		stop_drawing.close()
-		'''
 	else:
 		Usage()
 		return

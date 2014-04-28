@@ -55,11 +55,11 @@ def BuildComparisonPairsDataStructure(input_file):
 def OutputRecordsToFile(records, tabulated_file, record_pairs, features):
 	file_handler = open(tabulated_file, 'w')
 	file_handler.write("CombinationID|classification|")
-	file_handler.write("%s\n" % "|".join(features[1:]))
-	#import pdb; pdb.set_trace()
+	file_handler.write("%s\n" % "|".join(features))
+	
 	for record in record_pairs:
 		levenshtein_distances = []
-		for feature in features[1:]:
+		for feature in features:
 			levenshtein_distances.append(str(records[record][feature]))
 		file_handler.write("%s|%s|" % (record, records[record]["class"]))
 		file_handler.write("%s\n" % "|".join(levenshtein_distances))

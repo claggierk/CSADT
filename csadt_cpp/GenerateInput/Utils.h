@@ -30,8 +30,9 @@ enum PersonIndex
 	eRelatives,
 	eRecordDate,
 	eYearMined,
+	eTrue,
 	eDuplicateID,
-	eSizePersonAttributes // !
+	eSizePersonAttributes, // !
 };
 
 static string sPersonConditions[] = {
@@ -56,7 +57,8 @@ static string sPersonConditions[] = {
 	stringify(eRelatives),
 	stringify(eRecordDate),
 	stringify(eYearMined),
-	stringify(eDuplicateID)
+	stringify(eTrue),
+	stringify(eDuplicateID),
 };
 
 #endif

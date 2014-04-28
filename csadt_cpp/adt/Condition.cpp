@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "Condition.h"
 #include "Instance.h"
 #include "Person.h"
@@ -17,9 +19,11 @@ Condition::Condition(const Condition& p)
 
 Condition::Condition(const bool& myTrueFlag)
 {
-	value = 0;
+	// this is only used to make a 'TRUE' condition
+	// initialize to 1!
+	value = 1;
 	comparison = "==";
-	index = 0;
+	index = eTrue;
 	notFlag = false;
 	trueFlag = myTrueFlag;
 }
@@ -163,9 +167,8 @@ ostream& operator<<(ostream& out, const Condition& i)
 	i.getValue();
 	cerr << "checked.";*/
 	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
-	if (i.getTrueFlag()) {
-		out << "(True)";
-	} else if (i.getNotFlag()) {
+	if (i.getNotFlag()) {
+
 		out << "(not (" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << "))";
 	} else {
 		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";

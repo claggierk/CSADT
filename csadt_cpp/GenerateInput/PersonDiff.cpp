@@ -113,7 +113,12 @@ void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 {
     for(unsigned i = 0; i < eSizePersonAttributes; i++)
 	{
-        differences.push_back(ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i)));
+        unsigned difference = ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i));
+        if(i == eTrue)
+        {
+            difference = 1;
+        }
+        differences.push_back(difference);
 	}
 }
 

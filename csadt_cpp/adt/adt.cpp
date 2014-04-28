@@ -59,6 +59,7 @@ void PopulateInstances(string fileName)
         unsigned currentIndex = 0;
         do
         {
+            // the unique identifier of records must be the FIRST cell in a row!
             istringstream iss(line);
             
             bool match = false;
@@ -71,6 +72,7 @@ void PopulateInstances(string fileName)
         	}
         	else
         	{
+                // a match is represented by a 1 (we set it to 1)
         		if(tempStr == "1")
         		{
         			match = true;
@@ -169,13 +171,10 @@ string DetermineUniqueConditionSymbols()
 
 Condition ExtractCondition(const string& condition, const string& uniqueConditionSymbols)
 {
-    cerr << endl << " !!!!! Condition: " << condition;
-
-
     size_t found = condition.find_first_of(uniqueConditionSymbols);
     if(found == string::npos)
     {
-        cerr << endl << "##### ERROR: Could not create condition for " << condition;
+        cerr << endl << "##### ERROR: Could not create condition for the following: " << condition;
         return Condition(0, "?", 0); 
     }
 
@@ -239,6 +238,55 @@ Condition ExtractCondition(const string& condition, const string& uniqueConditio
 
 void GenerateConditions()
 {
+    for(unsigned i = 0; i < eSizePersonAttributes; i++)
+    {
+        vector<Condition> dummy;
+        gConditions.push_back(dummy);
+    }
+
+    bool populateConditionsFromFile = true;
+    if(populateConditionsFromFile)
+    {
+        ifstream conditionsFileHandler;
+        string conditionsFile = "../../csadt_python/conditions.txt";
+        conditionsFileHandler.open(conditionsFile.c_str());
+
+        vector<string> conditions;
+        
+        if(conditionsFileHandler.is_open())
+        {
+            string condition = "";
+            string uniqueConditionSymbols = DetermineUniqueConditionSymbols();
+            cerr << endl << "Possible comparison symbols:" << uniqueConditionSymbols;
+            unsigned lineNumber = 0;
+            while(!conditionsFileHandler.eof())
+            {
+                getline(conditionsFileHandler, condition);
+                lineNumber++;
+                if(condition == "")
+                {
+                    cerr << endl << "skipping blank line..." << endl;
+                    continue;
+                }
+                Condition extractedCondition = ExtractCondition(condition, uniqueConditionSymbols);
+                if(extractedCondition.getComparison() == "?")
+                {
+                    cerr << endl << "problem extracting condition from line:" << condition;
+                    continue;
+                }
+                cerr << endl << "Adding the following condition: " << extractedCondition;
+                gConditions.at(extractedCondition.getIndex()).push_back(extractedCondition);
+            }
+        }
+        else
+        {
+            cerr << endl << "##### ERROR: failed to open " << conditionsFile;
+        }
+
+        conditionsFileHandler.close();
+    }
+
+    /*
     vector<FeatureStats> matchFeatureStats;
     PopulateFeatureStatus(gMatches, matchFeatureStats);
     //cerr << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
@@ -263,58 +311,22 @@ void GenerateConditions()
         cerr << "##### ERROR: number of attributes disagreement" << endl;
         exit_now();
     }
-
-    bool populateConditionsFromFile = true;
-    if(populateConditionsFromFile)
+    
+    for(unsigned i = 1; i < matchFeatureStats.size(); i++)
     {
-        ifstream conditionsFileHandler;
-        string conditionsFile = "../../csadt_python/conditions.txt";
-        conditionsFileHandler.open(conditionsFile.c_str());
-
-        vector<string> conditions;
-        
-        if(conditionsFileHandler.is_open())
-        {
-            string condition = "";
-            string uniqueConditionSymbols = DetermineUniqueConditionSymbols();
-            while(!conditionsFileHandler.eof())
-            {
-                getline(conditionsFileHandler, condition);
-                Condition extractedCondition = ExtractCondition(condition, uniqueConditionSymbols);
-                if(extractedCondition.getValue() == '?')
-                {
-                    continue;
-                }
-                cerr << endl << "Adding the following condition: " << extractedCondition;
-                gConditions.at(extractedCondition.getIndex()).push_back(extractedCondition);
-            }
-        }
-        else
-        {
-            cerr << endl << "##### ERROR: failed to open " << conditionsFile;
-        }
-
-        conditionsFileHandler.close();
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
+        cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
     }
-    else
+    for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
     {
-        for(unsigned i = 1; i < matchFeatureStats.size(); i++)
-        {
-            gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
-            cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
-            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
-            gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
-            cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
-        }
-        /*
-        for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
-        {
-            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
-            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
-            //gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
-        }
-        */
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
+        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
     }
+    */
 }
 
 double SetInitialWeights()
@@ -338,7 +350,7 @@ bool checkIfInstanceSatisfiesCondition(Instance myInstance, vector<Condition> co
     //assume logical operator between conditions is an "and", because "or" never used in this function
     bool satisfy = false;
     for (unsigned i = 0; i < conditionVector.size(); i++) {
-        if (conditionVector.at(i).evaluate(myInstance)) { 
+        if (conditionVector.at(i).evaluate(myInstance)) {
             satisfy = true;          
         } else {
             satisfy = false;
@@ -512,10 +524,10 @@ void PrintConditionInfo()
     for(unsigned j = 0; j < gConditions.size(); j++)
     {
         numConditions = numConditions + gConditions.at(j).size();
-        cerr <<  "*****";
+        cerr <<  " Conditions relating to " << sPersonConditions[j] << ":" << endl;
         for(unsigned k = 0; k < gConditions.at(j).size(); k++)
         {
-            cerr << gConditions.at(j).at(k) << " ";
+            cerr << "   " << gConditions.at(j).at(k) << " ";
         }
         cerr << endl;
     }
@@ -658,7 +670,7 @@ void updateWeights(float costPlus, float costMinus) {
         float yi = -1.0;
         float cost = costPlus * 0.0 + costMinus * 1.0;
         gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * cost * exp(-yi*score));
-    }    
+    }
 }
 
 void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
@@ -692,6 +704,7 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     float alpha1 = 0.5 * log((costPlus * wPlus(tAsAVector, "and") + smoothFactor) / (costMinus * wMinus(tAsAVector, "and") + smoothFactor));
     float alpha2 = 0.0;
     cerr << "alpha1      : " << alpha1 << endl;
+    cerr << "alpha2      : " << alpha2 << endl;
 
     gRules.push_back(Rule(tAsAPrecondition, t, alpha1, alpha2));
     //cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
@@ -700,7 +713,6 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     for(unsigned i = 0; i < numTreeNodes; i++)
     {
         cerr << endl << "--New tree iteration--" << endl;
-
         smoothFactor = .5 * (calculateW(tAsAVector, "and")/(gMatches.size() + gNonMatches.size()));
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
@@ -779,17 +791,12 @@ int main(int argc, char* argv[])
     cerr << gNonMatches.at(0);
 
     GenerateConditions();
-
-    //adjust gMatches, gNonMatches to have roughly a magnitude of order less number of instances (in order to speed it up)
-    gMatches.resize(9);
-    gNonMatches.resize(480);
-    cerr << endl << "##### WARNING: The # of matches and nonmatches have been reduced." << endl << endl;
+    PrintConditionInfo();
 
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 2;
-    PrintConditionInfo();
+    unsigned numTreeNodes = 1;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS
@@ -805,6 +812,7 @@ int main(int argc, char* argv[])
         cerr << "\nRule " << i << ": " << endl;
         
         ostringstream oss;
+        // if the precondition has at least one condition
         if(gRules.at(i).getPrecondition().getConditions().size() > 0)
         {
             oss << gRules.at(i).getPrecondition().getConditions().at(0);
@@ -813,10 +821,11 @@ int main(int argc, char* argv[])
                 oss << "and" << gRules.at(i).getPrecondition().getConditions().at(j);
             }
         }
+        // if the precondition has zero conditions
         string preCondition = oss.str();
         if(preCondition == "")
         {
-            preCondition = "(True)";
+            preCondition = "(True WTF)";
         }
 
         ostringstream oss2;

@@ -61,6 +61,8 @@ Person CreatePerson(string personRecord, unsigned index)
 	} while(found != unsigned(string::npos));
 
     idStr = personRecord.substr(first, found-first);
+
+    // get the last one! THE UNIQUE IDENTIFIER IS ALWAYS AT THE END (last cell in a row)
     id = atoi(personInfo.at(personInfo.size()-1).c_str());
 
 	Person person(personInfo, index, id);

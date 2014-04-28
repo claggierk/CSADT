@@ -29,7 +29,7 @@ def PopulateConditions(conditions_file):
 	for line in conditions_file_handler:
 		line = line.strip()
 		conditions_list.append(line)
-        conditions_file_handler.close()  
+	conditions_file_handler.close()
 	print "##### conditions_list: %s" % conditions_list
 	return conditions_list
 
@@ -59,13 +59,6 @@ def main():
 		print("adtClassifier: %s" % adtClassifier)
 		
 		adt_infrastructure.WriteTreeToFile(adtClassifier, output_file)
-		outputDatabase = adt.evaluate(trainingComparisonPairs, adtClassifier)
-		
-		#adtClassifier = adt.classifier(trainingComparisonPairs, allConditions)
-		#results = run10FoldCrossValidation(output_file, adtClassifier)
-		#print("accuracy: " + str(results))
-		stop_drawing = open("node_end.txt", 'w')
-		stop_drawing.close()
 	else:
 		Usage()
 		return
