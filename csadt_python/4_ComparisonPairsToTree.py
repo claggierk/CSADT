@@ -55,7 +55,7 @@ def main():
 		print("allConditions: %s" % allConditions)
 		
 		#Produce trained tree and results
-		adtClassifier = adt.classifier(trainingComparisonPairs, allConditions, "people")
+		adtClassifier = adt.classifier(trainingComparisonPairs, allConditions)
 		print("adtClassifier: %s" % adtClassifier)
 		
 		adt_infrastructure.WriteTreeToFile(adtClassifier, output_file)

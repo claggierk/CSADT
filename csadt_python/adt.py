@@ -33,10 +33,11 @@ def getFeatures(dataSet):
 def getExamplesThatSatisfyCondition(condition, dataSet):
     examplesThatSatisfyCondition = []
     for example in dataSet.keys():
-        #create variables that are the features of the example
         for feature in featuresInDataSet:
-            vars()[feature] = dataSet[example][feature]
-        #evaluate condition on example
+            if dataSet[example][feature] == SAME or dataSet[example][feature] == DIFFERENT:
+                vars()[feature] = dataSet[example][feature]
+            else:
+                vars()[feature] = int(dataSet[example][feature])
         if eval(condition):
             examplesThatSatisfyCondition.append(example)
     return examplesThatSatisfyCondition
@@ -65,11 +66,13 @@ def weightPlus(condition):
     for example in examplesThatSatisfyCondition:
         if trainingDataSet[example]['classification'] == SAME:
             positivelyLabeledExamples.append(example)
+    #???print " ++++++++++ positivelyLabeledExamples: ", positivelyLabeledExamples
     #add up the weights of all positively labeled examples
-    weightPlus = 0
+    weightPlusSum = 0
     for example in positivelyLabeledExamples:
-        weightPlus += weights[example]
-    return weightPlus
+        weightPlusSum += weights[example]
+    print " ***** weightPlusSum: %s (from %s examples)" % (weightPlusSum, len(positivelyLabeledExamples))
+    return weightPlusSum
 
 def weightMinus(condition):
     #first: get list of examples that satisfy the condition
@@ -80,10 +83,11 @@ def weightMinus(condition):
         if trainingDataSet[example]['classification'] == DIFFERENT:
             negativelyLabeledExamples.append(example)
     #add up the weights of all negatively labeled examples
-    weightMinus = 0
+    weightMinusSum = 0
     for example in negativelyLabeledExamples:
-        weightMinus += weights[example]
-    return weightMinus
+        weightMinusSum += weights[example]
+    print " ***** weightMinusSum: %s (from %s examples)" % (str(weightMinusSum), len(negativelyLabeledExamples))
+    return weightMinusSum
 
 def weight(condition):
     return weightPlus(condition) + weightMinus(condition)
@@ -106,6 +110,7 @@ def argMin(preConditionsUsed):
     
     for d1 in preConditionsUsed:
         for d2 in allConditions:
+            #???print " ++++++++++ bestD1: %s --- bestD2: %s" % (bestD1, bestD2)
             if set_min:
                 # much better guarantee of an initialization
                 lowestZValue = calculateZ(d1, d2)
@@ -114,6 +119,7 @@ def argMin(preConditionsUsed):
                 set_min = False
             else:
                 z = calculateZ(d1, d2)
+                #???print " +++++++++++++++ d1: %s --- d2: %s --- z: %s" % (d1, d2, z)
                 if z < lowestZValue:
                     lowestZValue = z
                     bestD1 = d1
@@ -128,7 +134,7 @@ def argMin(preConditionsUsed):
     if type(bestD2) is NoneType:
         print "##### ERROR: bestD2 is NoneType!"
     
-    return bestD1, bestD2 
+    return bestD1, bestD2
 
 def calculateI(condition):
     if condition:
@@ -159,7 +165,7 @@ def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
                     return key, "no"
             count += 1
 
-def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
+def adt(costPlus, costMinus, numTreeNodes):
     print "Number of training record pairs: ", len(trainingDataSet)
     smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     if (costMinus * weightMinus('True') + smoothFactor) == 0:
@@ -189,7 +195,7 @@ def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
     print "initialAlpha1    : %s" % initialAlpha1
     print "initialAlpha2    : %s" % initialAlpha2
 
-    latestRule = [initialSplitterAndAssociatedPNodes]
+    rules = [initialSplitterAndAssociatedPNodes]
     preConditionsUsed = {'True'}
     dictOfNodeAndItsConditions = {0: ['True']}
     
@@ -197,13 +203,25 @@ def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
     tree_nodes.append(str(initialAlpha1))
     
     for i in range(numTreeNodes):
-        smoothFactor = .5*(weight('True')/len(trainingDataSet))
+        #???print " ***** There are %s available conditions: %s" % (len(allConditions), allConditions)
+        #???print " ***** %s pre-conditions used: %s" % (len(preConditionsUsed), preConditionsUsed)
+        print " ************************************************************ "
+        print "Weight(True): ", weight('True')
+        smoothFactor = .5 * (weight('True') / len(trainingDataSet))
+        print "len(trainingDataSet): ", len(trainingDataSet)
         d1, d2 = argMin(preConditionsUsed)
         #Set alpha1 and alpha2 which are the scores of positive and negative classification on all training examples that meet the d1, d2 conditions
+        print "smoothFactor: ", smoothFactor
         alpha1 = 0.5 * math.log( (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)  )
+        print "alpha1 numerator  : ", (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor)
+        print "alpha1 denominator: ", (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)
+        print "alpha1    : %s" % alpha1
         alpha2 =  0.5 * math.log( (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)  )
-        #Set latestRule = latestRule + new sNodeAndItsAssociatedPNodes with d1 is precondition, d2 is condition, scores alpha1 for yes and alpha2 for no
-        latestRule.append(sNodeAndItsAssociatedPNodes(d1, d2, alpha1, alpha2))
+        print "alpha2 numerator  : ", (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor)
+        print "alpha2 denominator: ", (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)
+        print "alpha2    : %s" % alpha2
+        #Set rules = rules + new sNodeAndItsAssociatedPNodes with d1 is precondition, d2 is condition, scores alpha1 for yes and alpha2 for no
+        rules.append(sNodeAndItsAssociatedPNodes(d1, d2, alpha1, alpha2))
         nodeNum, yesOrNo = getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1)
         
         '''
@@ -212,8 +230,10 @@ def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
         node 3 (cond: Age == 0 (y: 1.55 n: -4.0)) is attached to the no of node 2
         node 4 (cond: FirstName == 0 (y: 4.51 n: -4.3)) is attached to the yes of node 3
         '''
+        
         node_info = "node " + str(i+1) + " (cond:" + str(d2) + '(y: ' + str(alpha1)[:4] + ' n: ' + str(alpha2)[:4] + ")) is attached to the " + yesOrNo + " of node " + str(nodeNum)
         print "node_info:", node_info
+        
         #print "condition selected:", str(d2)
         # remove the most recently selected condition ... which is str(d2) ... from allConditions
         allConditions.remove(str(d2))
@@ -233,11 +253,9 @@ def adt(costPlus, costMinus, numTreeNodes, graph_identifier):
         preConditionsUsed.add( andConditions(d1, notCondition(d2)) )
         dictOfNodeAndItsConditions[i+1] = [andConditions(d1, d2), andConditions(d1, notCondition(d2))]
         #update all weights
-        weights = updateWeights(latestRule, costPlus, costMinus)
+        weights = updateWeights(rules, costPlus, costMinus)
     
-    #IllustrateTree.IllustrateTree(tree_nodes, graph_identifier)
-    
-    return latestRule
+    return rules
 
 def evaluate(parmTestDataSet, rule):
     global testDataSet, featuresInDataSet
@@ -254,7 +272,7 @@ def evaluate(parmTestDataSet, rule):
             outputDatabase[exampleIdentifier] = {'classification':DIFFERENT, 'score':score}
     return outputDatabase
 
-def classifier(parmTrainingDataSet, parmAllConditions, graph_identifier):
+def classifier(parmTrainingDataSet, parmAllConditions):
     global trainingDataSet, allConditions, weights, featuresInDataSet
     trainingDataSet = parmTrainingDataSet
     allConditions = deepcopy(parmAllConditions)
@@ -262,10 +280,10 @@ def classifier(parmTrainingDataSet, parmAllConditions, graph_identifier):
     for example in trainingDataSet.keys():
         weights[example] = 1.0/len(trainingDataSet)
     featuresInDataSet = getFeatures(trainingDataSet)
-    costPlus = 2
-    costMinus = 1
-    numTreeNodes = 1 #numberOfIterativeRounds
+    costPlus = 2.0
+    costMinus = 1.0
+    numTreeNodes = 3 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
-    rule = adt(costPlus, costMinus, numTreeNodes, graph_identifier)
+    rules = adt(costPlus, costMinus, numTreeNodes)
     
-    return rule
+    return rules

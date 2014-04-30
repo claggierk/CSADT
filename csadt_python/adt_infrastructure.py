@@ -69,6 +69,8 @@ def WriteTreeToFile(adtClassifer, adtree_file):
 	file_handler = open(adtree_file, 'w')
 	
 	file_handler.write("%s %s %s %s" % (adtClassifer[0].preCondition, adtClassifer[0].condition, adtClassifer[0].alpha1, adtClassifer[0].alpha2))
+	print "TREE"
+	print "   %s %s %s %s" % (adtClassifer[0].preCondition, adtClassifer[0].condition, adtClassifer[0].alpha1, adtClassifer[0].alpha2)
 	for node in adtClassifer[1:]:
 		preCondition = node.preCondition
 		preCondition = ''.join(preCondition.split())
@@ -80,4 +82,5 @@ def WriteTreeToFile(adtClassifer, adtree_file):
 		alpha2 = node.alpha2
 		
 		file_handler.write("\n%s %s %s %s" % (preCondition, condition, alpha1, alpha2))
+		print "   %s %s %s %s" % (preCondition, condition, alpha1, alpha2)
 	file_handler.close()

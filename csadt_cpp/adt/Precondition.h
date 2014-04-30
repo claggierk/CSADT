@@ -12,19 +12,14 @@ class Precondition
 {
 public:
 	Precondition();
-
 	Precondition(const vector<Condition>& vc);
-
 	Precondition(const Precondition& p);
 
-	vector<Condition> getConditions() const;
-
-	void addCondition(const Condition& c);
-
-	void clear();
+	vector<Condition> GetConditions() const;
+	void AddCondition(const Condition& c);
+	void Clear();
 
 	Precondition& operator=(const Precondition& c);
-
 	bool operator==(const Precondition& c);
 
 private:
