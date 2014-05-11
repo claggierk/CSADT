@@ -174,5 +174,4 @@ ostream& operator<<(ostream& out, const Condition& i)
 		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
 	}
 	return out;
-
 }

@@ -387,7 +387,8 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
             }
             else if (logicalOperator == "or")
             {
-                //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:  if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
+                //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:
+                //    if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
                 if (conditionVector.at(j).evaluate(gNonMatches.at(i)))
                 { 
                     satisfy = true; 
@@ -461,7 +462,8 @@ float wMinus(vector<Condition> conditionVector, string logicalOperator)
     {
         sumOfWeights += instancesThatSatisfy.at(i).getWeight();
     }
-    cerr << endl << " ***** wMinus: sumOfWeights: " << sumOfWeights << " (from " << instancesThatSatisfy.size() << " examples)";
+    // FIVE
+    // cerr << " ***** Condition: " << conditionVector.back() << " weightMinusSum: " << sumOfWeights << " (from " << instancesThatSatisfy.size() << " examples)" << endl;
     return sumOfWeights;
 }
 
@@ -473,7 +475,8 @@ float wPlus(vector<Condition> conditionVector, string logicalOperator)
     {
         sumOfWeights += instancesThatSatisfy.at(i).getWeight();
     }
-    cerr << endl << " ***** wPlus: sumOfWeights: " << sumOfWeights << " (from " << instancesThatSatisfy.size() << " examples)";
+    // FIVE
+    // cerr << " ***** Condition: " << conditionVector.back() << " weightPlusSum: " << sumOfWeights << " (from " << instancesThatSatisfy.size() << " examples)" << endl;
     return sumOfWeights;
 }
 
@@ -543,7 +546,6 @@ void PrintGConditions()
     cerr << endl <<  " ***** Available Conditions:";
     for(unsigned i = 0; i < gConditions.size(); i++)
     {
-        cerr << endl << " ******** Concerning " << sPersonConditions[i] << ":";
         for(unsigned j = 0; j < gConditions.at(i).size(); j++)
         {
             cerr << endl << " *********** " << gConditions.at(i).at(j);
@@ -574,6 +576,21 @@ void computeArgMin()
         {
             for(unsigned k = 0; k < gConditions.at(j).size(); k++)
             {
+                bool conditionAlreadyUsed = false;
+                for(unsigned x = 0; x < gConditionsAlreadySelected.size(); x++)
+                {
+                    if(gConditionsAlreadySelected.at(x) == gConditions.at(j).at(k))
+                    {
+                        cerr << " ENCOUNTERED ALIENS! " << gConditionsAlreadySelected.at(x) << endl;
+                        conditionAlreadyUsed = true;
+                        break;
+                    }
+                }
+                if(conditionAlreadyUsed)
+                {
+                    continue;
+                }
+
                 if(setMin)
                 {
                     lowestZValue = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
@@ -606,6 +623,7 @@ void computeArgMin()
             }
         }
     }
+    cerr <<  " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
     gPreconditionChosen = bestP;
     gConditionChosen = bestC;
 
@@ -625,13 +643,16 @@ void computeArgMin()
     // erase the 6th element
     //myvector.erase (myvector.begin()+5);
 
-    gConditions.at(bestCIndex1).erase( gConditions.at(bestCIndex1).begin() + bestCIndex2);
+    /*gConditions.at(bestCIndex1).erase( gConditions.at(bestCIndex1).begin() + bestCIndex2);
     if(gConditions.at(bestCIndex1).size() == 0)
     {
+        //gConditions.at(bestCIndex1).clear();
         gConditions.erase(gConditions.begin() + bestCIndex1);
+        cerr << "##### WARNING: Removing condition vector concerning " << sPersonConditions[bestCIndex1] << endl;
     }
     cerr << endl << endl;
     string foo;
+    PrintGConditions();*/
     //cin >> foo;
     //cerr << "Selected " << gConditionChosen << "... " << endl;
     //cerr << endl << endl;
@@ -672,8 +693,11 @@ void createAndUpdategPAndCAndgPandNotC() {
 float getScoreOfInstance(Instance myInstance)
 {
     float score = 0.0;
+    //cerr << "Instance:" << myInstance << endl;
     for (unsigned i = 0; i < gRules.size(); i++)
     {
+        //cerr << "Rule: " << gRules.at(i) << endl;
+        //cerr << "   before score: " << score << endl;
         vector<Condition> p = gRules.at(i).getPrecondition().GetConditions();
         if (checkIfInstanceSatisfiesCondition(myInstance, p))
         {
@@ -694,22 +718,42 @@ float getScoreOfInstance(Instance myInstance)
             score += 0;
         }
     }
+    //cerr << "    after score: " << score << endl;
     return score;
 }
 
+void DisplayWeights()
+{
+    cerr << "Match weights: " << endl;
+    for (unsigned i = 0; i < gMatches.size(); i++) {
+        cerr << gMatches.at(i).getWeight() << " ";
+    }
+    cerr << endl;
+    cerr << "Non-match weights: " << endl;
+    for (unsigned i = 0; i < gNonMatches.size(); i++) {
+        cerr << gNonMatches.at(i).getWeight() << " ";
+    }
+    cerr << endl;
+}
+
 void updateWeights(float costPlus, float costMinus) {
+    //cerr << "Before" << endl;
+    //DisplayWeights();
     for (unsigned i = 0; i < gMatches.size(); i++) {
         float score = getScoreOfInstance(gMatches.at(i));
+        //cerr << "score: " << score << endl;
         float yi = 1.0;
         float cost = costPlus * 1.0 + costMinus * 0.0;
-        gMatches.at(i).setWeight(gMatches.at(i).getWeight()*exp(-yi*score));
+        gMatches.at(i).setWeight(gMatches.at(i).getWeight() * cost * exp(-yi * score));
     }
     for (unsigned i = 0; i < gNonMatches.size(); i++) {
         float score = getScoreOfInstance(gNonMatches.at(i));
         float yi = -1.0;
         float cost = costPlus * 0.0 + costMinus * 1.0;
-        gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * cost * exp(-yi*score));
+        gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * cost * exp(-yi * score));
     }
+    //cerr << "After" << endl;
+    //DisplayWeights();
 }
 
 void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
@@ -750,23 +794,25 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     //create remaining rules
     for(unsigned i = 0; i < numTreeNodes; i++)
     {
-        cerr << endl << " ---------- New tree iteration ----------" << endl;
+        cerr << " ------------------------------------------------ " << endl;
+        cerr << " ----- Iteration: " << i << " ------------------- " << endl;
+        cerr << " ------------------------------------------------ " << endl;
         // smoothFactor = .5*(weight('True')/len(trainingDataSet))
         smoothFactor = .5 * (calculateW(tAsAVector, "and") / (gMatches.size() + gNonMatches.size()));
 
-        cerr << "calculateW(tAsAVector, and)       : " << calculateW(tAsAVector, "and") << endl;
+        //cerr << "calculateW(tAsAVector, and)       : " << calculateW(tAsAVector, "and") << endl;
         cerr << "gMatches.size() + gNonMatches.size(): " << gMatches.size() + gNonMatches.size() << endl;
         cerr << "smoothFactor   : " << smoothFactor << endl;
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
         alpha1 = 0.5 * log( (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) / (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) );
-        cerr << "alpha1 numerator   : " << (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) << endl;
-        cerr << "alpha1 denominator : " << (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) << endl;
+        //cerr << "alpha1 numerator   : " << (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) << endl;
+        //cerr << "alpha1 denominator : " << (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha1             : " << alpha1 << endl;
 
         alpha2 = 0.5 * log( (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) / (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) );
-        cerr << "alpha2 numerator   : " << (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) << endl;
-        cerr << "alpha2 denominator : " << (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) << endl;
+        //cerr << "alpha2 numerator   : " << (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) << endl;
+        //cerr << "alpha2 denominator : " << (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha2      : " << alpha2 << endl;
         //cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
         //gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
@@ -846,7 +892,7 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 3;
+    unsigned numTreeNodes = 10;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS

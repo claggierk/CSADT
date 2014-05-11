@@ -16,6 +16,20 @@ class sNodeAndItsAssociatedPNodes():
         self.condition = condition
         self.alpha1 = alpha1
         self.alpha2 = alpha2
+    
+    def __str__(self):
+        stringMe = "Precondition: " + str(self.preCondition) + "\n"
+        stringMe = stringMe + "Condition   : " + str(self.condition) + "\n"
+        stringMe = stringMe +  "trueScore   : " + str(self.alpha1) + "\n"
+        stringMe = stringMe +  "falseScore  : " + str(self.alpha2) + "\n"
+        return stringMe
+    
+    def __repr__(self):
+        stringMe = "Precondition: " + str(self.preCondition) + "\n"
+        stringMe = stringMe + "Condition   : " + str(self.condition) + "\n"
+        stringMe = stringMe +  "trueScore   : " + str(self.alpha1) + "\n"
+        stringMe = stringMe +  "falseScore  : " + str(self.alpha2) + "\n"
+        return stringMe
 
 def andConditions(condition1, condition2):
     return '(' + condition1 + ')' + ' and ' + '(' + condition2 + ')'
@@ -43,19 +57,29 @@ def getExamplesThatSatisfyCondition(condition, dataSet):
     return examplesThatSatisfyCondition
 
 def getScoreOfExample(rule, dataSetExample):
+    #print "dataSetExample:", dataSetExample
     #create variables that are the features of the example
     for feature in featuresInDataSet:
-        vars()[feature] = dataSetExample[feature]
+        if dataSetExample[feature] == SAME or dataSetExample[feature] == DIFFERENT:
+            vars()[feature] = dataSetExample[feature]
+        else:
+            vars()[feature] = int(dataSetExample[feature])
+        # FIVE ####vars()[feature] = dataSetExample[feature]
     #eval preCondition and condition to know what score to choose
     score = 0
     for sNodeAndItsAssociatedPNodes in rule:
+        #print "Current Rule:", sNodeAndItsAssociatedPNodes
+        #print "before score:", score
         if eval(sNodeAndItsAssociatedPNodes.preCondition):
             if eval(sNodeAndItsAssociatedPNodes.condition):
+                #print("going to alpha1")
                 score += sNodeAndItsAssociatedPNodes.alpha1
             else:
+                #print("going to alpha2")
                 score += sNodeAndItsAssociatedPNodes.alpha2
         else:
             score += 0
+        #print "after score:", score
     return score
 
 def weightPlus(condition):
@@ -71,7 +95,8 @@ def weightPlus(condition):
     weightPlusSum = 0
     for example in positivelyLabeledExamples:
         weightPlusSum += weights[example]
-    print " ***** weightPlusSum: %s (from %s examples)" % (weightPlusSum, len(positivelyLabeledExamples))
+    # FIVE
+    #print " ***** Condition: %s weightPlusSum: %s (from %s examples)" % (condition, weightPlusSum, len(positivelyLabeledExamples))
     return weightPlusSum
 
 def weightMinus(condition):
@@ -86,7 +111,8 @@ def weightMinus(condition):
     weightMinusSum = 0
     for example in negativelyLabeledExamples:
         weightMinusSum += weights[example]
-    print " ***** weightMinusSum: %s (from %s examples)" % (str(weightMinusSum), len(negativelyLabeledExamples))
+    # FIVE
+    #print " ***** weightMinusSum: %s (from %s examples)" % (str(weightMinusSum), len(negativelyLabeledExamples))
     return weightMinusSum
 
 def weight(condition):
@@ -124,6 +150,7 @@ def argMin(preConditionsUsed):
                     lowestZValue = z
                     bestD1 = d1
                     bestD2 = d2
+    print " ^^^^^^^^^^ lowestZValue: %s" % lowestZValue
     if len(preConditionsUsed) == 0:
         print "##### ERROR: length of preConditionsUsed is 0!"
     if len(allConditions) == 0:
@@ -143,15 +170,20 @@ def calculateI(condition):
         return 0
 
 def updateWeights(rule, costPlus, costMinus):
+    #print "Before"
+    #print weights
     for exampleIdentifier in trainingDataSet.keys():
         score = getScoreOfExample(rule, trainingDataSet[exampleIdentifier])
         classification = trainingDataSet[exampleIdentifier]['classification']
         if classification == SAME:
+            #print "score of match:", score 
             yi = 1
         else:
             yi = -1
         cost = costPlus * calculateI(yi == 1) + costMinus * calculateI(yi == -1)
-        weights[exampleIdentifier] = cost*weights[exampleIdentifier]*math.pow(math.e,-yi*score)
+        weights[exampleIdentifier] = cost * weights[exampleIdentifier] * math.pow(math.e, -yi * score)
+    #print "After"
+    #print weights
     return weights
 
 def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
@@ -205,20 +237,22 @@ def adt(costPlus, costMinus, numTreeNodes):
     for i in range(numTreeNodes):
         #???print " ***** There are %s available conditions: %s" % (len(allConditions), allConditions)
         #???print " ***** %s pre-conditions used: %s" % (len(preConditionsUsed), preConditionsUsed)
-        print " ************************************************************ "
-        print "Weight(True): ", weight('True')
+        print " ********************************************* "
+        print " ***** ITERATION: %s ************************* " % i
+        print " ********************************************* "
+        #print "Weight(True): ", weight('True')
         smoothFactor = .5 * (weight('True') / len(trainingDataSet))
         print "len(trainingDataSet): ", len(trainingDataSet)
         d1, d2 = argMin(preConditionsUsed)
         #Set alpha1 and alpha2 which are the scores of positive and negative classification on all training examples that meet the d1, d2 conditions
         print "smoothFactor: ", smoothFactor
         alpha1 = 0.5 * math.log( (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)  )
-        print "alpha1 numerator  : ", (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor)
-        print "alpha1 denominator: ", (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)
+        #print "alpha1 numerator  : ", (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor)
+        #print "alpha1 denominator: ", (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)
         print "alpha1    : %s" % alpha1
         alpha2 =  0.5 * math.log( (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)  )
-        print "alpha2 numerator  : ", (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor)
-        print "alpha2 denominator: ", (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)
+        #print "alpha2 numerator  : ", (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor)
+        #print "alpha2 denominator: ", (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)
         print "alpha2    : %s" % alpha2
         #Set rules = rules + new sNodeAndItsAssociatedPNodes with d1 is precondition, d2 is condition, scores alpha1 for yes and alpha2 for no
         rules.append(sNodeAndItsAssociatedPNodes(d1, d2, alpha1, alpha2))
@@ -282,7 +316,7 @@ def classifier(parmTrainingDataSet, parmAllConditions):
     featuresInDataSet = getFeatures(trainingDataSet)
     costPlus = 2.0
     costMinus = 1.0
-    numTreeNodes = 3 #numberOfIterativeRounds
+    numTreeNodes = 10 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
     rules = adt(costPlus, costMinus, numTreeNodes)
     

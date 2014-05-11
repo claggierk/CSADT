@@ -1,9 +1,14 @@
-eID==0
 eNameTitle==0
+eNameTitle>1
+eNameTitle==20
 eFirstName==0
+eFirstName==20
 eMiddleName==0
+eMiddleName==20
 eLastName==0
+eLastName==20
 eNameSuffix==0
+eNameSuffix==20
 eAge==0
 eDOB==0
 ePhone==0
@@ -20,4 +25,5 @@ eRelatives==0
 eRecordDate==0
 eYearMined==0
 eTrue==0
-eDuplicateID==0
+eTrue==100
+eDuplicateID==10

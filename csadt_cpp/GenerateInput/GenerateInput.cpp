@@ -267,13 +267,13 @@ int main(int argc, char** argv)
         cout << endl << "Size of gPeopleDifferences[" << i << "]: " << gPeopleDifferences.at(i).size();
     }
     
-    cerr << gPeople.at(0) << endl;
-    cerr << gPeople.at(1) << endl;
-    cerr << gPeople.at(2) << endl;
-    cerr << gPeopleDifferences.at(0).at(0) << endl;
-    cerr << gPeopleDifferences.at(0).at(1) << endl;
-    cerr << gPeopleDifferences.at(0).at(2) << endl;
-    cerr << gPeopleDifferences.at(0).at(3) << endl;
+    //cerr << gPeople.at(0) << endl;
+    //cerr << gPeople.at(1) << endl;
+    //cerr << gPeople.at(2) << endl;
+    //cerr << gPeopleDifferences.at(0).at(0) << endl;
+    //cerr << gPeopleDifferences.at(0).at(1) << endl;
+    //cerr << gPeopleDifferences.at(0).at(2) << endl;
+    //cerr << gPeopleDifferences.at(0).at(3) << endl;
     
     OutputPeopleDifferences(outputFileName);
     
