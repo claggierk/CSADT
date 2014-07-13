@@ -514,6 +514,41 @@ float calcZ(const Precondition& p, Condition c)
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
     float thirdPart = calculateW(notP, "or");
+    thirdPart = 1.0f - thirdPart; // TODO FIXME ?????
+    float z = (2 * (firstPart + secondPart)) + thirdPart;
+
+    return z;
+}
+
+float outputCalcZ(const Precondition& p, Condition c)
+{
+    // p = d1 ; c = d2
+    //prepare w, wPlus, and wMinus input
+    vector<Condition> pAndC = p.GetConditions();
+    pAndC.push_back(c);
+    vector<Condition> pAndNotC = p.GetConditions();
+    Condition notC = c;
+    notC.setNotFlag(true);
+    pAndNotC.push_back(notC);
+    vector<Condition> notP = p.GetConditions();
+    for (unsigned i = 0; i < notP.size(); i++)
+    {
+        notP.at(i).setNotFlag(true);
+    }
+
+    //calculate z equation
+    cerr << "First part a: " << wPlus(pAndC, "and") << endl;
+    cerr << "First part a: " << wMinus(pAndC, "and") << endl;
+    float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
+    
+    cerr << "Second part a: " << wPlus(pAndNotC, "and") << endl;
+    cerr << "Second part a: " << wMinus(pAndNotC, "and") << endl;
+    float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
+    
+    cerr << "Third part: " << calculateW(notP, "or") << endl;
+    cerr << "notP: " << notP << endl;
+    float thirdPart = calculateW(notP, "or");
+    thirdPart = 1.0f - thirdPart;
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -581,7 +616,7 @@ void computeArgMin()
                 {
                     if(gConditionsAlreadySelected.at(x) == gConditions.at(j).at(k))
                     {
-                        cerr << " ENCOUNTERED ALIENS! " << gConditionsAlreadySelected.at(x) << endl;
+                        //cerr << " ENCOUNTERED ALIENS! " << gConditionsAlreadySelected.at(x) << endl;
                         conditionAlreadyUsed = true;
                         break;
                     }
@@ -626,6 +661,7 @@ void computeArgMin()
     cerr <<  " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
     gPreconditionChosen = bestP;
     gConditionChosen = bestC;
+    outputCalcZ(gPreconditionChosen, gConditionChosen);
 
     gConditionsAlreadySelected.push_back(gConditionChosen);
     //PrintGConditions();
@@ -773,7 +809,8 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     Precondition tAsAPrecondition;
     tAsAPrecondition.AddCondition(t);
     tAsAVector.push_back(t);
-    float smoothFactor = 0.5 * (calculateW(tAsAVector, "and") / (gMatches.size() + gNonMatches.size()));
+    float smoothFactor = 0.5 * (calculateW(tAsAVector, "and") / ( float(gMatches.size() + gNonMatches.size())));
+    smoothFactor = 0.5f * (1.0f / (gMatches.size() + gNonMatches.size())); // TODO FIXME ?????
     cerr << "costPlus    : " << costPlus << endl;
     cerr << "costMinus   : " << costMinus << endl;
     cerr << "numTreeNodes: " << numTreeNodes << endl; 
@@ -892,7 +929,7 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 10;
+    unsigned numTreeNodes = 1;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS

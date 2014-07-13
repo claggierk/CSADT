@@ -1,7 +1,6 @@
 import sys
 import math
 from copy import deepcopy
-import IllustrateTree
 
 from types import NoneType
 
@@ -126,30 +125,37 @@ def calculateZ(d1, d2):
     z = ( 2 * ( firstPart + secondPart ) ) + thirdPart
     return z
 
+def outputCalculateZ(d1, d2):
+    #d1 is ex. True or a condition which can be evaluated to True
+    print "First part a: ", weightPlus( andConditions(d1, d2) )
+    print "First part b: ", weightMinus( andConditions(d1, d2) )
+    firstPart = math.sqrt( weightPlus( andConditions(d1, d2) ) * weightMinus( andConditions(d1, d2) ) )
+
+    print "Second part a: ", weightPlus( andConditions( d1, notCondition(d2) ) )
+    print "Second part b: " , weightMinus( andConditions( d1, notCondition(d2) ) )
+    secondPart = math.sqrt( weightPlus( andConditions( d1, notCondition(d2) ) ) * weightMinus( andConditions( d1, notCondition(d2) ) ) );
+
+    print "Third part: ", weight( notCondition(d1) )
+    print "d1: ", d1
+    thirdPart = weight( notCondition(d1) )
+    z = ( 2 * ( firstPart + secondPart ) ) + thirdPart
+    return z
+
 def argMin(preConditionsUsed):
-    # shitty initialization
-    lowestZValue = 5 #z will never be >= 5, but probably a lot smaller than that 
-    bestD1 = None
-    bestD2 = None
-    
-    set_min = True
+    z_values = []
     
     for d1 in preConditionsUsed:
         for d2 in allConditions:
-            #???print " ++++++++++ bestD1: %s --- bestD2: %s" % (bestD1, bestD2)
-            if set_min:
-                # much better guarantee of an initialization
-                lowestZValue = calculateZ(d1, d2)
-                bestD1 = d1
-                bestD2 = d2
-                set_min = False
-            else:
-                z = calculateZ(d1, d2)
-                #???print " +++++++++++++++ d1: %s --- d2: %s --- z: %s" % (d1, d2, z)
-                if z < lowestZValue:
-                    lowestZValue = z
-                    bestD1 = d1
-                    bestD2 = d2
+            z_values.append((d1, d2, calculateZ(d1, d2)))
+    z_values.sort(key=lambda tup: tup[2])
+    lowestZValue = z_values[0]
+    
+    bestD1 = lowestZValue[0]
+    bestD2 = lowestZValue[1]
+    lowestZValue = lowestZValue[2]
+
+    outputCalculateZ(bestD1, bestD2)
+            
     print " ^^^^^^^^^^ lowestZValue: %s" % lowestZValue
     if len(preConditionsUsed) == 0:
         print "##### ERROR: length of preConditionsUsed is 0!"
@@ -170,20 +176,15 @@ def calculateI(condition):
         return 0
 
 def updateWeights(rule, costPlus, costMinus):
-    #print "Before"
-    #print weights
     for exampleIdentifier in trainingDataSet.keys():
         score = getScoreOfExample(rule, trainingDataSet[exampleIdentifier])
         classification = trainingDataSet[exampleIdentifier]['classification']
         if classification == SAME:
-            #print "score of match:", score 
             yi = 1
         else:
             yi = -1
         cost = costPlus * calculateI(yi == 1) + costMinus * calculateI(yi == -1)
         weights[exampleIdentifier] = cost * weights[exampleIdentifier] * math.pow(math.e, -yi * score)
-    #print "After"
-    #print weights
     return weights
 
 def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
@@ -241,7 +242,8 @@ def adt(costPlus, costMinus, numTreeNodes):
         print " ***** ITERATION: %s ************************* " % i
         print " ********************************************* "
         #print "Weight(True): ", weight('True')
-        smoothFactor = .5 * (weight('True') / len(trainingDataSet))
+        smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
+        smoothFactor = 0.5 * (1.0 / len(trainingDataSet)) # TODO FIX ME ?????
         print "len(trainingDataSet): ", len(trainingDataSet)
         d1, d2 = argMin(preConditionsUsed)
         #Set alpha1 and alpha2 which are the scores of positive and negative classification on all training examples that meet the d1, d2 conditions
@@ -316,7 +318,7 @@ def classifier(parmTrainingDataSet, parmAllConditions):
     featuresInDataSet = getFeatures(trainingDataSet)
     costPlus = 2.0
     costMinus = 1.0
-    numTreeNodes = 10 #numberOfIterativeRounds
+    numTreeNodes = 1 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
     rules = adt(costPlus, costMinus, numTreeNodes)
     
