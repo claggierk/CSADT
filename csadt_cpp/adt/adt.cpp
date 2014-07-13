@@ -514,7 +514,7 @@ float calcZ(const Precondition& p, Condition c)
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
     float thirdPart = calculateW(notP, "or");
-    thirdPart = 1.0f - thirdPart; // TODO FIXME ?????
+    //thirdPart = 1.0f - thirdPart; // TODO FIXME ?????
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -548,7 +548,7 @@ float outputCalcZ(const Precondition& p, Condition c)
     cerr << "Third part: " << calculateW(notP, "or") << endl;
     cerr << "notP: " << notP << endl;
     float thirdPart = calculateW(notP, "or");
-    thirdPart = 1.0f - thirdPart;
+    //thirdPart = 1.0f - thirdPart;
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -831,14 +831,11 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     //create remaining rules
     for(unsigned i = 0; i < numTreeNodes; i++)
     {
-        cerr << " ------------------------------------------------ " << endl;
-        cerr << " ----- Iteration: " << i << " ------------------- " << endl;
-        cerr << " ------------------------------------------------ " << endl;
+        cerr << endl << " ----- Iteration: " << i << " ------------------- " << endl;
         // smoothFactor = .5*(weight('True')/len(trainingDataSet))
         smoothFactor = .5 * (calculateW(tAsAVector, "and") / (gMatches.size() + gNonMatches.size()));
 
         //cerr << "calculateW(tAsAVector, and)       : " << calculateW(tAsAVector, "and") << endl;
-        cerr << "gMatches.size() + gNonMatches.size(): " << gMatches.size() + gNonMatches.size() << endl;
         cerr << "smoothFactor   : " << smoothFactor << endl;
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
@@ -929,7 +926,7 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 1;
+    unsigned numTreeNodes = 6;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS

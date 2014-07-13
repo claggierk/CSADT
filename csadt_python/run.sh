@@ -6,6 +6,7 @@ rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
 inputFile="../30.csv"
+numNodes="6"
 
 date
 python 1_CSVToText.py $inputFile Training.txt
@@ -26,7 +27,7 @@ then
     exit 1
 fi
 
-python 4_ComparisonPairsToTree.py ComparisonRecords.txt conditions.txt Tree.txt
+python 4_ComparisonPairsToTree.py ComparisonRecords.txt conditions.txt $numNodes Tree.txt
 status=$?
 if (( status != 0 ))
 then

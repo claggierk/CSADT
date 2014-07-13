@@ -238,13 +238,11 @@ def adt(costPlus, costMinus, numTreeNodes):
     for i in range(numTreeNodes):
         #???print " ***** There are %s available conditions: %s" % (len(allConditions), allConditions)
         #???print " ***** %s pre-conditions used: %s" % (len(preConditionsUsed), preConditionsUsed)
-        print " ********************************************* "
+        print ""
         print " ***** ITERATION: %s ************************* " % i
-        print " ********************************************* "
         #print "Weight(True): ", weight('True')
         smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
         smoothFactor = 0.5 * (1.0 / len(trainingDataSet)) # TODO FIX ME ?????
-        print "len(trainingDataSet): ", len(trainingDataSet)
         d1, d2 = argMin(preConditionsUsed)
         #Set alpha1 and alpha2 which are the scores of positive and negative classification on all training examples that meet the d1, d2 conditions
         print "smoothFactor: ", smoothFactor
@@ -308,7 +306,7 @@ def evaluate(parmTestDataSet, rule):
             outputDatabase[exampleIdentifier] = {'classification':DIFFERENT, 'score':score}
     return outputDatabase
 
-def classifier(parmTrainingDataSet, parmAllConditions):
+def classifier(parmTrainingDataSet, numTreeNodes, parmAllConditions):
     global trainingDataSet, allConditions, weights, featuresInDataSet
     trainingDataSet = parmTrainingDataSet
     allConditions = deepcopy(parmAllConditions)
@@ -318,8 +316,7 @@ def classifier(parmTrainingDataSet, parmAllConditions):
     featuresInDataSet = getFeatures(trainingDataSet)
     costPlus = 2.0
     costMinus = 1.0
-    numTreeNodes = 1 #numberOfIterativeRounds
     #Run adt algorithm and return the tree (in the form of the last rule generated)
-    rules = adt(costPlus, costMinus, numTreeNodes)
+    rules = adt(costPlus, costMinus, int(numTreeNodes))
     
     return rules
