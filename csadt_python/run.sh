@@ -6,7 +6,7 @@ rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
 inputFile="../30.csv"
-numNodes="6"
+numNodes="2"
 
 date
 python 1_CSVToText.py $inputFile Training.txt

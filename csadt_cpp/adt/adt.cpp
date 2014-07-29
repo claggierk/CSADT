@@ -20,7 +20,7 @@
 using namespace std;
 
 const unsigned MAX_FEATURE_COUNT = 128;
-const unsigned NUM_COMMAND_LINE_ARGUMENTS = 2;
+const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
 
 vector<Instance> gMatches;
 vector<Instance> gNonMatches;
@@ -595,16 +595,15 @@ void computeArgMin()
     float lowestZValue = 1000000.0;
     Precondition bestP;
     Condition bestC;
-    bool setMin = false;
     unsigned bestCIndex1 = 0;
     unsigned bestCIndex2 = 0;
 
     //PrintConditionInfo();
+    unsigned zValuesConsidered = 0;
 
     //find best preCondition and condition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
-        //setMin = true; //<-I don't know why you added that
         bestCIndex1 = 0;
         bestCIndex2 = 0;
         for(unsigned j = 0; j < gConditions.size(); j++)
@@ -626,38 +625,21 @@ void computeArgMin()
                     continue;
                 }
 
-                if(setMin)
+                zValuesConsidered++;
+
+                float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
+                if (z < lowestZValue)
                 {
-                    lowestZValue = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
+                    lowestZValue = z;
                     bestP = gPreconditionsUsed.at(i);
                     bestC = gConditions.at(j).at(k);
                     bestCIndex1 = j;
                     bestCIndex2 = k;
-                    setMin = false;
-                }
-                else
-                {
-                    float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
-                    /*
-                    if (z < lowestZValue) {
-                        cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << " <--Current Best" << endl;
-                    } else {
-                        cerr << "precondition " << i << ". condition " << j << " " << k << " | " << "z: " << z << " ... lowestZValue: " << lowestZValue << endl;
-                    }
-                    */
-                    
-                    if (z < lowestZValue)
-                    {
-                        lowestZValue = z;
-                        bestP = gPreconditionsUsed.at(i);
-                        bestC = gConditions.at(j).at(k);
-                        bestCIndex1 = j;
-                        bestCIndex2 = k;
-                    }
                 }
             }
         }
     }
+    cerr << " Considering " << zValuesConsidered << " z-values..." << endl;
     cerr <<  " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
     gPreconditionChosen = bestP;
     gConditionChosen = bestC;
@@ -913,9 +895,11 @@ int main(int argc, char* argv[])
 
     string dataInputFileName = commandLineArgs[0];
     string outputFileName = commandLineArgs[1];
+    string numTreeNodesString = commandLineArgs[2];
+    unsigned numTreeNodes = atoi(numTreeNodesString.c_str());
 
-	PopulateInstances(dataInputFileName);
-	cerr << "gMatches size   : " << gMatches.size() << endl;
+    PopulateInstances(dataInputFileName);
+    cerr << "gMatches size   : " << gMatches.size() << endl;
     cerr << "gNonMatches size: " << gNonMatches.size() << endl;
     cerr << gMatches.at(0);
     cerr << gNonMatches.at(0);
@@ -926,7 +910,6 @@ int main(int argc, char* argv[])
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
     float costMinus = 1.0f; 
-    unsigned numTreeNodes = 6;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS

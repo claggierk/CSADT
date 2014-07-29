@@ -155,7 +155,13 @@ def argMin(preConditionsUsed):
     lowestZValue = lowestZValue[2]
 
     outputCalculateZ(bestD1, bestD2)
-            
+
+    print ""
+    print "%s Z values:" % len(z_values)
+    for zvalue in z_values:
+        print "d1: %s --- d2: %s --- zvalue: %s" % (zvalue[0], zvalue[1], zvalue[2])
+    print ""
+
     print " ^^^^^^^^^^ lowestZValue: %s" % lowestZValue
     if len(preConditionsUsed) == 0:
         print "##### ERROR: length of preConditionsUsed is 0!"
