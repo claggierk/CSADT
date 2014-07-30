@@ -25,7 +25,7 @@ PersonDiff::PersonDiff(const PersonDiff & p)
 // compute the difference of two 'Person's
 PersonDiff::PersonDiff(const Person& p1, const Person &p2)
 {
-	setDifferences(p1, p2);
+    setDifferences(p1, p2);
     i1 = p1.getIndex();
     i2 = p2.getIndex();
     id1 = p1.getID();
@@ -111,13 +111,9 @@ void PersonDiff::setDifferencesDirectly(const vector<unsigned>& v)
 
 void PersonDiff::setDifferences(const Person& p1, const Person &p2)
 {
-    for(unsigned i = 0; i < eSizePersonAttributes; i++)
+	for(unsigned i = 0; i < eSizePersonAttributes; i++)
 	{
         unsigned difference = ComputeLevenshteinDistance(p1.getAttributes().at(i), p2.getAttributes().at(i));
-        if(i == eTrue)
-        {
-            difference = 1;
-        }
         differences.push_back(difference);
 	}
 }

@@ -797,7 +797,7 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     //set initial weights of instances
     double initialWeight = SetInitialWeights();
     //create initial rule
-    Condition t = Condition(true);
+    Condition t = Condition(0, "==", eTrue, false);
     vector<Condition> tAsAVector;
     Precondition tAsAPrecondition;
     tAsAPrecondition.AddCondition(t);
