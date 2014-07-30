@@ -16,6 +16,7 @@
 #include "FeatureStats.h"
 #include "Rule.h"
 #include "Utils.h"
+#include "ZValue.h"
 
 using namespace std;
 
@@ -589,6 +590,8 @@ void PrintGConditions()
     cerr << endl;
 }
 
+bool sortZValue(ZValue z1, ZValue z2) { return z1.GetZ() < z2.GetZ(); }
+
 void computeArgMin()
 {
     //Thanks for saying I had a shitty initialization :)
@@ -600,6 +603,8 @@ void computeArgMin()
 
     //PrintConditionInfo();
     unsigned zValuesConsidered = 0;
+
+    vector<ZValue> zvalues;
 
     //find best preCondition and condition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
@@ -628,6 +633,7 @@ void computeArgMin()
                 zValuesConsidered++;
 
                 float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
+                zvalues.push_back(ZValue(gPreconditionsUsed.at(i), gConditions.at(j).at(k), z));
                 if (z < lowestZValue)
                 {
                     lowestZValue = z;
@@ -639,8 +645,13 @@ void computeArgMin()
             }
         }
     }
+    sort(zvalues.begin(), zvalues.end(), sortZValue);
     cerr << " Considering " << zValuesConsidered << " z-values..." << endl;
-    cerr <<  " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
+    for(unsigned i = 0; i < zvalues.size(); i++)
+    {
+        cerr << endl << "d1: " << zvalues.at(i).GetPrecondition() << " --- d2: " << zvalues.at(i).GetCondition() << " --- zvalue: " << zvalues.at(i).GetZ();  
+    }
+    cerr <<  endl << " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
     gPreconditionChosen = bestP;
     gConditionChosen = bestC;
     outputCalcZ(gPreconditionChosen, gConditionChosen);
