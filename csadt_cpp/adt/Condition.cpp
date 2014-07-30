@@ -5,7 +5,7 @@
 #include "Person.h"
 #include "Utils.h"
 
-Condition::Condition() : value(0), comparison("=="), index(0), trueFlag(false), notFlag(false)
+Condition::Condition() : value(0), comparison("=="), index(0), notFlag(false)
 {}
 
 Condition::Condition(const Condition& p)
@@ -13,19 +13,7 @@ Condition::Condition(const Condition& p)
 	value = p.getValue();
 	comparison = p.getComparison();
 	index = p.getIndex();
-	trueFlag = p.getTrueFlag();
 	notFlag = p.getNotFlag();
-}
-
-Condition::Condition(const bool& myTrueFlag)
-{
-	// this is only used to make a 'TRUE' condition
-	// initialize to 1!
-	value = 1;
-	comparison = "==";
-	index = eTrue;
-	notFlag = false;
-	trueFlag = myTrueFlag;
 }
 
 Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex)
@@ -34,16 +22,14 @@ Condition::Condition(const unsigned& myValue, const string& myComparison, const 
 	comparison = myComparison;
 	index = myIndex;
 	notFlag = false;
-	trueFlag = false;
 }
 
-Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex, const bool& myNotFlag, const bool& myTrueFlag)
+Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex, const bool& myNotFlag)
 {
 	value = myValue;
 	comparison = myComparison;
 	index = myIndex;
 	notFlag = myNotFlag;
-	trueFlag = myTrueFlag;
 }
 
 unsigned Condition::getValue() const
@@ -106,21 +92,10 @@ bool Condition::considerNotFlag(const bool& c) const
 	}
 }
 
-bool Condition::getTrueFlag() const
-{
-	return trueFlag;
-}
-
-void Condition::setTrueFlag(const bool& t)
-{
-	trueFlag = t;
-}
-
 bool Condition::evaluate(const Instance& instance) const
 {
-	//if Condition's trueFlag is true i.e Condition(true), always return true
-	if (trueFlag) {
-		return true;
+        if (index == eTrue) {
+		return considerNotFlag(true);
 	}
 
 	//use index so that I can run evaluate like conditionObject.evaluate(instanceObject) 
@@ -143,14 +118,13 @@ Condition& Condition::operator=(const Condition& c)
 	value = c.getValue();
 	comparison = c.getComparison();
 	index = c.getIndex();
-	trueFlag = c.getTrueFlag();
 	notFlag = c.getNotFlag();
 	
 	return *this;
 }
 
 bool Condition::operator==(const Condition& c) {
-	if ((value == c.getValue()) and (comparison == c.getComparison()) and (index == c.getIndex()) and (trueFlag == c.getTrueFlag()) and (notFlag == c.getNotFlag())) {
+	if ((value == c.getValue()) and (comparison == c.getComparison()) and (index == c.getIndex()) and (notFlag == c.getNotFlag())) {
 		return true;
 	} else {
 		return false;
