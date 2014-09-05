@@ -481,8 +481,13 @@ float wPlus(vector<Condition> conditionVector, string logicalOperator)
     return sumOfWeights;
 }
 
-float calculateW(vector<Condition> conditionVector, string logicalOperator)
+float calculateW(vector<Condition> conditionVector, string logicalOperator, bool output=false)
 {
+    if(output)
+    {
+        cerr << endl << " ***** wPlus(" << conditionVector << "): " << wPlus(conditionVector, logicalOperator);
+        cerr << endl << " ***** wMinus(" << conditionVector << "): " << wMinus(conditionVector, logicalOperator);
+    }
     return wPlus(conditionVector, logicalOperator) + wMinus(conditionVector, logicalOperator);
 }
 /*
@@ -508,14 +513,13 @@ float calcZ(const Precondition& p, Condition c)
     vector<Condition> notP = p.GetConditions();
     for (unsigned i = 0; i < notP.size(); i++)
     {
-        notP.at(i).setNotFlag(true);
+        notP.at(i).setNotFlag(not notP.at(i).getNotFlag());
     }
 
     //calculate z equation
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
     float thirdPart = calculateW(notP, "or");
-    //thirdPart = 1.0f - thirdPart; // TODO FIXME ?????
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -523,6 +527,9 @@ float calcZ(const Precondition& p, Condition c)
 
 float outputCalcZ(const Precondition& p, Condition c)
 {
+    cout << endl << "Considering preCondition: " << p;
+    cout << endl << "Considering condition   : " << c;
+
     // p = d1 ; c = d2
     //prepare w, wPlus, and wMinus input
     vector<Condition> pAndC = p.GetConditions();
@@ -534,22 +541,25 @@ float outputCalcZ(const Precondition& p, Condition c)
     vector<Condition> notP = p.GetConditions();
     for (unsigned i = 0; i < notP.size(); i++)
     {
-        notP.at(i).setNotFlag(true);
+        notP.at(i).setNotFlag(not notP.at(i).getNotFlag());
     }
 
     //calculate z equation
-    cerr << "First part a: " << wPlus(pAndC, "and") << endl;
-    cerr << "First part a: " << wMinus(pAndC, "and") << endl;
+    //cerr << endl << "First part a: " << wPlus(pAndC, "and");
+    //cerr << endl << "First part b: " << wMinus(pAndC, "and");
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
+    cerr << endl << "first part: " << firstPart;
     
-    cerr << "Second part a: " << wPlus(pAndNotC, "and") << endl;
-    cerr << "Second part a: " << wMinus(pAndNotC, "and") << endl;
+    //cerr << endl << "Second part a: " << wPlus(pAndNotC, "and");
+    //cerr << endl << "Second part b: " << wMinus(pAndNotC, "and");
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
+    cerr << endl << "second part: " << secondPart;
     
-    cerr << "Third part: " << calculateW(notP, "or") << endl;
-    cerr << "notP: " << notP << endl;
+    cerr << endl << "Third part: " << calculateW(notP, "or", true);
+    cerr << endl << "p   : " << p;
+    cerr << endl << "notP: " << notP;
     float thirdPart = calculateW(notP, "or");
-    //thirdPart = 1.0f - thirdPart;
+    
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -594,13 +604,6 @@ bool sortZValue(ZValue z1, ZValue z2) { return z1.GetZ() < z2.GetZ(); }
 
 void computeArgMin()
 {
-    //Thanks for saying I had a shitty initialization :)
-    float lowestZValue = 1000000.0;
-    Precondition bestP;
-    Condition bestC;
-    unsigned bestCIndex1 = 0;
-    unsigned bestCIndex2 = 0;
-
     //PrintConditionInfo();
     unsigned zValuesConsidered = 0;
 
@@ -609,8 +612,6 @@ void computeArgMin()
     //find best preCondition and condition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
-        bestCIndex1 = 0;
-        bestCIndex2 = 0;
         for(unsigned j = 0; j < gConditions.size(); j++)
         {
             for(unsigned k = 0; k < gConditions.at(j).size(); k++)
@@ -634,57 +635,35 @@ void computeArgMin()
 
                 float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
                 zvalues.push_back(ZValue(gPreconditionsUsed.at(i), gConditions.at(j).at(k), z));
-                if (z < lowestZValue)
-                {
-                    lowestZValue = z;
-                    bestP = gPreconditionsUsed.at(i);
-                    bestC = gConditions.at(j).at(k);
-                    bestCIndex1 = j;
-                    bestCIndex2 = k;
-                }
             }
         }
     }
+    
     sort(zvalues.begin(), zvalues.end(), sortZValue);
-    cerr << " Considering " << zValuesConsidered << " z-values..." << endl;
+    Precondition bestP = zvalues.at(0).GetPrecondition();
+    Condition bestC = zvalues.at(0).GetCondition();
+    float lowestZValue = zvalues.at(0).GetZ();
+
+    for(unsigned i = 0; i < zvalues.size(); i++)
+    {
+        cerr << endl;
+        cerr << endl << " ZVALUE: " << zvalues.at(i).GetZ();
+        outputCalcZ(zvalues.at(i).GetPrecondition(), zvalues.at(i).GetCondition());
+    }
+
+    cerr << endl;
+    cerr << endl << " Considering " << zValuesConsidered << " z-values...";
     for(unsigned i = 0; i < zvalues.size(); i++)
     {
         cerr << endl << "d1: " << zvalues.at(i).GetPrecondition() << " --- d2: " << zvalues.at(i).GetCondition() << " --- zvalue: " << zvalues.at(i).GetZ();  
     }
-    cerr <<  endl << " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
+    
     gPreconditionChosen = bestP;
     gConditionChosen = bestC;
+    cerr <<  endl << " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
     outputCalcZ(gPreconditionChosen, gConditionChosen);
 
     gConditionsAlreadySelected.push_back(gConditionChosen);
-    //PrintGConditions();
-    /*cerr << endl << "Size of gConditionsAlreadySelected: " << gConditionsAlreadySelected.size();
-
-    cerr << endl << "bestCIndex1: " << bestCIndex1 << " --- bestCIndex2: " << bestCIndex2;
-    cerr << endl << "gConditions.size: " << gConditions.size();
-    cerr << endl << "gConditions[" << bestCIndex1 << "].size: " << gConditions.at(bestCIndex1).size();
-    cerr << endl << "JUST ADDED: " << gConditionsAlreadySelected.back() << endl;
-    cerr << endl << "THIS SHOULD BE THE SAME: " << gConditions.at(bestCIndex1).at(bestCIndex2);
-    
-    cerr << endl << "Proposed index to remove   : " << gConditions.at(bestCIndex1).size() + bestCIndex2-1;
-    cerr << endl << "Size we want to remove from: " << gConditions.at(bestCIndex1).size();*/
-
-    // erase the 6th element
-    //myvector.erase (myvector.begin()+5);
-
-    /*gConditions.at(bestCIndex1).erase( gConditions.at(bestCIndex1).begin() + bestCIndex2);
-    if(gConditions.at(bestCIndex1).size() == 0)
-    {
-        //gConditions.at(bestCIndex1).clear();
-        gConditions.erase(gConditions.begin() + bestCIndex1);
-        cerr << "##### WARNING: Removing condition vector concerning " << sPersonConditions[bestCIndex1] << endl;
-    }
-    cerr << endl << endl;
-    string foo;
-    PrintGConditions();*/
-    //cin >> foo;
-    //cerr << "Selected " << gConditionChosen << "... " << endl;
-    //cerr << endl << endl;
 }
 
 bool isPreconditionInVectorOfPreconditions(Precondition& p, vector<Precondition>& vp) {
@@ -711,10 +690,12 @@ void createAndUpdategPAndCAndgPandNotC() {
     //Add them to gPreconditionsUsed
     Precondition pAndCAsPrecondition = Precondition(pAndC);
     Precondition pAndNotCAsPrecondition = Precondition(pAndNotC);
-    if (not isPreconditionInVectorOfPreconditions(pAndCAsPrecondition, gPreconditionsUsed)) {
+    if (not isPreconditionInVectorOfPreconditions(pAndCAsPrecondition, gPreconditionsUsed))
+    {
         gPreconditionsUsed.push_back(pAndCAsPrecondition);
     }
-    if (not isPreconditionInVectorOfPreconditions(pAndNotCAsPrecondition, gPreconditionsUsed)) {
+    if (not isPreconditionInVectorOfPreconditions(pAndNotCAsPrecondition, gPreconditionsUsed))
+    {
         gPreconditionsUsed.push_back(pAndNotCAsPrecondition);
     }
 }
@@ -802,8 +783,7 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     Precondition tAsAPrecondition;
     tAsAPrecondition.AddCondition(t);
     tAsAVector.push_back(t);
-    float smoothFactor = 0.5 * (calculateW(tAsAVector, "and") / ( float(gMatches.size() + gNonMatches.size())));
-    smoothFactor = 0.5f * (1.0f / (gMatches.size() + gNonMatches.size())); // TODO FIXME ?????
+    float smoothFactor = 1.0f / ( float(gMatches.size() + gNonMatches.size()));
     cerr << "costPlus    : " << costPlus << endl;
     cerr << "costMinus   : " << costMinus << endl;
     cerr << "numTreeNodes: " << numTreeNodes << endl; 
@@ -825,21 +805,19 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     for(unsigned i = 0; i < numTreeNodes; i++)
     {
         cerr << endl << " ----- Iteration: " << i << " ------------------- " << endl;
-        // smoothFactor = .5*(weight('True')/len(trainingDataSet))
-        smoothFactor = .5 * (calculateW(tAsAVector, "and") / (gMatches.size() + gNonMatches.size()));
 
         //cerr << "calculateW(tAsAVector, and)       : " << calculateW(tAsAVector, "and") << endl;
         cerr << "smoothFactor   : " << smoothFactor << endl;
         computeArgMin();
         createAndUpdategPAndCAndgPandNotC();
         alpha1 = 0.5 * log( (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) / (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) );
-        //cerr << "alpha1 numerator   : " << (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) << endl;
-        //cerr << "alpha1 denominator : " << (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) << endl;
+        cerr << "alpha1 numerator   : " << (costPlus * wPlus(gPAndCChosen, "and") + smoothFactor) << endl;
+        cerr << "alpha1 denominator : " << (costMinus * wMinus(gPAndCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha1             : " << alpha1 << endl;
 
         alpha2 = 0.5 * log( (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) / (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) );
-        //cerr << "alpha2 numerator   : " << (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) << endl;
-        //cerr << "alpha2 denominator : " << (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) << endl;
+        cerr << "alpha2 numerator   : " << (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) << endl;
+        cerr << "alpha2 denominator : " << (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha2      : " << alpha2 << endl;
         //cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
         //gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
@@ -851,6 +829,10 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
         //    cerr << i << "th iteration: gPreconditionsUsed[" << j << "]: " << gPreconditionsUsed.at(j) << endl;
         //}
     }
+
+    cerr << endl;
+    cerr << endl;
+    //DisplayWeights();
 
     cerr << endl;
     cerr << " ***** Selected Conditions:" << endl;

@@ -47,7 +47,7 @@ def getExamplesThatSatisfyCondition(condition, dataSet):
     examplesThatSatisfyCondition = []
     for example in dataSet.keys():
         for feature in featuresInDataSet:
-            if dataSet[example][feature] == SAME or dataSet[example][feature] == DIFFERENT:
+            if (dataSet[example][feature] == SAME) or (dataSet[example][feature] == DIFFERENT):
                 vars()[feature] = dataSet[example][feature]
             else:
                 vars()[feature] = int(dataSet[example][feature])
@@ -114,7 +114,11 @@ def weightMinus(condition):
     #print " ***** weightMinusSum: %s (from %s examples)" % (str(weightMinusSum), len(negativelyLabeledExamples))
     return weightMinusSum
 
-def weight(condition):
+def weight(condition, output=False):
+    if output:
+        print ""
+        print " ***** weightPlus(%s) : %s" % (condition, weightPlus(condition))
+        print " ***** weightMinus(%s): %s" % (condition, weightMinus(condition))
     return weightPlus(condition) + weightMinus(condition)
 
 def calculateZ(d1, d2):
@@ -126,17 +130,22 @@ def calculateZ(d1, d2):
     return z
 
 def outputCalculateZ(d1, d2):
+    print " Considering preCondition: %s" % d1
+    print " Considering condition   : %s" % d2
     #d1 is ex. True or a condition which can be evaluated to True
-    print "First part a: ", weightPlus( andConditions(d1, d2) )
-    print "First part b: ", weightMinus( andConditions(d1, d2) )
+    #print "First part a: ", weightPlus( andConditions(d1, d2) )
+    #print "First part b: ", weightMinus( andConditions(d1, d2) )
     firstPart = math.sqrt( weightPlus( andConditions(d1, d2) ) * weightMinus( andConditions(d1, d2) ) )
+    print "firstPart: ", firstPart
 
-    print "Second part a: ", weightPlus( andConditions( d1, notCondition(d2) ) )
-    print "Second part b: " , weightMinus( andConditions( d1, notCondition(d2) ) )
-    secondPart = math.sqrt( weightPlus( andConditions( d1, notCondition(d2) ) ) * weightMinus( andConditions( d1, notCondition(d2) ) ) );
+    #print "Second part a: ", weightPlus( andConditions( d1, notCondition(d2) ) )
+    #print "Second part b: " , weightMinus( andConditions( d1, notCondition(d2) ) )
+    secondPart = math.sqrt( weightPlus( andConditions( d1, notCondition(d2) ) ) * weightMinus( andConditions( d1, notCondition(d2) ) ) )
+    print "secondPart: ", secondPart
 
-    print "Third part: ", weight( notCondition(d1) )
-    print "d1: ", d1
+    print "Third part: ", weight( notCondition(d1) , True)
+    print "d1              : ", d1
+    print "notCondition(d1): ", notCondition(d1)
     thirdPart = weight( notCondition(d1) )
     z = ( 2 * ( firstPart + secondPart ) ) + thirdPart
     return z
@@ -147,15 +156,19 @@ def argMin(preConditionsUsed):
     for d1 in preConditionsUsed:
         for d2 in allConditions:
             z_values.append((d1, d2, calculateZ(d1, d2)))
-    z_values.sort(key=lambda tup: tup[2])
-    lowestZValue = z_values[0]
     
-    bestD1 = lowestZValue[0]
-    bestD2 = lowestZValue[1]
-    lowestZValue = lowestZValue[2]
+    z_values.sort(key=lambda tup: tup[2])
+    lowestZ = z_values[0]
+    bestD1 = lowestZ[0]
+    bestD2 = lowestZ[1]
+    lowestZValue = lowestZ[2]
 
-    outputCalculateZ(bestD1, bestD2)
-
+    for z_value in z_values:
+        print ""
+        print " ZVALUE: %s" % z_value[2]
+        outputCalculateZ(z_value[0], z_value[1])
+    print ""
+    
     print ""
     print "%s Z values:" % len(z_values)
     for zvalue in z_values:
@@ -163,6 +176,8 @@ def argMin(preConditionsUsed):
     print ""
 
     print " ^^^^^^^^^^ lowestZValue: %s" % lowestZValue
+    outputCalculateZ(bestD1, bestD2)
+
     if len(preConditionsUsed) == 0:
         print "##### ERROR: length of preConditionsUsed is 0!"
     if len(allConditions) == 0:
@@ -206,7 +221,7 @@ def getNodeNumAndYesOrNoCondition(dictOfNodeAndItsConditions, d1):
 
 def adt(costPlus, costMinus, numTreeNodes):
     print "Number of training record pairs: ", len(trainingDataSet)
-    smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
+    smoothFactor = 1.0 / len(trainingDataSet)
     if (costMinus * weightMinus('True') + smoothFactor) == 0:
         problem = "##### ERROR: denominator is 0 and anything / 0 is not possible..."
         print problem
@@ -247,18 +262,16 @@ def adt(costPlus, costMinus, numTreeNodes):
         print ""
         print " ***** ITERATION: %s ************************* " % i
         #print "Weight(True): ", weight('True')
-        smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
-        smoothFactor = 0.5 * (1.0 / len(trainingDataSet)) # TODO FIX ME ?????
         d1, d2 = argMin(preConditionsUsed)
         #Set alpha1 and alpha2 which are the scores of positive and negative classification on all training examples that meet the d1, d2 conditions
         print "smoothFactor: ", smoothFactor
         alpha1 = 0.5 * math.log( (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)  )
-        #print "alpha1 numerator  : ", (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor)
-        #print "alpha1 denominator: ", (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)
+        print "alpha1 numerator  : ", (costPlus * weightPlus( andConditions(d1, d2) ) + smoothFactor)
+        print "alpha1 denominator: ", (costMinus * weightMinus( andConditions(d1, d2) ) + smoothFactor)
         print "alpha1    : %s" % alpha1
         alpha2 =  0.5 * math.log( (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor) / (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)  )
-        #print "alpha2 numerator  : ", (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor)
-        #print "alpha2 denominator: ", (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)
+        print "alpha2 numerator  : ", (costPlus * weightPlus( andConditions(d1, notCondition(d2) )  ) + smoothFactor)
+        print "alpha2 denominator: ", (costMinus * weightMinus( andConditions(d1, notCondition(d2) ) ) + smoothFactor)
         print "alpha2    : %s" % alpha2
         #Set rules = rules + new sNodeAndItsAssociatedPNodes with d1 is precondition, d2 is condition, scores alpha1 for yes and alpha2 for no
         rules.append(sNodeAndItsAssociatedPNodes(d1, d2, alpha1, alpha2))

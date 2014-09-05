@@ -13,7 +13,7 @@ class Condition
 {
 public:
 	Condition();
-	Condition(const Condition& p);
+	Condition(const Condition& c);
 	Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex);
 	Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex, const bool& myNotFlag);
 

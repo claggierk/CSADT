@@ -8,12 +8,12 @@
 Condition::Condition() : value(0), comparison("=="), index(0), notFlag(false)
 {}
 
-Condition::Condition(const Condition& p)
+Condition::Condition(const Condition& c)
 {
-	value = p.getValue();
-	comparison = p.getComparison();
-	index = p.getIndex();
-	notFlag = p.getNotFlag();
+	value = c.getValue();
+	comparison = c.getComparison();
+	index = c.getIndex();
+	notFlag = c.getNotFlag();
 }
 
 Condition::Condition(const unsigned& myValue, const string& myComparison, const unsigned& myIndex)
@@ -94,18 +94,34 @@ bool Condition::considerNotFlag(const bool& c) const
 
 bool Condition::evaluate(const Instance& instance) const
 {
-        if (index == eTrue) {
+    if (index == eTrue)
+    {
 		return considerNotFlag(true);
 	}
 
 	//use index so that I can run evaluate like conditionObject.evaluate(instanceObject) 
 	unsigned localDiff = instance.getAttribute(index);
 
-	if(comparison == sValidComparisons[eLessThan])				return considerNotFlag(localDiff < value);
-	else if(comparison == sValidComparisons[eGreatherThan])		return considerNotFlag(localDiff > value);
-	else if(comparison == sValidComparisons[eEqualTo])			return considerNotFlag(localDiff == value);
-	else if(comparison == sValidComparisons[eLessThanOrEqual])	return considerNotFlag(localDiff <= value);
-	else if(comparison == sValidComparisons[eGreaterThanOrEqual])return considerNotFlag(localDiff >= value);
+	if(comparison == sValidComparisons[eLessThan])
+	{
+		return considerNotFlag(localDiff < value);
+	}
+	else if(comparison == sValidComparisons[eGreatherThan])
+	{
+		return considerNotFlag(localDiff > value);
+	}
+	else if(comparison == sValidComparisons[eEqualTo])
+	{
+		return considerNotFlag(localDiff == value);
+	}
+	else if(comparison == sValidComparisons[eLessThanOrEqual])
+	{
+		return considerNotFlag(localDiff <= value);
+	}
+	else if(comparison == sValidComparisons[eGreaterThanOrEqual])
+	{
+		return considerNotFlag(localDiff >= value);
+	}
 	else
 	{
 		cerr << "##### ERROR: unknown comparison: " << comparison << endl;
@@ -133,17 +149,9 @@ bool Condition::operator==(const Condition& c) {
 
 ostream& operator<<(ostream& out, const Condition& i)
 {
-	/*cerr << "check-";
-	i.getTrueFlag();
-	i.getNotFlag();
-	i.getIndex();
-	i.getComparison();
-	i.getValue();
-	cerr << "checked.";*/
 	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
 	if (i.getNotFlag()) {
-
-		out << "(not (" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << "))";
+		out << "not(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
 	} else {
 		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
 	}

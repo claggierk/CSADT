@@ -15,6 +15,7 @@ public:
         z = zValue.GetZ();
     }
     ZValue(Precondition precondition, Condition condition, float myZ) : p(precondition), c(condition), z(myZ) {}
+    
     Precondition GetPrecondition() const { return p; }
     Condition GetCondition() const { return c; }
     float GetZ() const { return z; }
