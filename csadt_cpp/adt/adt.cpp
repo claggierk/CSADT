@@ -13,7 +13,6 @@
 #include "Instance.h"
 #include "Condition.h"
 #include "Precondition.h"
-#include "FeatureStats.h"
 #include "Rule.h"
 #include "Utils.h"
 #include "ZValue.h"
@@ -113,7 +112,7 @@ void PopulateInstances(string fileName)
 	
 	fin.close();
 }
-
+/*
 void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStats>& fs)
 {
     vector<unsigned> attributes = instances.at(0).getAttributes();
@@ -154,7 +153,7 @@ void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStat
         fs.at(i).setStdDev((double)fs.at(i).getSqSum() / (double)instances.size());
     }
 }
-
+*/
 string DetermineUniqueConditionSymbols()
 {
     string uniqueConditionSymbols = "";
@@ -621,7 +620,6 @@ void computeArgMin()
                 {
                     if(gConditionsAlreadySelected.at(x) == gConditions.at(j).at(k))
                     {
-                        //cerr << " ENCOUNTERED ALIENS! " << gConditionsAlreadySelected.at(x) << endl;
                         conditionAlreadyUsed = true;
                         break;
                     }

@@ -17,6 +17,7 @@ then
     if [ $command_status -eq 0 ]
     then
     	cp ADT_ready.txt ../adt/
+    	cp ADT_ready.txt ../generate-conditions/
     	echo "Copied ADT_ready.txt into ../adt/"
 	fi
 else

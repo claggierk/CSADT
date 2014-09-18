@@ -4,7 +4,7 @@
 
 echo " ***** adt *********************************************"
 
-numTreeNodes="2"
+numTreeNodes="3"
 
 g++ -rdynamic *.h *.cpp -o adt
 compiled_status=$?
