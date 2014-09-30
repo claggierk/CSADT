@@ -1,23 +1,33 @@
 import pydot
+import sys
 
 EXPECTED_INPUTS_FOR_NODE = 4
 
 POSSIBLE_CONDITION_SYMBOLS = ['<', '=', '>']
 
-def PopulateNodes():
+def Usage():
+	print "**************************************************"
+	print "Usage  : python %s [tree text file] [PNG output file]" % sys.argv[0]
+	print "Example: python %s Tree.txt CS_ADT_Tree.png" % sys.argv[0]
+	print "**************************************************"
+	print 
+
+def PopulateNodes(input_tree_file_name):
 	nodes = []
-	tree_file = open("Tree.txt", 'r')
+	tree_file = open(input_tree_file_name, 'r')
 	for node_index, node_line in enumerate(tree_file):
 		local_node = node_line.split(" ")
 		if len(local_node) != EXPECTED_INPUTS_FOR_NODE:
 			print "##### ERROR: Expected number of inputs for node: %d... received: %d" % (EXPECTED_INPUTS_FOR_NODE, len(local_node))
 			return
+		if local_node[1][0] == '(' and local_node[1][-1] == ')':
+			local_node[1] = local_node[1][1:-1] # remove the parenthesis from the '('condition')'
 		local_node = ("node" + str(node_index+1), local_node[0], local_node[1], local_node[2], local_node[3])
 		nodes.append(local_node)
 	tree_file.close()
+	#print "nodes: ", nodes
 	return nodes
-#012345678912345678912345678
-#(True)and(not(eFirstName==1))
+
 def DetermineLastCondition(parent_line):
 	condition_symbol_largest_index = 0
 	for character_index, character in enumerate(reversed(parent_line)):
@@ -49,13 +59,13 @@ def DetermineLastCondition(parent_line):
 	last_condition = parent_line[last_condition_start:last_condition_end]
 
 	if parent_line[last_condition_start-4:last_condition_start-1] == 'not':
-		#print "NOT last_condition: ", last_condition
+		#####print "NOT last_condition: ", last_condition
 		return last_condition, False
 
-	#print "    last_condition: ", last_condition
+	#####print "    last_condition: ", last_condition
 	return last_condition, True
 
-def IllustrateTree(nodes, identifier):
+def IllustrateTree(output_tree_file_name, nodes):
 	graph = pydot.Dot(graph_type='digraph')
 	dictionary_of_nodes = {}
 	
@@ -95,7 +105,6 @@ def IllustrateTree(nodes, identifier):
 		print "yes_weight:", yes_weight
 		print "no_weight :", no_weight
 		'''
-
 		last_condition, yes_no = DetermineLastCondition(parent)
 		
 		node = pydot.Node(title + "\n" + condition, style="filled", fillcolor="#00BFFF")
@@ -115,8 +124,11 @@ def IllustrateTree(nodes, identifier):
 		graph.add_edge(pydot.Edge(node, yes_node, label=yes_weight, labelfontcolor="#009933", fontsize="10.0", color="blue"))
 		graph.add_edge(pydot.Edge(node, no_node, label=no_weight, labelfontcolor="#009933", fontsize="10.0", color="blue"))
 		
-		if parent == 'True':
+		if parent == 'True': # account for the python tree
 			graph.add_edge(pydot.Edge(dictionary_of_nodes[parent][0], node))
+		elif parent == '(eTrue==0)': # account for the C++ tree
+			# remove the parenthesis from the parent...
+			graph.add_edge(pydot.Edge(dictionary_of_nodes[parent[1:-1]][0], node))
 		else:
 			for node_key in dictionary_of_nodes:
 				#print "node:", node
@@ -125,13 +137,23 @@ def IllustrateTree(nodes, identifier):
 					#print "FOUND IT!"
 					graph.add_edge(pydot.Edge(dictionary_of_nodes[node_key][0], node))
 					break
-		#print dictionary_of_nodes
 			
-	graph.write_png("CS_ADT_" + identifier + ".png")
+	graph.write_png(output_tree_file_name)
 
 def main():
-	nodes = PopulateNodes()
-	IllustrateTree(nodes, "Tree")
+	for i, arg in enumerate(sys.argv):
+		print "arg: %s: %s" % (i, arg) 
+	argc = len(sys.argv)
+	
+	if argc != 3:
+		Usage()
+		return
+	
+	input_tree_file_name = sys.argv[1]
+	output_tree_file_name = sys.argv[2]
+
+	nodes = PopulateNodes(input_tree_file_name)
+	IllustrateTree(output_tree_file_name, nodes)
 
 if __name__ == "__main__":
 	main()
