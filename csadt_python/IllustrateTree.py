@@ -41,13 +41,19 @@ def DetermineLastCondition(parent_line):
 	last_condition_end = 0
 	for character_index, character in enumerate(parent_line[condition_symbol_largest_index:]):
 		if character == ')':
-			last_condition_end = condition_symbol_largest_index + character_index - 1
+			last_condition_end = condition_symbol_largest_index + character_index
+			break
 	#print "last_condition_end:", last_condition_end
 	#print parent_line[last_condition_end]
 
+	last_condition = parent_line[last_condition_start:last_condition_end]
+
 	if parent_line[last_condition_start-4:last_condition_start-1] == 'not':
-		return parent_line[last_condition_start:last_condition_end], False
-	return parent_line[last_condition_start:last_condition_end], True
+		#print "NOT last_condition: ", last_condition
+		return last_condition, False
+
+	#print "    last_condition: ", last_condition
+	return last_condition, True
 
 def IllustrateTree(nodes, identifier):
 	graph = pydot.Dot(graph_type='digraph')
