@@ -5,8 +5,9 @@ rm -f ComparisonRecords.txt
 rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
-inputFile="../30.csv"
-numNodes="2"
+inputFile="../50.csv"
+#inputFile="../VA_UniqueGoodExplod_2009-2010-2012_Training.csv"
+numNodes="10"
 
 date
 python 1_CSVToText.py $inputFile Training.txt
@@ -36,7 +37,7 @@ then
     exit 1
 fi
 
-python IllustrateTree.py
+python IllustrateTree.py Tree.txt CS_ADT_Tree.png
 status=$?
 if (( status != 0 ))
 then
