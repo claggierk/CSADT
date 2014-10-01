@@ -1,8 +1,10 @@
 #!/bin/bash
 
-TreePYTHONReady="TreePYTHONReady.txt"
+rm *.png
+
+TreePYTHONReady="../translate-tree/TreePYTHONReady.txt"
 TreePYTHONGraph="TreePYTHON.png"
-TreeCPPReady="TreeCPPReady.txt"
+TreeCPPReady="../translate-tree/TreeCPPReady.txt"
 TreeCPPGraph="TreeCPP.png"
 
 date

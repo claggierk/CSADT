@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm Tree*.txt
+
 TreePYTHON="TreePYTHON.txt"
 TreePYTHONReady="TreePYTHONReady.txt"
 TreeCPP="TreeCPP.txt"

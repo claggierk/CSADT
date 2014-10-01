@@ -128,7 +128,6 @@ def IllustrateTree(output_tree_file_name, nodes):
 		if parent == '(True)': # account for the python tree
 			graph.add_edge(pydot.Edge(dictionary_of_nodes[parent][0], node))
 		elif parent == '(eTrue==0)': # account for the C++ tree
-			# remove the parenthesis from the parent...
 			graph.add_edge(pydot.Edge(dictionary_of_nodes[parent][0], node))
 		else:
 			for node_key in dictionary_of_nodes:
