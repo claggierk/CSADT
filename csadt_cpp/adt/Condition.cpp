@@ -151,7 +151,7 @@ ostream& operator<<(ostream& out, const Condition& i)
 {
 	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
 	if (i.getNotFlag()) {
-		out << "not(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
+		out << "(not(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << "))";
 	} else {
 		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
 	}

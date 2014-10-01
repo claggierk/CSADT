@@ -37,7 +37,7 @@ then
     exit 1
 fi
 
-python IllustrateTree.py Tree.txt CS_ADT_Tree.png
+python illustrate-tree/illustrate-tree.py Tree.txt CS_ADT_Tree.png
 status=$?
 if (( status != 0 ))
 then
