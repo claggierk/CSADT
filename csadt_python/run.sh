@@ -5,34 +5,34 @@ rm -f ComparisonRecords.txt
 rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
-inputFile="../50.csv"
+inputFile="../10.csv"
 #inputFile="../VA_UniqueGoodExplod_2009-2010-2012_Training.csv"
-numNodes="10"
+numNodes="2"
 
 date
-python 1_CSVToText.py $inputFile Training.txt
+python raw-data-to-text/1_CSVToText.py $inputFile Training.txt
 status=$?
 if (( status != 0 ))
 then
-    echo " ##### ERROR: 1_CSVToText.py failed"
+    echo " ##### ERROR: raw-data-to-text/1_CSVToText.py failed"
     date
     exit 1
 fi
 
-python 3_TextToComparisonPairs.py Training.txt ComparisonRecords.txt
+python compare-records/compare-pairs.py Training.txt ComparisonRecords.txt
 status=$?
 if (( status != 0 ))
 then
-    echo " ##### ERROR: 3_TextToComparisonPairs.py failed"
+    echo " ##### ERROR: compare-records/compare-pairs.py failed"
     date
     exit 1
 fi
 
-python 4_ComparisonPairsToTree.py ComparisonRecords.txt conditions.txt $numNodes Tree.txt
+python create-tree/create-tree.py ComparisonRecords.txt conditions.txt $numNodes Tree.txt
 status=$?
 if (( status != 0 ))
 then
-    echo " ##### ERROR: 4_ComparisonPairsToTree.py failed"
+    echo " ##### ERROR: create-tree/create-tree.py failed"
     date
     exit 1
 fi
@@ -41,16 +41,16 @@ python illustrate-tree/illustrate-tree.py Tree.txt CS_ADT_Tree.png
 status=$?
 if (( status != 0 ))
 then
-    echo " ##### ERROR: IllustrateTree.py failed"
+    echo " ##### ERROR: illustrate-tree/illustrate-tree.py failed"
     date
     exit 1
 fi
 
-python 5_TestingTextThroughTree.py $inputFile Tree.txt
+python classify-testing/classify-testing.py $inputFile Tree.txt
 status=$?
 if (( status != 0 ))
 then
-    echo " ##### ERROR: 5_TestingTextThroughTree.py failed"
+    echo " ##### ERROR: classify-testing/classify-testing.py failed"
     date
     exit 1
 fi

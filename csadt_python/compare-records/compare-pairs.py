@@ -4,8 +4,6 @@ import copy
 import string
 import re
 import math
-import adt
-import accuracy
 import pickle
 import levenshtein
 import adt_infrastructure
@@ -17,11 +15,6 @@ def Usage():
 	print "Usage  : python %s [text (.txt) input file] [text (.txt) output file]" % sys.argv[0]
 	print "Example: python %s Data.txt ComparisonRecords.txt" % sys.argv[0]
 	print "**************************************************"
-
-def run10FoldCrossValidation(inputFile, classifier):
-	learners = [classifier]
-	results = accuracy.crossValidation(inputFile, learners, 10)
-	return results
 
 def PopulateConditions(conditions_file):
 	conditions_list = []

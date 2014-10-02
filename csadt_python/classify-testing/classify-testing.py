@@ -4,11 +4,8 @@ import string
 import re
 import math
 import adt
-import accuracy
-#import orange
 import pickle
 import levenshtein
-import adt_infrastructure
 import csv
 
 global testingDataSet
