@@ -29,3 +29,5 @@ then
     date
     exit 1
 fi
+
+diff TreePYTHONReady.txt TreeCPPReady.txt

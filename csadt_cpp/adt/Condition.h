@@ -31,6 +31,7 @@ public:
 	bool getNotFlag() const;
 	void setNotFlag(const bool& n);
 	bool considerNotFlag(const bool& c) const;
+	string toString() const;
 
 	bool evaluate(const Instance& instance) const;
 

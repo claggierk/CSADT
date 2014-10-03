@@ -14,6 +14,7 @@ then
     $command
     command_status=$?
     echo "Command status: $command_status"
+    cp Conditions.txt ../../csadt_python/conditions-real-training.txt
 else
     echo "failed compilation"
 fi

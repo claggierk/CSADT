@@ -5,9 +5,9 @@ rm -f ComparisonRecords.txt
 rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
-inputFile="../10.csv"
+inputFile="../20.csv"
 #inputFile="../VA_UniqueGoodExplod_2009-2010-2012_Training.csv"
-numNodes="2"
+numNodes="5"
 
 date
 python raw-data-to-text/1_CSVToText.py $inputFile Training.txt

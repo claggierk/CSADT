@@ -1,1 +1,1 @@
-../GenerateInput/PersonDiff.cpp
+../generate-input/PersonDiff.cpp

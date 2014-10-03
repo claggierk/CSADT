@@ -14,7 +14,7 @@
 using namespace std;
 using namespace boost; 
 
-const unsigned NUM_THREADS = 4;
+const unsigned NUM_THREADS = 8;
 const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
 
 unsigned gNumRecords = 0;

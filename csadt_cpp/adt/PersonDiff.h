@@ -1,1 +1,1 @@
-../GenerateInput/PersonDiff.h
+../generate-input/PersonDiff.h

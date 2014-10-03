@@ -1,4 +1,6 @@
-#include <cstdlib>
+#include <sstream>
+
+using std::ostringstream;
 
 #include "Condition.h"
 #include "Instance.h"
@@ -129,6 +131,18 @@ bool Condition::evaluate(const Instance& instance) const
 	}
 }
 
+string Condition::toString() const
+{
+	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
+	ostringstream oss;
+	if (getNotFlag()) {
+		oss << "not(" << sPersonConditions[getIndex()] << getComparison() << getValue() << ")";
+	} else {
+		oss << sPersonConditions[getIndex()] << getComparison() << getValue();
+	}
+	return oss.str();
+}
+
 Condition& Condition::operator=(const Condition& c)
 {
 	value = c.getValue();
@@ -149,11 +163,6 @@ bool Condition::operator==(const Condition& c) {
 
 ostream& operator<<(ostream& out, const Condition& i)
 {
-	//out << "Condition: Attribute[" << i.getIndex() << "] ... " << sPersonConditions[i.getIndex()] << " " << i.getComparison() << " " << i.getValue();
-	if (i.getNotFlag()) {
-		out << "(not(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << "))";
-	} else {
-		out << "(" << sPersonConditions[i.getIndex()] << i.getComparison() << i.getValue() << ")";
-	}
+	out << "(" << i.toString() << ")";
 	return out;
 }

@@ -1,1 +1,1 @@
-../GenerateInput/Person.h
+../generate-input/Person.h

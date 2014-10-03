@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd GenerateUniqueCombinations && ./run.sh
-cd ../GenerateInput && ./run.sh
+cd generate-unique-pairs && ./run.sh
+cd ../generate-input && ./run.sh
 cd ../adt && ./run.sh

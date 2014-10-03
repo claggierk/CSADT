@@ -144,6 +144,18 @@ void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStat
     }
 }
 
+bool alreadyExists(const Condition& c, const unsigned& index)
+{
+    for(unsigned i = 0; i < gConditions.at(index).size(); i++)
+    {
+        if(gConditions.at(index).at(i) == c)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void GenerateConditions()
 {
     for(unsigned i = 0; i < eSizePersonAttributes; i++)
@@ -175,15 +187,37 @@ void GenerateConditions()
     
     for(unsigned i = 1; i < matchFeatureStats.size(); i++)
     {
+        if(i == eID || i == eDuplicateID)
+        {
+            continue;
+        }
         gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
         gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
         gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
     }
     for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
     {
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
+        if(i == eID || i == eDuplicateID)
+        {
+            continue;
+        }
+        Condition dummy1(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i);
+        if(!alreadyExists(dummy1, i))
+        {
+            gConditions.at(i).push_back(dummy1);
+        }
+
+        Condition dummy2(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i);
+        if(!alreadyExists(dummy2, i))
+        {
+            gConditions.at(i).push_back(dummy2);
+        }
+
+        Condition dummy3(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i);
+        if(!alreadyExists(dummy3, i))
+        {
+            gConditions.at(i).push_back(dummy3);
+        }
     }
 }
 
@@ -248,7 +282,7 @@ int main(int argc, char* argv[])
     {
         for(unsigned j = 0; j < gConditions.at(i).size(); j++)
         {
-            fout << gConditions.at(i).at(j) << endl;
+            fout << gConditions.at(i).at(j).toString() << endl;
         }
     }
 

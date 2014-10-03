@@ -1,6 +1,1 @@
-eNameTitle==0
-eNameTitle>1
-eFirstName==0
-eMiddleName==0
-eLastName==0
-eTrue==0
+conditions-real-training.txt

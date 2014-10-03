@@ -1,1 +1,1 @@
-../GenerateInput/Person.cpp
+../generate-input/Person.cpp
