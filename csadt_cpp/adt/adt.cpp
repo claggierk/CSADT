@@ -26,7 +26,7 @@ vector<Instance> gMatches;
 vector<Instance> gNonMatches;
 
 // for each attribute, there is a vector of Conditions
-vector< vector<Condition> > gConditions;
+vector< vector<Condition> > gAvailableConditions;
 
 vector<Precondition> gPreconditionsUsed;
 Precondition gPreconditionChosen;
@@ -241,7 +241,7 @@ void GenerateConditions()
     for(unsigned i = 0; i < eSizePersonAttributes; i++)
     {
         vector<Condition> dummy;
-        gConditions.push_back(dummy);
+        gAvailableConditions.push_back(dummy);
     }
 
     bool populateConditionsFromFile = true;
@@ -275,7 +275,7 @@ void GenerateConditions()
                     continue;
                 }
                 cerr << endl << "Adding the following condition: " << extractedCondition;
-                gConditions.at(extractedCondition.getIndex()).push_back(extractedCondition);
+                gAvailableConditions.at(extractedCondition.getIndex()).push_back(extractedCondition);
             }
         }
         else
@@ -285,48 +285,6 @@ void GenerateConditions()
 
         conditionsFileHandler.close();
     }
-
-    /*
-    vector<FeatureStats> matchFeatureStats;
-    PopulateFeatureStatus(gMatches, matchFeatureStats);
-    //cerr << "Size of matchFeatureStats: " << matchFeatureStats.size() << endl;
-    //cerr << matchFeatureStats.at(0);
-
-    vector<FeatureStats> nonMatchFeatureStats;
-    PopulateFeatureStatus(gNonMatches, nonMatchFeatureStats);
-    //cerr << "Size of nonMatchFeatureStats: " << nonMatchFeatureStats.size() << endl;
-    //cerr << nonMatchFeatureStats.at(0);
-
-    if(matchFeatureStats.size() == nonMatchFeatureStats.size())
-    {
-        unsigned numAttributes = matchFeatureStats.size();
-        for(unsigned i = 0; i < numAttributes; i++)
-        {
-            vector<Condition> dummy;
-            gConditions.push_back(dummy);
-        }
-    }
-    else
-    {
-        cerr << "##### ERROR: number of attributes disagreement" << endl;
-        exit_now();
-    }
-    
-    for(unsigned i = 1; i < matchFeatureStats.size(); i++)
-    {
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(matchFeatureStats.at(i).getMean()+0.5f), ">", i));
-        cerr << endl << "Adding the following condition: " << gConditions.at(i).back();
-    }
-    for(unsigned i = 0; i < nonMatchFeatureStats.size(); i++)
-    {
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "==", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), "<", i));
-        gConditions.at(i).push_back(Condition(static_cast<unsigned>(nonMatchFeatureStats.at(i).getMean()+0.5f), ">", i));
-    }
-    */
 }
 
 double SetInitialWeights()
@@ -567,19 +525,19 @@ float outputCalcZ(const Precondition& p, Condition c)
 void PrintConditionInfo()
 {
     unsigned numConditions = 0;
-    for(unsigned j = 0; j < gConditions.size(); j++)
+    for(unsigned j = 0; j < gAvailableConditions.size(); j++)
     {
-        numConditions += gConditions.at(j).size();
+        numConditions += gAvailableConditions.at(j).size();
     }
     cerr << "Considering " << numConditions << " conditions... " << endl;
 
-    for(unsigned j = 0; j < gConditions.size(); j++)
+    for(unsigned j = 0; j < gAvailableConditions.size(); j++)
     {
-        numConditions = numConditions + gConditions.at(j).size();
+        numConditions = numConditions + gAvailableConditions.at(j).size();
         cerr <<  " Conditions relating to " << sPersonConditions[j] << ":" << endl;
-        for(unsigned k = 0; k < gConditions.at(j).size(); k++)
+        for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
         {
-            cerr << "   " << gConditions.at(j).at(k) << " ";
+            cerr << "   " << gAvailableConditions.at(j).at(k) << " ";
         }
         cerr << endl;
     }
@@ -589,11 +547,11 @@ void PrintGConditions()
 {
     cerr << endl;
     cerr << endl <<  " ***** Available Conditions:";
-    for(unsigned i = 0; i < gConditions.size(); i++)
+    for(unsigned i = 0; i < gAvailableConditions.size(); i++)
     {
-        for(unsigned j = 0; j < gConditions.at(i).size(); j++)
+        for(unsigned j = 0; j < gAvailableConditions.at(i).size(); j++)
         {
-            cerr << endl << " *********** " << gConditions.at(i).at(j);
+            cerr << endl << " *********** " << gAvailableConditions.at(i).at(j);
         }
     }
     cerr << endl;
@@ -608,17 +566,26 @@ void computeArgMin()
 
     vector<ZValue> zvalues;
 
+    // this is so awful!
+    // needs to be sorted out... also need to kick this off in threads
     //find best preCondition and condition
+
+    // traversing the tree, check at the end of every precondition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
-        for(unsigned j = 0; j < gConditions.size(); j++)
+        // consider all conditions at the end of each precondition
+        // conditions are broken into a multi-dimensional vector
+        // for every type of condition (ie zipcode)
+        for(unsigned j = 0; j < gAvailableConditions.size(); j++)
         {
-            for(unsigned k = 0; k < gConditions.at(j).size(); k++)
+            // for each legitimate condition (ie zipcode < 3, zipcode < 4, etc)
+            for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
             {
                 bool conditionAlreadyUsed = false;
+                // need to update gConditions to just be gAvailableConditions
                 for(unsigned x = 0; x < gConditionsAlreadySelected.size(); x++)
                 {
-                    if(gConditionsAlreadySelected.at(x) == gConditions.at(j).at(k))
+                    if(gConditionsAlreadySelected.at(x) == gAvailableConditions.at(j).at(k))
                     {
                         conditionAlreadyUsed = true;
                         break;
@@ -631,8 +598,8 @@ void computeArgMin()
 
                 zValuesConsidered++;
 
-                float z = calcZ(gPreconditionsUsed.at(i), gConditions.at(j).at(k));
-                zvalues.push_back(ZValue(gPreconditionsUsed.at(i), gConditions.at(j).at(k), z));
+                float z = calcZ(gPreconditionsUsed.at(i), gAvailableConditions.at(j).at(k));
+                zvalues.push_back(ZValue(gPreconditionsUsed.at(i), gAvailableConditions.at(j).at(k), z));
             }
         }
     }
