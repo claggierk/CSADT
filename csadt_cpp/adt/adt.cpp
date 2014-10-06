@@ -112,48 +112,7 @@ void PopulateInstances(string fileName)
 	
 	fin.close();
 }
-/*
-void PopulateFeatureStatus(const vector<Instance>& instances, vector<FeatureStats>& fs)
-{
-    vector<unsigned> attributes = instances.at(0).getAttributes();
-    for(unsigned j = 0; j < attributes.size(); j++)
-    {
-                                //myIndex, mySum,      mySqSum,                             myMin             myMax,            myMean, myStdDev
-        fs.push_back(FeatureStats(j, attributes.at(j), attributes.at(j) * attributes.at(j), attributes.at(j), attributes.at(j), 0.0f, 0.0f));
-    }
 
-    for(unsigned i = 1; i < instances.size(); i++)
-    {
-        vector<unsigned> attributes = instances.at(i).getAttributes();
-        for(unsigned j = 0; j < attributes.size(); j++)
-        {
-            // update the sum
-            fs.at(j).setSum(fs.at(j).getSum() + attributes.at(j));
-
-            // update the squared sum
-            fs.at(j).setSqSum(fs.at(j).getSqSum() + attributes.at(j) * attributes.at(j));            
-
-            // update the min (if its smaller)
-            if(attributes.at(j) < fs.at(j).getMin())
-            {
-                fs.at(j).setMin(attributes.at(j));
-            }
-
-            // update the max (if its smaller)
-            if(attributes.at(j) > fs.at(j).getMax())
-            {
-                fs.at(j).setMax(attributes.at(j));
-            }
-        }
-    }
-
-    for(unsigned i = 0; i < fs.size(); i++)
-    {
-        fs.at(i).setMean((double)fs.at(i).getSum() / (double)instances.size());
-        fs.at(i).setStdDev((double)fs.at(i).getSqSum() / (double)instances.size());
-    }
-}
-*/
 string DetermineUniqueConditionSymbols()
 {
     string uniqueConditionSymbols = "";
