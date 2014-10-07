@@ -9,6 +9,7 @@
 #include <csignal>
 #include <execinfo.h>
 #include <unistd.h>
+#include <limits>
 
 #include "Instance.h"
 #include "Condition.h"
@@ -529,6 +530,12 @@ void computeArgMin()
     // needs to be sorted out... also need to kick this off in threads
     //find best preCondition and condition
 
+    unsigned conditionIndex1 = 0;
+    unsigned conditionIndex2 = 0;
+
+    // the z-value is defaulted to the max double!
+    ZValue minZ;
+
     // traversing the tree, check at the end of every precondition
     for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
     {
@@ -540,51 +547,28 @@ void computeArgMin()
             // for each legitimate condition (ie zipcode < 3, zipcode < 4, etc)
             for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
             {
-                bool conditionAlreadyUsed = false;
-                // need to update gConditions to just be gAvailableConditions
-                for(unsigned x = 0; x < gConditionsAlreadySelected.size(); x++)
-                {
-                    if(gConditionsAlreadySelected.at(x) == gAvailableConditions.at(j).at(k))
-                    {
-                        conditionAlreadyUsed = true;
-                        break;
-                    }
-                }
-                if(conditionAlreadyUsed)
-                {
-                    continue;
-                }
-
                 zValuesConsidered++;
 
                 float z = calcZ(gPreconditionsUsed.at(i), gAvailableConditions.at(j).at(k));
-                zvalues.push_back(ZValue(gPreconditionsUsed.at(i), gAvailableConditions.at(j).at(k), z));
+                if(z < minZ.GetZ())
+                {
+                    minZ.SetPrecondition(gPreconditionsUsed.at(i));
+                    minZ.SetCondition(gAvailableConditions.at(j).at(k));
+                    minZ.SetZ(z);
+
+                    // save these off so we can ultimately remove the seleted condition from gAvailableConditions
+                    conditionIndex1 = j;
+                    conditionIndex2 = k;
+                }
             }
         }
     }
-    
-    sort(zvalues.begin(), zvalues.end(), sortZValue);
-    Precondition bestP = zvalues.at(0).GetPrecondition();
-    Condition bestC = zvalues.at(0).GetCondition();
-    float lowestZValue = zvalues.at(0).GetZ();
 
-    for(unsigned i = 0; i < zvalues.size(); i++)
-    {
-        cerr << endl;
-        cerr << endl << " ZVALUE: " << zvalues.at(i).GetZ();
-        outputCalcZ(zvalues.at(i).GetPrecondition(), zvalues.at(i).GetCondition());
-    }
+    // remove the most recently selected condition from gAvailableConditions (cannot choose the same condition more than once)
+    gAvailableConditions.at(conditionIndex1).erase(gAvailableConditions.at(conditionIndex1).begin() + conditionIndex2);
 
-    cerr << endl;
-    cerr << endl << " Considering " << zValuesConsidered << " z-values...";
-    for(unsigned i = 0; i < zvalues.size(); i++)
-    {
-        cerr << endl << "d1: " << zvalues.at(i).GetPrecondition() << " --- d2: " << zvalues.at(i).GetCondition() << " --- zvalue: " << zvalues.at(i).GetZ();  
-    }
-    
-    gPreconditionChosen = bestP;
-    gConditionChosen = bestC;
-    cerr <<  endl << " ^^^^^^^^^^ lowestZValue: " << lowestZValue << endl; 
+    gPreconditionChosen = minZ.GetPrecondition();
+    gConditionChosen = minZ.GetCondition();
     outputCalcZ(gPreconditionChosen, gConditionChosen);
 
     gConditionsAlreadySelected.push_back(gConditionChosen);
