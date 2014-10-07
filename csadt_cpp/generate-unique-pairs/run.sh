@@ -20,11 +20,11 @@ then
         echo "Copied UniqueCombinations.txt into ../generate-input/"
     else
         echo "failed $command"
-        return 1
+        exit 1
     fi
 else
     echo "failed compilation"
-    return 2
+    exit 2
 fi
 
 echo " *******************************************************"
