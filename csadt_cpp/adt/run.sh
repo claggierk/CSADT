@@ -6,7 +6,7 @@ echo " ***** adt *********************************************"
 
 numTreeNodes="5"
 
-g++ -rdynamic *.h *.cpp -o adt
+g++ -rdynamic *.h *.cpp -o adt -I /usr/local/include -L /usr/local/lib -l boost_thread -l boost_system
 compiled_status=$?
 if [[ $compiled_status -eq 0 ]]
 then

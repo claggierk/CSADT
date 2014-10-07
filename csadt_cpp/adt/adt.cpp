@@ -1,3 +1,4 @@
+#include <boost/thread.hpp>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -19,6 +20,9 @@
 #include "ZValue.h"
 
 using namespace std;
+using namespace boost;
+
+unsigned NUM_THREADS = 8;
 
 const unsigned MAX_FEATURE_COUNT = 128;
 const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
@@ -30,8 +34,11 @@ vector<Instance> gNonMatches;
 vector< vector<Condition> > gAvailableConditions;
 
 vector<Precondition> gPreconditionsUsed;
+
+vector<ZValue> gMinZValues;
 Precondition gPreconditionChosen;
 Condition gConditionChosen;
+
 vector<Condition> gConditionsAlreadySelected;
 vector<Condition> gPAndCChosen;
 vector<Condition> gPandNotCChosen;
@@ -519,56 +526,88 @@ void PrintGConditions()
 
 bool sortZValue(ZValue z1, ZValue z2) { return z1.GetZ() < z2.GetZ(); }
 
+void computeZValues(unsigned threadNumber)
+{
+    // the z-value is defaulted to the max double!
+    ZValue minZ;
+
+    // consider all conditions at the end of each precondition
+    // conditions are broken into a multi-dimensional vector
+    // for every type of condition (ie zipcode)
+    for(unsigned j = 0; j < gAvailableConditions.size(); j++)
+    {
+        // for each legitimate condition (ie zipcode < 3, zipcode < 4, etc)
+        for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
+        {
+            float z = calcZ(gPreconditionsUsed.at(threadNumber), gAvailableConditions.at(j).at(k));
+            if(z < minZ.GetZ())
+            {
+                minZ.SetPrecondition(gPreconditionsUsed.at(threadNumber));
+                minZ.SetCondition(gAvailableConditions.at(j).at(k));
+                minZ.SetZ(z);
+                // save these off so we can ultimately remove the selected condition from gAvailableConditions
+                minZ.SetOuterIndex(j);
+                minZ.SetInnerIndex(k);
+            }
+        }
+    }
+    gMinZValues.at(threadNumber) = minZ;
+}
+
 void computeArgMin()
 {
     //PrintConditionInfo();
-    unsigned zValuesConsidered = 0;
-
-    vector<ZValue> zvalues;
 
     // this is so awful!
     // needs to be sorted out... also need to kick this off in threads
     //find best preCondition and condition
 
-    unsigned conditionIndex1 = 0;
-    unsigned conditionIndex2 = 0;
-
-    // the z-value is defaulted to the max double!
-    ZValue minZ;
-
+    // ***************************************************
+    // ***************************************************
+    // ***************************************************
+    //NUM_THREADS = gAvailableConditions.size();
     // traversing the tree, check at the end of every precondition
-    for(unsigned i = 0; i < gPreconditionsUsed.size(); i++)
+    NUM_THREADS = gPreconditionsUsed.size();
+    gMinZValues.clear();
+    gMinZValues.resize(NUM_THREADS);
+    vector<thread*> threadPtrs(NUM_THREADS);
+
+    // kick off all the threads
+    for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
     {
-        // consider all conditions at the end of each precondition
-        // conditions are broken into a multi-dimensional vector
-        // for every type of condition (ie zipcode)
-        for(unsigned j = 0; j < gAvailableConditions.size(); j++)
+        cerr << endl << "***** Starting Thread";
+        cerr << endl << "       --- Considering precondition: " << gPreconditionsUsed.at(threadNumber);
+        threadPtrs.at(threadNumber) = new thread(computeZValues, threadNumber);
+        usleep(1000); // microseconds
+    }
+
+    for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
+    {
+        threadPtrs.at(threadNumber)->join();
+        delete threadPtrs.at(threadNumber);
+        threadPtrs.at(threadNumber) = NULL;
+    }
+    threadPtrs.clear();
+    // ***************************************************
+    // ***************************************************
+    // ***************************************************
+
+    ZValue minZ(gMinZValues.at(0));
+    for(unsigned threadMinZIndex = 1; threadMinZIndex < gMinZValues.size(); threadMinZIndex++)
+    {
+        if(gMinZValues.at(threadMinZIndex).GetZ() < minZ.GetZ())
         {
-            // for each legitimate condition (ie zipcode < 3, zipcode < 4, etc)
-            for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
-            {
-                zValuesConsidered++;
-
-                float z = calcZ(gPreconditionsUsed.at(i), gAvailableConditions.at(j).at(k));
-                if(z < minZ.GetZ())
-                {
-                    minZ.SetPrecondition(gPreconditionsUsed.at(i));
-                    minZ.SetCondition(gAvailableConditions.at(j).at(k));
-                    minZ.SetZ(z);
-
-                    // save these off so we can ultimately remove the seleted condition from gAvailableConditions
-                    conditionIndex1 = j;
-                    conditionIndex2 = k;
-                }
-            }
+            minZ = gMinZValues.at(threadMinZIndex);
         }
     }
 
     // remove the most recently selected condition from gAvailableConditions (cannot choose the same condition more than once)
-    gAvailableConditions.at(conditionIndex1).erase(gAvailableConditions.at(conditionIndex1).begin() + conditionIndex2);
+    gAvailableConditions.at( minZ.GetOuterIndex() ).erase( gAvailableConditions.at(minZ.GetOuterIndex()).begin() + minZ.GetInnerIndex() );
 
     gPreconditionChosen = minZ.GetPrecondition();
     gConditionChosen = minZ.GetCondition();
+    cerr << endl << " ***** Selected: " << gConditionChosen;
+
     outputCalcZ(gPreconditionChosen, gConditionChosen);
 
     gConditionsAlreadySelected.push_back(gConditionChosen);
