@@ -33,13 +33,12 @@ vector<Instance> gNonMatches;
 // for each attribute, there is a vector of Conditions
 vector< vector<Condition> > gAvailableConditions;
 
-vector<Precondition> gPreconditionsUsed;
+vector<Precondition> gPreconditions;
 
 vector<ZValue> gMinZValues;
 Precondition gPreconditionChosen;
 Condition gConditionChosen;
 
-vector<Condition> gConditionsAlreadySelected;
 vector<Condition> gPAndCChosen;
 vector<Condition> gPandNotCChosen;
 vector<Rule> gRules;
@@ -526,7 +525,7 @@ void PrintGConditions()
 
 bool sortZValue(ZValue z1, ZValue z2) { return z1.GetZ() < z2.GetZ(); }
 
-void computeZValues(unsigned threadNumber)
+void determineLocalMinZValue(unsigned threadNumber)
 {
     // the z-value is defaulted to the max double!
     ZValue minZ;
@@ -539,15 +538,16 @@ void computeZValues(unsigned threadNumber)
         // for each legitimate condition (ie zipcode < 3, zipcode < 4, etc)
         for(unsigned k = 0; k < gAvailableConditions.at(j).size(); k++)
         {
-            float z = calcZ(gPreconditionsUsed.at(threadNumber), gAvailableConditions.at(j).at(k));
+            float z = calcZ(gPreconditions.at(threadNumber), gAvailableConditions.at(j).at(k));
             if(z < minZ.GetZ())
             {
-                minZ.SetPrecondition(gPreconditionsUsed.at(threadNumber));
+                minZ.SetPrecondition(gPreconditions.at(threadNumber));
                 minZ.SetCondition(gAvailableConditions.at(j).at(k));
                 minZ.SetZ(z);
                 // save these off so we can ultimately remove the selected condition from gAvailableConditions
-                minZ.SetOuterIndex(j);
-                minZ.SetInnerIndex(k);
+                minZ.SetPreconditionIndex(threadNumber);
+                minZ.SetConditionOuterIndex(j);
+                minZ.SetConditionInnerIndex(k);
             }
         }
     }
@@ -567,7 +567,7 @@ void computeArgMin()
     // ***************************************************
     //NUM_THREADS = gAvailableConditions.size();
     // traversing the tree, check at the end of every precondition
-    NUM_THREADS = gPreconditionsUsed.size();
+    NUM_THREADS = gPreconditions.size();
     gMinZValues.clear();
     gMinZValues.resize(NUM_THREADS);
     vector<thread*> threadPtrs(NUM_THREADS);
@@ -576,8 +576,8 @@ void computeArgMin()
     for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
     {
         cerr << endl << "***** Starting Thread";
-        cerr << endl << "       --- Considering precondition: " << gPreconditionsUsed.at(threadNumber);
-        threadPtrs.at(threadNumber) = new thread(computeZValues, threadNumber);
+        cerr << endl << "       --- Considering precondition: " << gPreconditions.at(threadNumber);
+        threadPtrs.at(threadNumber) = new thread(determineLocalMinZValue, threadNumber);
         usleep(1000); // microseconds
     }
 
@@ -601,16 +601,26 @@ void computeArgMin()
         }
     }
 
-    // remove the most recently selected condition from gAvailableConditions (cannot choose the same condition more than once)
-    gAvailableConditions.at( minZ.GetOuterIndex() ).erase( gAvailableConditions.at(minZ.GetOuterIndex()).begin() + minZ.GetInnerIndex() );
-
     gPreconditionChosen = minZ.GetPrecondition();
     gConditionChosen = minZ.GetCondition();
-    cerr << endl << " ***** Selected: " << gConditionChosen;
+    cerr << endl << "       selected precondition: " << gPreconditionChosen;
+    cerr << endl << "       selected condition   : " << gConditionChosen;
+
+    if(gPreconditionChosen == gPreconditions.at(0))
+    {
+        // do not remove the "True" precondition
+    }
+    else
+    {
+        // remove the most recently selected precondition
+        cerr << endl << "          Removing precondition: " << gPreconditionChosen << " from the preconditions.";
+        gPreconditions.erase(gPreconditions.begin() + minZ.GetPreconditionIndex());
+    }
+    // remove the most recently selected condition from gAvailableConditions (cannot choose the same condition more than once)
+    cerr << endl << "          Removing condition: " << gConditionChosen << " from the available conditions.";
+    gAvailableConditions.at( minZ.GetConditionOuterIndex() ).erase( gAvailableConditions.at(minZ.GetConditionOuterIndex()).begin() + minZ.GetConditionInnerIndex() );
 
     outputCalcZ(gPreconditionChosen, gConditionChosen);
-
-    gConditionsAlreadySelected.push_back(gConditionChosen);
 }
 
 bool isPreconditionInVectorOfPreconditions(Precondition& p, vector<Precondition>& vp) {
@@ -634,16 +644,16 @@ void createAndUpdategPAndCAndgPandNotC() {
     pAndNotC.push_back(notC);
     gPAndCChosen = pAndC;
     gPandNotCChosen = pAndNotC;
-    //Add them to gPreconditionsUsed
+    //Add them to gPreconditions
     Precondition pAndCAsPrecondition = Precondition(pAndC);
     Precondition pAndNotCAsPrecondition = Precondition(pAndNotC);
-    if (not isPreconditionInVectorOfPreconditions(pAndCAsPrecondition, gPreconditionsUsed))
+    if (not isPreconditionInVectorOfPreconditions(pAndCAsPrecondition, gPreconditions))
     {
-        gPreconditionsUsed.push_back(pAndCAsPrecondition);
+        gPreconditions.push_back(pAndCAsPrecondition);
     }
-    if (not isPreconditionInVectorOfPreconditions(pAndNotCAsPrecondition, gPreconditionsUsed))
+    if (not isPreconditionInVectorOfPreconditions(pAndNotCAsPrecondition, gPreconditions))
     {
-        gPreconditionsUsed.push_back(pAndNotCAsPrecondition);
+        gPreconditions.push_back(pAndNotCAsPrecondition);
     }
 }
 
@@ -716,7 +726,7 @@ void updateWeights(float costPlus, float costMinus) {
 void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
 {
     //clear global vars that will be modified and used
-    gPreconditionsUsed.clear();
+    gPreconditions.clear();
     gPreconditionChosen.Clear();
     gConditionChosen = Condition();
     gPAndCChosen.clear();
@@ -747,7 +757,7 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
 
     gRules.push_back(Rule(tAsAPrecondition, t, alpha1, alpha2));
     //cerr << "##### ERROR: The number of conditions the preconditon has for the initial rule (should be 1): " << gRules.at(0).getPrecondition().size() << endl;
-    gPreconditionsUsed.push_back(tAsAPrecondition);
+    gPreconditions.push_back(tAsAPrecondition);
     //create remaining rules
     for(unsigned i = 0; i < numTreeNodes; i++)
     {
@@ -766,28 +776,14 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
         cerr << "alpha2 numerator   : " << (costPlus * wPlus(gPandNotCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha2 denominator : " << (costMinus * wMinus(gPandNotCChosen, "and") + smoothFactor) << endl;
         cerr << "alpha2      : " << alpha2 << endl;
-        //cerr << "+++++++++++++++++++++++ Sending in this condition to gRules: " << gConditionsAlreadySelected.back() << endl;
-        //gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
-        gRules.push_back(Rule(gPreconditionChosen, gConditionsAlreadySelected.back(), alpha1, alpha2));
-        //cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
+        gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
+        cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
         updateWeights(costPlus, costMinus);
-
-        //for (unsigned j = 0; j < gPreconditionsUsed.size(); j++) {
-        //    cerr << i << "th iteration: gPreconditionsUsed[" << j << "]: " << gPreconditionsUsed.at(j) << endl;
-        //}
     }
 
     cerr << endl;
     cerr << endl;
     //DisplayWeights();
-
-    cerr << endl;
-    cerr << " ***** Selected Conditions:" << endl;
-    for(unsigned i = 0; i < gConditionsAlreadySelected.size(); i++)
-    {
-        cerr << " ***** " << gConditionsAlreadySelected.at(i) << endl;
-    }
-    cerr << endl;
 }
 
 void usage()

@@ -7,7 +7,6 @@
 #include "Precondition.h"
 #include "Condition.h"
 
-
 class ZValue
 {
 public:
@@ -19,16 +18,17 @@ public:
         p = zValue.GetPrecondition();
         c = zValue.GetCondition();
         z = zValue.GetZ();
-        outerIndex = zValue.GetOuterIndex();
-        innerIndex = zValue.GetInnerIndex();
+        preconditionIndex = zValue.GetPreconditionIndex();
+        conditionOuterIndex = zValue.GetConditionOuterIndex();
+        conditionInnerIndex = zValue.GetConditionInnerIndex();
     }
 
-    ZValue(Precondition precondition, Condition condition, double myZ, unsigned outer, unsigned inner)
-        : p(precondition), c(condition), z(myZ), outerIndex(outer), innerIndex(inner)
+    ZValue(Precondition precondition, Condition condition, double myZ, unsigned preCondIndex, unsigned conditionOuter, unsigned conditionInner)
+        : p(precondition), c(condition), z(myZ), preconditionIndex(preCondIndex), conditionOuterIndex(conditionOuter), conditionInnerIndex(conditionInner)
     {}
 
     ZValue(Precondition precondition, Condition condition)
-        : p(precondition), c(condition), z(std::numeric_limits<double>::max()), outerIndex(0), innerIndex(0)
+        : p(precondition), c(condition), z(std::numeric_limits<double>::max()), preconditionIndex(0), conditionOuterIndex(0), conditionInnerIndex(0)
     {
         std::cerr << endl << "Set z-value to max double" << endl;
     }
@@ -36,22 +36,26 @@ public:
 
     Condition GetCondition() const { return c; }
     double GetZ() const { return z; }
-    unsigned GetOuterIndex() const { return outerIndex; }
-    unsigned GetInnerIndex() const { return innerIndex; }
+    unsigned GetPreconditionIndex() const { return preconditionIndex; }
+    unsigned GetConditionOuterIndex() const { return conditionOuterIndex; }
+    unsigned GetConditionInnerIndex() const { return conditionInnerIndex; }
 
     void SetPrecondition(const Precondition& precondition) { p = precondition; }
     void SetCondition(const Condition& condition) { c = condition; }
     void SetZ(const double& myZ) { z = myZ; }
-    void SetOuterIndex(const unsigned& outer) { outerIndex = outer; }
-    void SetInnerIndex(const unsigned& inner) { innerIndex = inner; }
+    void SetPreconditionIndex(const unsigned& preCondIndex) { preconditionIndex = preCondIndex; }
+    void SetConditionOuterIndex(const unsigned& conditionOuter) { conditionOuterIndex = conditionOuter; }
+    void SetConditionInnerIndex(const unsigned& conditionInner) { conditionInnerIndex = conditionInner; }
 
     ZValue& operator=(const ZValue& zValue)
     {
         p = zValue.GetPrecondition();
         c = zValue.GetCondition();
         z = zValue.GetZ();
-        outerIndex = zValue.GetOuterIndex();
-        innerIndex = zValue.GetInnerIndex();
+
+        preconditionIndex = zValue.GetPreconditionIndex();
+        conditionOuterIndex = zValue.GetConditionOuterIndex();
+        conditionInnerIndex = zValue.GetConditionInnerIndex();
         return *this;
     }
 
@@ -60,8 +64,9 @@ private:
     Condition c;
     double z;
 
-    unsigned outerIndex;
-    unsigned innerIndex;
+    unsigned preconditionIndex;
+    unsigned conditionOuterIndex;
+    unsigned conditionInnerIndex;
 };
 
 #endif
