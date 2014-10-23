@@ -57,6 +57,8 @@ def main():
 		# test unique combinations for record linkage (duplicates)
 		combination_pairs = []
 		total_processed = 0
+		number_of_matches = 0
+		number_of_nonmatches = 0
 		for combination_1 in range(num_records):
 			total_processed = total_processed + (num_records - combination_1) - 1
 			percent_complete = float(total_processed) / float(num_combinations) * 100
@@ -66,8 +68,10 @@ def main():
 				#import pdb; pdb.set_trace()
 				if levenshtein.Compute_Levenshtein_Distance(records[combination_1]["eDuplicateID"], records[combination_2]["eDuplicateID"]) == 0:
 					tempDictionary['class'] = 'SAME'
+					number_of_matches += 1
 				else:
 					tempDictionary['class'] = 'DIFFERENT'
+					number_of_nonmatches += 1
 				for key in keys:
 					levenshtein_distance = levenshtein.Compute_Levenshtein_Distance(records[combination_1][key], records[combination_2][key])
 					tempDictionary[key] = levenshtein_distance
@@ -82,7 +86,7 @@ def main():
 
 		print " ********** Running CSADT on %s combination pairs..." % len(trainingDataSet)
 		#keys.remove("ID") # need to remove the key "ID" since it has no bearing anymore (and is not a key in the trainingDataSet dictionary)
-		adt_infrastructure.OutputRecordsToFile(trainingDataSet, output_file, combination_pairs, keys)
+		adt_infrastructure.OutputRecordsToFile(trainingDataSet, output_file, combination_pairs, keys, number_of_matches, number_of_nonmatches)
 	else:
 		Usage()
 		return

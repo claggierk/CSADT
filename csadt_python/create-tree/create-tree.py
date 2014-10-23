@@ -42,7 +42,7 @@ def main():
 	output_file = sys.argv[4]
 	
 	if os.path.exists(input_file):
-		trainingComparisonPairs = adt_infrastructure.BuildComparisonPairsDataStructure(input_file)
+		number_of_matches, number_of_non_matches, trainingComparisonPairs = adt_infrastructure.BuildComparisonPairsDataStructure(input_file)
 		print trainingComparisonPairs["0-1"]
 		
 		allConditions = PopulateConditions(conditions_file)

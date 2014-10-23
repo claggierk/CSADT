@@ -27,15 +27,14 @@ def BuildDataStructure(input_file):
 
 def BuildComparisonPairsDataStructure(input_file):
 	file_handler = open(input_file, 'r')
-	
 	lines = file_handler.readlines()
-	
-	first_line = lines[0]
-	first_line = first_line.strip()
-	keys = first_line.split("|")
+	number_of_matches = lines[0].split()[0]
+	number_of_non_matches = lines[0].split()[1]
+		
+	keys = lines[1].strip().split("|")
 	
 	trainingComparisonPairs = {}
-	for line_index, line in enumerate(lines[1:]):		
+	for line_index, line in enumerate(lines[2:]):		
 		line = line.strip()
 		cell_values = line.split("|")
 
@@ -49,11 +48,12 @@ def BuildComparisonPairsDataStructure(input_file):
 	
 	file_handler.close()
 	
-	return trainingComparisonPairs
+	return number_of_matches, number_of_non_matches, trainingComparisonPairs
 
 
-def OutputRecordsToFile(records, tabulated_file, record_pairs, features):
+def OutputRecordsToFile(records, tabulated_file, record_pairs, features, number_of_matches, number_of_nonmatches):
 	file_handler = open(tabulated_file, 'w')
+	file_handler.write("%s %s\n" % (number_of_matches, number_of_nonmatches))
 	file_handler.write("CombinationID|classification|")
 	file_handler.write("%s\n" % "|".join(features))
 	

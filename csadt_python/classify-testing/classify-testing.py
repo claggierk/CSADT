@@ -159,8 +159,8 @@ def main():
 			print "Number of predicted matches   : %s" % number_of_predicted_matches
 			print "Number of predicted nonmatches: %s" % number_of_predicted_nonmatches
 			print ""
-			print "True Positives                : %s" % true_positives
-			print "True Negatives                : %s" % true_negatives
+			print "True Positives                : %s of %s detected (%s%%)" % (true_positives, number_of_matches, float(true_positives) / float(number_of_matches) * 100.0)
+			print "True Negatives                : %s of %s detected (%s%%)" % (true_negatives, number_of_nonmatches, float(true_negatives) / float(number_of_nonmatches) * 100.0)
 			print ""
 			print "False Positives               : %s" % false_positives
 			print "False Negatives               : %s" % false_negatives
