@@ -1,0 +1,4 @@
+There is always more to do. This file is a simple list for myself to remember where I left off and what still needs done.
+ - Improve classify-test to NOT have to take the levenshtein distance of all the instances again
+ - compare non-threaded to threaded minZ values
+ - export environment variables so that both the python and c++ run scripts can source them for common variables
