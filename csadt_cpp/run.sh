@@ -41,5 +41,29 @@ fi
 
 cd ../
 python ../csadt_python/translate-tree/translate-tree.py adt/Tree.txt TreeCPPReady.txt
-python ../csadt_python/classify-testing/classify-testing.py ../VA_UniqueGoodExplod_2009-2010-2012_Training.csv TreeCPPReady.txt
-#python ../csadt_python/classify-testing/classify-testing.py ../20.csv TreeCPPReady.txt
+status=$?
+if (( status != 0 ))
+then
+    echo " ##### ERROR: translate-tree/translate-tree.py failed"
+    date
+    exit 1
+fi
+
+python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt
+status=$?
+if (( status != 0 ))
+then
+    echo " ##### ERROR: classification-accuracy/classification-accuracy.py failed"
+    date
+    exit 1
+fi
+
+#python classify-testing/classify-testing.py $inputFile Tree.txt
+#status=$?
+#if (( status != 0 ))
+#then
+#    echo " ##### ERROR: classify-testing/classify-testing.py failed"
+#    date
+#    exit 1
+#fi
+#date

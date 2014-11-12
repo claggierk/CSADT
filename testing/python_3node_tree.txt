@@ -1,0 +1,4 @@
+True True -1.08664999563 0
+True eCity==0 0.315635888421 -2.98178967181
+(True)and(eCity==0) eFirstName==0 2.12521866273 -1.16368154504
+((True)and(eCity==0))and(eFirstName==0) eMiddleName==0 2.25155977006 0.283382238843

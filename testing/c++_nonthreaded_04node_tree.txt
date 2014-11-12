@@ -1,0 +1,5 @@
+(eTrue==0) (eTrue==0) -1.08665 0
+(eTrue==0) (eCity==0) 0.315636 -2.98179
+(eTrue==0)and(eCity==0) (eFirstName==0) 2.12522 -1.16368
+(eTrue==0)and(eCity==0)and(eFirstName==0) (eStreet<15) 2.25156 0.283381
+(eTrue==0)and(eCity==0)and(eFirstName==0)and(not(eStreet<15)) (eYearMined>1) 0.913015 -1.81692

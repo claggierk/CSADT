@@ -58,7 +58,7 @@ void PopulateInstances(string fileName)
 
     vector<unsigned> inputData;
     inputData.reserve(MAX_FEATURE_COUNT);
-	
+
 	if(fin.is_open())
     {
     	string line = "";
@@ -68,7 +68,7 @@ void PopulateInstances(string fileName)
         {
             // the unique identifier of records must be the FIRST cell in a row!
             istringstream iss(line);
-            
+
             bool match = false;
             string tempStr = "";
             iss >> tempStr;
@@ -85,7 +85,7 @@ void PopulateInstances(string fileName)
         			match = true;
         		}
         	}
-            
+
             inputData.clear();
             iss >> tempStr;
             do
@@ -93,7 +93,7 @@ void PopulateInstances(string fileName)
             	inputData.push_back(atoi(tempStr.c_str()));
                 iss >> tempStr;
             } while(iss);
-            
+
             if(match)
             {
                 // only the match instances
@@ -104,7 +104,7 @@ void PopulateInstances(string fileName)
                 // only the non match instances
                 gNonMatches.push_back(Instance(inputData, currentIndex, match));
             }
-            
+
             getline(fin, line);
             currentIndex++;
         } while(!fin.eof());
@@ -116,7 +116,7 @@ void PopulateInstances(string fileName)
     	cerr << endl << "##### ERROR: Unable to open " << fileName << "!";
         exit_now();
     }
-	
+
 	fin.close();
 }
 
@@ -127,13 +127,13 @@ string DetermineUniqueConditionSymbols()
     {
         uniqueConditionSymbols = uniqueConditionSymbols + sValidComparisons[conditionSymbol];
     }
-    
+
     // remove duplicates
     std::sort(uniqueConditionSymbols.begin(), uniqueConditionSymbols.end());
     uniqueConditionSymbols.erase(std::unique(uniqueConditionSymbols.begin(), uniqueConditionSymbols.end()), uniqueConditionSymbols.end());
-    
+
     return uniqueConditionSymbols;
-} 
+}
 
 Condition ExtractCondition(const string& condition, const string& uniqueConditionSymbols)
 {
@@ -141,7 +141,7 @@ Condition ExtractCondition(const string& condition, const string& uniqueConditio
     if(found == string::npos)
     {
         cerr << endl << "##### ERROR: Could not create condition for the following: " << condition;
-        return Condition(0, "?", 0); 
+        return Condition(0, "?", 0);
     }
 
     unsigned conditionIndex = eSizePersonAttributes;
@@ -186,7 +186,7 @@ Condition ExtractCondition(const string& condition, const string& uniqueConditio
     if(!foundCondition)
     {
         cerr << endl << "##### ERROR: Could not create condition for " << condition << " (invalid ... was not defind in Utils.h?)";
-        return Condition(0, "?", 0); 
+        return Condition(0, "?", 0);
     }
 
     unsigned conditionValue = (unsigned)atoi(conditionValueStr.c_str());
@@ -218,7 +218,7 @@ void GenerateConditions()
         conditionsFileHandler.open(conditionsFile.c_str());
 
         vector<string> conditions;
-        
+
         if(conditionsFileHandler.is_open())
         {
             string condition = "";
@@ -254,7 +254,7 @@ void GenerateConditions()
 }
 
 double SetInitialWeights()
-{   
+{
     double totalInstances = static_cast<double>(gMatches.size()) + static_cast<double>(gNonMatches.size());
     double initialWeight = 1.0 / totalInstances;
     for(unsigned i = 0; i < gMatches.size(); i++)
@@ -275,7 +275,7 @@ bool checkIfInstanceSatisfiesCondition(Instance myInstance, vector<Condition> co
     bool satisfy = false;
     for (unsigned i = 0; i < conditionVector.size(); i++) {
         if (conditionVector.at(i).evaluate(myInstance)) {
-            satisfy = true;          
+            satisfy = true;
         } else {
             satisfy = false;
             break;
@@ -300,8 +300,8 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
             {
                 //used when an instance needs to satisfy more than one condition (ex. Both condition1 and conditon2 have to be true)
                 if (conditionVector.at(j).evaluate(gNonMatches.at(i)))
-                { 
-                    satisfy = true;          
+                {
+                    satisfy = true;
                 }
                 else
                 {
@@ -314,9 +314,9 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
                 //used only for "not p" where each condition of p is negated and joined by an or (De Morgan's Law:
                 //    if not p = not(condtion1 and condition2), then not(condition1 and condition2) <-> not(condition1) or not(condition2))
                 if (conditionVector.at(j).evaluate(gNonMatches.at(i)))
-                { 
-                    satisfy = true; 
-                    break;         
+                {
+                    satisfy = true;
+                    break;
                 }
                 else
                 {
@@ -326,7 +326,7 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
         }
         if (satisfy)
         {
-            instancesThatSatisfy.push_back(gNonMatches.at(i)); 
+            instancesThatSatisfy.push_back(gNonMatches.at(i));
         }
         satisfy = false;
     }
@@ -345,8 +345,8 @@ vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> condition
             if (logicalOperator == "and")
             {
                 if (conditionVector.at(j).evaluate(gMatches.at(i)))
-                { 
-                    satisfy = true;          
+                {
+                    satisfy = true;
                 }
                 else
                 {
@@ -359,9 +359,9 @@ vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> condition
             else if (logicalOperator == "or")
             {
                 if (conditionVector.at(j).evaluate(gMatches.at(i)))
-                { 
-                    satisfy = true; 
-                    break;         
+                {
+                    satisfy = true;
+                    break;
                 }
                 else
                 {
@@ -371,7 +371,7 @@ vector<Instance> getPosInstancesThatSatisfyCondition(vector<Condition> condition
         }
         if(satisfy)
         {
-            instancesThatSatisfy.push_back(gMatches.at(i)); 
+            instancesThatSatisfy.push_back(gMatches.at(i));
         }
         satisfy = false;
     }
@@ -472,17 +472,17 @@ float outputCalcZ(const Precondition& p, Condition c)
     //cerr << endl << "First part b: " << wMinus(pAndC, "and");
     float firstPart = sqrt( wPlus(pAndC, "and") * wMinus(pAndC, "and") );
     cerr << endl << "first part: " << firstPart;
-    
+
     //cerr << endl << "Second part a: " << wPlus(pAndNotC, "and");
     //cerr << endl << "Second part b: " << wMinus(pAndNotC, "and");
     float secondPart = sqrt( wPlus(pAndNotC, "and") * wMinus(pAndNotC, "and") );
     cerr << endl << "second part: " << secondPart;
-    
+
     cerr << endl << "Third part: " << calculateW(notP, "or", true);
     cerr << endl << "p   : " << p;
     cerr << endl << "notP: " << notP;
     float thirdPart = calculateW(notP, "or");
-    
+
     float z = (2 * (firstPart + secondPart)) + thirdPart;
 
     return z;
@@ -634,7 +634,7 @@ bool isPreconditionInVectorOfPreconditions(Precondition& p, vector<Precondition>
 
 void createAndUpdategPAndCAndgPandNotC() {
     //Create p and c, p and not c so they can be used several times later.
-    //I need to make copies. 
+    //I need to make copies.
     vector<Condition> pAndC = gPreconditionChosen.GetConditions(); //hopefully this makes a copy of all conditions
     Condition c = gConditionChosen;
     pAndC.push_back(c);
@@ -743,14 +743,14 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
     float smoothFactor = 1.0f / ( float(gMatches.size() + gNonMatches.size()));
     cerr << "costPlus    : " << costPlus << endl;
     cerr << "costMinus   : " << costMinus << endl;
-    cerr << "numTreeNodes: " << numTreeNodes << endl; 
+    cerr << "numTreeNodes: " << numTreeNodes << endl;
     cerr << "smoothFactor: " << smoothFactor << endl;
     cerr << "wPlus(tAsAVector, and) : " << wPlus(tAsAVector, "and") << endl;
     cerr << "wMinus(tAsAVector, and): " << wMinus(tAsAVector, "and") << endl;
 
     cerr << "weight of True         : " << calculateW(tAsAVector, "and") << endl;
     cerr << "training data set size : " << gMatches.size() + gNonMatches.size() << endl;
-    
+
     float alpha1 = 0.5 * log((costPlus * wPlus(tAsAVector, "and") + smoothFactor) / (costMinus * wMinus(tAsAVector, "and") + smoothFactor));
     float alpha2 = 0.0;
 
@@ -845,7 +845,7 @@ int main(int argc, char* argv[])
 
     //prepare input for GenerateADT and run it.
     float costPlus = 2.0f;
-    float costMinus = 1.0f; 
+    float costMinus = 1.0f;
 
     //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
     // THIS IS WHERE IT ALL HAPPENS
@@ -857,16 +857,16 @@ int main(int argc, char* argv[])
     //print rules
     cerr << "\nCSADT Rules Output:";
     for(unsigned i = 0; i < gRules.size(); i++)
-    {  
+    {
         cerr << "\nRule " << i << ": " << endl;
-        
+
         ostringstream oss;
         // if the precondition has at least one condition
         if(gRules.at(i).getPrecondition().GetConditions().size() > 0)
         {
             oss << gRules.at(i).getPrecondition().GetConditions().at(0);
             for(unsigned j = 1; j < gRules.at(i).getPrecondition().GetConditions().size(); j++)
-            {  
+            {
                 oss << "and" << gRules.at(i).getPrecondition().GetConditions().at(j);
             }
         }
@@ -882,7 +882,7 @@ int main(int argc, char* argv[])
         string condition = oss2.str();
         float trueScore = gRules.at(i).getTrueScore();
         float falseScore = gRules.at(i).getFalseScore();
-        
+
         cerr << "   precondition: " << preCondition << endl;
         cerr << "   condition   : " << condition << endl;
         cerr << "   true score  : " << trueScore << endl;
