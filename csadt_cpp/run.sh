@@ -49,6 +49,15 @@ then
     exit 1
 fi
 
+python ../csadt_python/illustrate-tree/illustrate-tree.py TreeCPPReady.txt CS_ADT_Tree.png
+status=$?
+if (( status != 0 ))
+then
+    echo " ##### ERROR: illustrate-tree/illustrate-tree.py failed"
+    date
+    exit 1
+fi
+
 python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt
 status=$?
 if (( status != 0 ))
