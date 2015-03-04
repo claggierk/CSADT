@@ -292,9 +292,9 @@ vector<Instance> getNegInstancesThatSatisfyCondition(vector<Condition> condition
 {
     vector<Instance> instancesThatSatisfy;
     bool satisfy = false;
-    for (unsigned i = 0; i < gNonMatches.size(); i++)
+    for(unsigned i = 0; i < gNonMatches.size(); i++)
     {
-        for (unsigned j = 0; j < conditionVector.size(); j++)
+        for(unsigned j = 0; j < conditionVector.size(); j++)
         {
             if (logicalOperator == "and")
             {
@@ -557,10 +557,7 @@ void determineLocalMinZValue(unsigned threadNumber)
 void computeArgMin()
 {
     //PrintConditionInfo();
-
-    // this is so awful!
-    // needs to be sorted out... also need to kick this off in threads
-    //find best preCondition and condition
+    // find best preCondition and condition
 
     // ***************************************************
     // ***************************************************
