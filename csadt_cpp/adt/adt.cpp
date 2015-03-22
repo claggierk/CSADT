@@ -1,4 +1,7 @@
 #include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -11,6 +14,7 @@
 #include <execinfo.h>
 #include <unistd.h>
 #include <limits>
+#include <memory>
 
 #include "Instance.h"
 #include "Condition.h"
@@ -567,28 +571,22 @@ void computeArgMin()
     NUM_THREADS = gPreconditions.size();
     gMinZValues.clear();
     gMinZValues.resize(NUM_THREADS);
-    vector<thread*> threadPtrs(NUM_THREADS);
+    vector< boost::shared_ptr<boost::thread> > preconditionThreads;
 
     // kick off all the threads
     for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
     {
         cerr << endl << "***** Starting Thread";
         cerr << endl << "       --- Considering precondition: " << gPreconditions.at(threadNumber);
-        threadPtrs.at(threadNumber) = new thread(determineLocalMinZValue, threadNumber);
+        preconditionThreads.push_back(boost::make_shared<boost::thread>(determineLocalMinZValue, threadNumber));
         usleep(1000); // microseconds
     }
 
     for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
     {
-        threadPtrs.at(threadNumber)->join();
-        cerr << endl << "Deleting thread: " << threadNumber;
-        delete threadPtrs.at(threadNumber);
-        cerr << endl << "Deleted thread: " << threadNumber;
-        threadPtrs.at(threadNumber) = NULL;
+      preconditionThreads.at(threadNumber)->join();
     }
-    cerr << endl << "Clearing threadPtrs...";
-    threadPtrs.clear();
-    cerr << endl << "Cleared threadPtrs";
+    preconditionThreads.clear();
     // ***************************************************
     // ***************************************************
     // ***************************************************
