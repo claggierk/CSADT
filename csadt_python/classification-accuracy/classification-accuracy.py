@@ -39,7 +39,6 @@ def main():
 
 		number_of_matches, number_of_nonmatches, trainingComparisonPairs = adt_infrastructure.BuildComparisonPairsDataStructure(training_comparisons_file)
 		outputDatabase = adt.evaluate(trainingComparisonPairs, adtree)
-		print "LENGTH OF OUTPUTDATABASE: %s" % len(outputDatabase)
 
 		number_of_matches = float(number_of_matches)
 		number_of_nonmatches = float(number_of_nonmatches)
@@ -104,6 +103,8 @@ def main():
 			accuracy_denominator = 0.001
 		accuracy = (true_positives + true_negatives) / accuracy_denominator * 100.0
 
+		print ""
+		print "Training Data Record-Pairs    : %s" % len(outputDatabase)
 		print ""
 		print "Number of matches             : %s" % str(int(number_of_matches))
 		print "Number of nonmatches          : %s" % str(int(number_of_nonmatches))

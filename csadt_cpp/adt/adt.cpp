@@ -581,10 +581,14 @@ void computeArgMin()
     for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
     {
         threadPtrs.at(threadNumber)->join();
+        cerr << endl << "Deleting thread: " << threadNumber;
         delete threadPtrs.at(threadNumber);
+        cerr << endl << "Deleted thread: " << threadNumber;
         threadPtrs.at(threadNumber) = NULL;
     }
+    cerr << endl << "Clearing threadPtrs...";
     threadPtrs.clear();
+    cerr << endl << "Cleared threadPtrs";
     // ***************************************************
     // ***************************************************
     // ***************************************************
