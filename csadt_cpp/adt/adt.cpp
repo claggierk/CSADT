@@ -26,7 +26,7 @@
 using namespace std;
 using namespace boost;
 
-unsigned NUM_THREADS = 8;
+unsigned NUM_THREADS_TO_RUN_SIMULTANEOUSLY = 8;
 
 const unsigned MAX_FEATURE_COUNT = 128;
 const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
@@ -566,27 +566,40 @@ void computeArgMin()
     // ***************************************************
     // ***************************************************
     // ***************************************************
-    //NUM_THREADS = gAvailableConditions.size();
-    // traversing the tree, check at the end of every precondition
-    NUM_THREADS = gPreconditions.size();
+    unsigned threadsToRun = gPreconditions.size();
     gMinZValues.clear();
-    gMinZValues.resize(NUM_THREADS);
-    vector< boost::shared_ptr<boost::thread> > preconditionThreads;
+    gMinZValues.resize(threadsToRun);
 
-    // kick off all the threads
-    for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
+    unsigned batchNumber = 0;
+    unsigned numberOfThreadsToRunThisBatch = 0;
+    NUM_THREADS_TO_RUN_SIMULTANEOUSLY = 4;
+    while(threadsToRun != 0)
     {
-        cerr << endl << "***** Starting Thread";
-        cerr << endl << "       --- Considering precondition: " << gPreconditions.at(threadNumber);
-        preconditionThreads.push_back(boost::make_shared<boost::thread>(determineLocalMinZValue, threadNumber));
-        usleep(1000); // microseconds
-    }
+      if(threadsToRun > NUM_THREADS_TO_RUN_SIMULTANEOUSLY) {
+        numberOfThreadsToRunThisBatch = NUM_THREADS_TO_RUN_SIMULTANEOUSLY;
+      } else {
+        numberOfThreadsToRunThisBatch = threadsToRun;
+      }
 
-    for(unsigned threadNumber = 0; threadNumber < NUM_THREADS; threadNumber++)
-    {
-      preconditionThreads.at(threadNumber)->join();
+      // kick off all the threads
+      unsigned startThreadNumber = batchNumber * NUM_THREADS_TO_RUN_SIMULTANEOUSLY;
+      unsigned lastThreadNumber = startThreadNumber + numberOfThreadsToRunThisBatch;
+      boost::thread_group batchThreads;
+      cerr << endl << " *** Thread batch: " << batchNumber;
+      for(unsigned threadNumber = startThreadNumber; threadNumber < lastThreadNumber; threadNumber++)
+      {
+          cerr << endl << "   *** Starting thread: " << threadNumber;
+          cerr << endl << "     --- Considering precondition: " << gPreconditions.at(threadNumber);
+          batchThreads.create_thread( boost::bind(determineLocalMinZValue, threadNumber) );
+          usleep(1000); // microseconds
+      }
+
+      threadsToRun -= numberOfThreadsToRunThisBatch;
+      batchNumber++;
+
+      // wait for the batch's threads to complete
+      batchThreads.join_all();
     }
-    preconditionThreads.clear();
     // ***************************************************
     // ***************************************************
     // ***************************************************
