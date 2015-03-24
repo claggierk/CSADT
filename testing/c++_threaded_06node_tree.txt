@@ -1,7 +1,0 @@
-(eTrue==0) (eTrue==0) -1.08665 0
-(eTrue==0) (eCity==0) 0.315636 -2.98179
-(eTrue==0)and(eCity==0) (eFirstName==0) 2.12522 -1.16368
-(eTrue==0)and(eCity==0)and(eFirstName==0) (eMiddleName==0) 2.25156 0.283381
-(eTrue==0)and(eCity==0)and(eFirstName==0)and(not(eMiddleName==0)) (eMiddleName<2) -1.81692 0.913015
-(eTrue==0)and(eCity==0)and(eFirstName==0)and(not(eMiddleName==0))and(eMiddleName<2) (eNameTitle==0) -1.72984 0
-(eTrue==0)and(eCity==0)and(eFirstName==0)and(not(eMiddleName==0))and(eMiddleName<2)and(eNameTitle==0) (eNameTitle<0) 0 -0.858307
