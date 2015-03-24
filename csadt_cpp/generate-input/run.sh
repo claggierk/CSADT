@@ -2,14 +2,14 @@
 
 ./clean.sh
 
-echo " ***** prepare-input ***********************************"
+echo " ***** generate-input ***********************************"
 
-g++ *.h *.cpp -o prepare-input -I /usr/local/include -L /usr/local/lib -l boost_thread -l boost_system
+g++ *.h *.cpp -o generate-input -I /usr/local/include -L /usr/local/lib -l boost_thread -l boost_system
 compiled_status=$?
 if [[ $compiled_status -eq 0 ]]
 then
     echo "Compilation success!"
-    command="./prepare-input UniqueCombinations.txt ../../csadt_python/Training.txt ADT_ready.txt"
+    command="./generate-input UniqueCombinations.txt ../../csadt_python/Training.txt ADT_ready.txt"
     echo $command
     $command
     command_status=$?
