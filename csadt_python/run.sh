@@ -5,7 +5,7 @@ rm -f ComparisonRecords.txt
 rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
-numNodes="1"
+numNodes="2"
 
 inputFile="../10.csv"
 #inputFile="../20.csv"

@@ -15,17 +15,6 @@ def Usage():
 	print "Example: python %s testing_data.txt Tree.txt" % sys.argv[0]
 	print "**************************************************"
 
-def ReCreateADTree(adtree_file):
-    file_handler = open(adtree_file, 'r')
-    lines = file_handler.readlines()
-    adtree = []
-    for line in lines:
-        node_values = line.split(" ")
-        print "line: %s" % line
-        print "node_values: %s" % node_values
-        adtree.append(adt.sNodeAndItsAssociatedPNodes(node_values[0], node_values[1], float(node_values[2]), float(node_values[3])))
-    return adtree
-
 def main():
 	if len(sys.argv) != 3:
 		Usage()
@@ -35,7 +24,7 @@ def main():
 	adtree_file = sys.argv[2]
 
 	if os.path.exists(training_comparisons_file) and os.path.exists(adtree_file):
-		adtree = ReCreateADTree(adtree_file)
+		adtree = adt_infrastructure.ReCreateADTree(adtree_file, adt)
 
 		number_of_matches, number_of_nonmatches, trainingComparisonPairs = adt_infrastructure.BuildComparisonPairsDataStructure(training_comparisons_file)
 		outputDatabase = adt.evaluate(trainingComparisonPairs, adtree)

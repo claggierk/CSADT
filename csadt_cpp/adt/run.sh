@@ -9,7 +9,7 @@ echo " ***** adt *********************************************"
 #numTreeNodes="10"
 #numTreeNodes="12"
 #numTreeNodes="15"
-numTreeNodes="1"
+numTreeNodes="2"
 
 g++ -rdynamic *.h *.cpp -o adt -I /usr/local/include -L /usr/local/lib -l boost_thread -l boost_system
 compiled_status=$?
