@@ -5,18 +5,24 @@ rm -f ComparisonRecords.txt
 rm -f Tree.txt
 rm -f CS_ADT_Tree.png
 
-#inputFile="../10.csv"
+numNodes="1"
+
+inputFile="../10.csv"
 #inputFile="../20.csv"
 #inputFile="../30.csv"
 #inputFile="../40.csv"
-inputFile="../50.csv"
+#inputFile="../50.csv"
 #inputFile="../60.csv"
 #inputFile="../70.csv"
 #inputFile="../80.csv"
 #inputFile="../90.csv"
 #inputFile="../100.csv"
-#inputFile="../VA_UniqueGoodExplod_2009-2010-2012_Training.csv"
-numNodes="5"
+#inputFile="../200.csv"
+#inputFile="../300.csv"
+#inputFile="../400.csv"
+#inputFile="../500.csv"
+#inputFile="../600.csv"
+#inputFile="../644.csv"
 
 start1=$(date +%s.%N)
 python raw-data-to-text/1_CSVToText.py $inputFile Training.txt

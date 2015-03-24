@@ -1,5 +1,8 @@
 #!/bin/bash
 
-cd GenerateUniqueCombinations && ./clean.sh
-cd GenerateInput && ./clean.sh
+cd generate-unique-pairs && ./clean.sh
+cd ../
+cd generate-input && ./clean.sh
+cd ../
 cd adt && ./clean.sh
+cd ../
