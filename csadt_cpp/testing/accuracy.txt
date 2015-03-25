@@ -1,0 +1,55 @@
+Tree-30records-25nodes-171conditions.txt
+Recall    : 93.0875576037
+Precision : 58.9781021898
+Accuracy  : 99.8497918337
+
+Tree-30records-50nodes-171conditions.txt
+Recall    : 93.0875576037
+Precision : 58.9781021898
+Accuracy  : 99.8497918337
+
+Tree-50records-25nodes-171conditions.txt
+Recall    : 89.6313364055
+Precision : 81.8947368421
+Accuracy  : 99.9367290361
+
+Tree-50records-50nodes-171conditions.txt
+Recall    : 89.6313364055
+Precision : 81.8947368421
+Accuracy  : 99.9367290361
+
+Tree-80records-25nodes-171conditions.txt
+Recall    : 90.7834101382
+Precision : 46.9606674613
+Accuracy  : 99.7657525381
+
+Tree-100records-30nodes-171conditions.txt
+Recall    : 86.1751152074
+Precision : 46.5753424658
+Accuracy  : 99.7638206003
+
+Tree-200records-30nodes-171conditions.txt
+Recall    : 90.7834101382
+Precision : 16.5685449958
+Accuracy  : 99.0224394579
+
+Tree-300records-25nodes-171conditions.txt
+Recall    : 22.380952381
+Precision : 0.89404603386
+Accuracy  : 88.0200668896
+
+Tree-400records-25nodes-171conditions.txt
+Recall    : 19.7916666667
+Precision : 17.5925925926
+Accuracy  : 99.3759398496
+
+Tree-500records-25nodes-171conditions.txt
+Recall    : 28.818443804
+Precision : 10.3519668737
+Accuracy  : 99.1078156313
+
+Tree-644records-25nodes-171conditions.txt
+Recall    : 0.460829493088
+Precision : 0.0219178082192
+Accuracy  : 95.385083508
+
