@@ -11,17 +11,19 @@ DIFFERENT = "DIFFERENT"
 
 def Usage():
 	print "**************************************************"
-	print "Usage  : python %s [text (.txt) input file] [text (.txt) input file]" % sys.argv[0]
-	print "Example: python %s testing_data.txt Tree.txt" % sys.argv[0]
+	print "Usage  : python %s [text (.txt) input file] [text (.txt) input file] [output file prefix]" % sys.argv[0]
+	print "Example: python %s testing_data.txt Tree.txt 1" % sys.argv[0]
 	print "**************************************************"
+	print "Your arguments:", sys.argv
 
 def main():
-	if len(sys.argv) != 3:
+	if len(sys.argv) != 4:
 		Usage()
 		return
 
 	training_comparisons_file = sys.argv[1]
 	adtree_file = sys.argv[2]
+	output_file_prefix = sys.argv[3]
 
 	if os.path.exists(training_comparisons_file) and os.path.exists(adtree_file):
 		adtree = adt_infrastructure.ReCreateADTree(adtree_file, adt)
@@ -93,23 +95,33 @@ def main():
 		accuracy = (true_positives + true_negatives) / accuracy_denominator * 100.0
 
 		print ""
-		print "Training Data Record-Pairs    : %s" % len(outputDatabase)
+		print " Training Data Record-Pairs    : %s" % len(outputDatabase)
 		print ""
-		print "Number of matches             : %s" % str(int(number_of_matches))
-		print "Number of nonmatches          : %s" % str(int(number_of_nonmatches))
+		print " Number of matches             : %s" % str(int(number_of_matches))
+		print " Number of nonmatches          : %s" % str(int(number_of_nonmatches))
 		print ""
-		print "Number of predicted matches   : %s" % str(int(number_of_predicted_matches))
-		print "Number of predicted nonmatches: %s" % str(int(number_of_predicted_nonmatches))
+		print " Number of predicted matches   : %s" % str(int(number_of_predicted_matches))
+		print " Number of predicted nonmatches: %s" % str(int(number_of_predicted_nonmatches))
 		print ""
-		print "True Positives                : %s detected of %s (%.2f%%)" % (str(int(true_positives)), str(int(number_of_matches)), true_positives / number_of_matches * 100.0)
-		print "True Negatives                : %s detected of %s (%.2f%%)" % (str(int(true_negatives)), str(int(number_of_nonmatches)), true_negatives / number_of_nonmatches * 100.0)
-		print "False Positives               : %s" % str(int(false_positives))
-		print "False Negatives               : %s" % str(int(false_negatives))
+		print " True Positives                : %s detected of %s (%.2f%%)" % (str(int(true_positives)), str(int(number_of_matches)), true_positives / number_of_matches * 100.0)
+		print " True Negatives                : %s detected of %s (%.2f%%)" % (str(int(true_negatives)), str(int(number_of_nonmatches)), true_negatives / number_of_nonmatches * 100.0)
+		print " False Positives               : %s" % str(int(false_positives))
+		print " False Negatives               : %s" % str(int(false_negatives))
 		print ""
-		print "Recall    : %s" % precision
-		print "Precision : %s" % recall
-		print "Accuracy  : %s" % accuracy
+		print " Recall                        : %s%%" % precision
+		print " Precision                     : %s%%" % recall
+		print " Accuracy                      : %s%%" % accuracy
 		print ""
+
+		with open(output_file_prefix + "-Precision.txt", 'w') as f_precision:
+			f_precision.write(str(precision))
+			f_precision.write("\n")
+		with open(output_file_prefix + "-Recall.txt", 'w') as f_recall:
+			f_recall.write(str(recall))
+			f_recall.write("\n")
+		with open(output_file_prefix + "-Accuracy.txt", 'w') as f_accuracy:
+			f_accuracy.write(str(accuracy))
+			f_accuracy.write("\n")
 
 	else:
 		Usage()

@@ -1,4 +1,4 @@
 #!/bin/bash
 
 rm -f adt
-rm -f Tree.txt
+rm -f *Tree.txt

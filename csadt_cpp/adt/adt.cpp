@@ -26,7 +26,7 @@
 using namespace std;
 using namespace boost;
 
-unsigned NUM_THREADS_TO_RUN_SIMULTANEOUSLY = 8;
+const unsigned NUM_THREADS_TO_RUN_SIMULTANEOUSLY = 16;
 
 const unsigned MAX_FEATURE_COUNT = 128;
 const unsigned NUM_COMMAND_LINE_ARGUMENTS = 3;
@@ -566,8 +566,6 @@ void computeArgMin()
         unsigned batchNumber = 0;
         unsigned numberOfThreadsToRunThisBatch = 0;
         // for single threaded, set NUM_THREADS_TO_RUN_SIMULTANEOUSLY to 1
-        // for as many threads as possible set NUM_THREADS_TO_RUN_SIMULTANEOUSLY to threadsToRun
-        //NUM_THREADS_TO_RUN_SIMULTANEOUSLY = 1; //threadsToRun;
         while(threadsToRun != 0)
         {
                 if(threadsToRun > NUM_THREADS_TO_RUN_SIMULTANEOUSLY) {
@@ -710,27 +708,82 @@ void DisplayWeights()
         cerr << endl;
 }
 
-void updateWeights(float costPlus, float costMinus) {
-        //cerr << "Before" << endl;
-        //DisplayWeights();
+void updateWeights(const float& costPlus, const float& costMinus) {
         for (unsigned i = 0; i < gMatches.size(); i++) {
                 float score = getScoreOfInstance(gMatches.at(i));
                 //cerr << "score: " << score << endl;
                 float yi = 1.0;
-                float cost = costPlus * 1.0 + costMinus * 0.0;
-                gMatches.at(i).setWeight(gMatches.at(i).getWeight() * cost * exp(-yi * score));
+                gMatches.at(i).setWeight(gMatches.at(i).getWeight() * costPlus * exp(-yi * score));
         }
         for (unsigned i = 0; i < gNonMatches.size(); i++) {
                 float score = getScoreOfInstance(gNonMatches.at(i));
                 float yi = -1.0;
-                float cost = costPlus * 0.0 + costMinus * 1.0;
-                gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * cost * exp(-yi * score));
+                gNonMatches.at(i).setWeight(gNonMatches.at(i).getWeight() * costMinus * exp(-yi * score));
         }
-        //cerr << "After" << endl;
-        //DisplayWeights();
 }
 
-void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
+void OutputTree(const string& outputFileName)
+{
+      ofstream fout;
+      fout.open(outputFileName.c_str());
+
+      //print rules
+      cerr << "\nCSADT Rules Output:";
+      for(unsigned i = 0; i < gRules.size(); i++)
+      {
+              cerr << "\nRule " << i << ": " << endl;
+
+              ostringstream oss;
+              // if the precondition has at least one condition
+              if(gRules.at(i).getPrecondition().GetConditions().size() > 0)
+              {
+                      oss << gRules.at(i).getPrecondition().GetConditions().at(0);
+                      for(unsigned j = 1; j < gRules.at(i).getPrecondition().GetConditions().size(); j++)
+                      {
+                              oss << "and" << gRules.at(i).getPrecondition().GetConditions().at(j);
+                      }
+              }
+              // if the precondition has zero conditions
+              string preCondition = oss.str();
+              if(preCondition == "")
+              {
+                      preCondition = "(True WTF)";
+              }
+
+              ostringstream oss2;
+              oss2 << gRules.at(i).getCondition();
+              string condition = oss2.str();
+              float trueScore = gRules.at(i).getTrueScore();
+              float falseScore = gRules.at(i).getFalseScore();
+
+              cerr << "   precondition: " << preCondition << endl;
+              cerr << "   condition   : " << condition << endl;
+              cerr << "   true score  : " << trueScore << endl;
+              cerr << "   false score : " << falseScore << endl;
+
+              if(!fout.is_open())
+              {
+                      cerr << endl << "##### ERROR: Unable to open " << outputFileName << ".";
+                      exit_now();
+              }
+              else
+              {
+                      fout << preCondition << " " << condition << " " << trueScore << " " << falseScore;
+                      if((i+1) != gRules.size())
+                      {
+                              fout << endl;
+                      }
+              }
+      }
+      if(fout.is_open())
+      {
+              fout.close();
+      }
+
+      cerr << endl << endl;
+}
+
+void GenerateADT(const float& costPlus, const float& costMinus, const unsigned& numTreeNodes, const string& outputFileName)
 {
         //clear global vars that will be modified and used
         gPreconditions.clear();
@@ -786,6 +839,7 @@ void GenerateADT(float costPlus, float costMinus, unsigned numTreeNodes)
                 gRules.push_back(Rule(gPreconditionChosen, gConditionChosen, alpha1, alpha2));
                 cerr << "+++++++++++++++++++++++ This rule was just added to gRules: " << gRules.back() << endl;
                 updateWeights(costPlus, costMinus);
+                OutputTree(to_string(i+1) + "-" + outputFileName);
         }
 
         cerr << endl;
@@ -851,69 +905,12 @@ int main(int argc, char* argv[])
         PrintConditionInfo();
 
         //prepare input for GenerateADT and run it.
-        float costPlus = 2.0f;
+        float costPlus = 1.0f;
         float costMinus = 1.0f;
 
         //smoothFactor = 0.5 * (weight('True') / len(trainingDataSet))
         // THIS IS WHERE IT ALL HAPPENS
-        GenerateADT(costPlus, costMinus, numTreeNodes);
+        GenerateADT(costPlus, costMinus, numTreeNodes, outputFileName);
 
-        ofstream fout;
-        fout.open(outputFileName.c_str());
-
-        //print rules
-        cerr << "\nCSADT Rules Output:";
-        for(unsigned i = 0; i < gRules.size(); i++)
-        {
-                cerr << "\nRule " << i << ": " << endl;
-
-                ostringstream oss;
-                // if the precondition has at least one condition
-                if(gRules.at(i).getPrecondition().GetConditions().size() > 0)
-                {
-                        oss << gRules.at(i).getPrecondition().GetConditions().at(0);
-                        for(unsigned j = 1; j < gRules.at(i).getPrecondition().GetConditions().size(); j++)
-                        {
-                                oss << "and" << gRules.at(i).getPrecondition().GetConditions().at(j);
-                        }
-                }
-                // if the precondition has zero conditions
-                string preCondition = oss.str();
-                if(preCondition == "")
-                {
-                        preCondition = "(True WTF)";
-                }
-
-                ostringstream oss2;
-                oss2 << gRules.at(i).getCondition();
-                string condition = oss2.str();
-                float trueScore = gRules.at(i).getTrueScore();
-                float falseScore = gRules.at(i).getFalseScore();
-
-                cerr << "   precondition: " << preCondition << endl;
-                cerr << "   condition   : " << condition << endl;
-                cerr << "   true score  : " << trueScore << endl;
-                cerr << "   false score : " << falseScore << endl;
-
-                if(!fout.is_open())
-                {
-                        cerr << endl << "##### ERROR: Unable to open " << outputFileName << ".";
-                        exit_now();
-                }
-                else
-                {
-                        fout << preCondition << " " << condition << " " << trueScore << " " << falseScore;
-                        if((i+1) != gRules.size())
-                        {
-                                fout << endl;
-                        }
-                }
-        }
-        if(fout.is_open())
-        {
-                fout.close();
-        }
-
-        cerr << endl << endl;
         return EXIT_SUCCESS;
 }
