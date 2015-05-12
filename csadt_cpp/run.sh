@@ -80,7 +80,7 @@ runtime5=$(python -c "print(${end5} - ${start5})")
 
 # ---------------------------------------
 start6=$(date +%s.%N)
-python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt
+python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt 0
 status=$?
 if (( status != 0 ))
 then
