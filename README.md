@@ -1,57 +1,67 @@
-For any shell script:
-* /usr/bin/dos2unix [shell_script]
+# For any shell script:
 
-h2. Clone the PeopleRL git repository:
+/usr/bin/dos2unix [shell_script]
+
+# Clone the PeopleRL git repository:
+
 git clone git@github.com:claggierk/PeopleRL.git
 
-h2. Set up the input data:
-mv person_data.tar.gz PeopleRL
-cd PeopleRL
-tar -zxvf person_data.tar.gz
+# Set up the input data:
 
-h2. Convert input csv to txt and compute Levenstein distances of pairs:
-This is used later, when the accuracy is computed.
-cd csadt_python
-vim run.sh to edit the "inputFile" variable (default is ../10.csv)
-./run.sh
+1. mv person_data.tar.gz PeopleRL
+2. cd PeopleRL
+3. tar -zxvf person_data.tar.gz
+
+# Convert input csv to txt and compute Levenstein distances of pairs:
+
+1. This is used later, when the accuracy is computed.
+2. cd csadt_python
+3. vim run.sh to edit the "inputFile" variable (default is ../10.csv)
+4. ./run.sh
    - creates 'Training.txt' and 'ComparisonRecords.txt'
 
-h2. Determine unique pairs of persons:
-cd ../csadt_cpp/generate-unique-pairs
-./run
+# Determine unique pairs of persons:
+
+1. cd ../csadt_cpp/generate-unique-pairs
+2. ./run
    - creates 'UniqueCombinations.txt'
 
-h2. Compute the Levenstein distances of person-pairs:
-cd ../generate-input/
-./run
+# Compute the Levenstein distances of person-pairs:
+
+1. cd ../generate-input/
+2. ./run
  - creates 'ADT_ready.txt'
 
-h2. Generate conditions:
- * needed only if running the python implementation)
-# cd ../generate-conditions
-# ./run
-#   - creates 'Conditions.txt'
+# Generate conditions:
 
-h2. Run the ADT/CSADT algorithm:
-cd ../adt
-vim adt.cpp
+1. needed only if running the python implementation)
+2. cd ../generate-conditions
+3. ./run
+   - creates 'Conditions.txt'
+
+# Run the ADT/CSADT algorithm:
+
+1. cd ../adt
+2. vim adt.cpp
  - edit NUM_THREADS_TO_RUN_SIMULTANEOUSLY
  - edit costPlus
-
  - edit costMinus
-vim run.sh to edit the "numTreeNodes" variable
-./run.sh
+3. vim run.sh to edit the "numTreeNodes" variable
+4. ./run.sh
  - creates '[1 through numTreeNodes]-Tree.txt'
 
-h2. Translate the generated tree:
-cd ../
-python ../csadt_python/translate-tree/translate-tree.py adt/[numTreeNodes]-Tree.txt TreeCPPReady.txt
+# Translate the generated tree:
+
+1. cd ../
+2. python ../csadt_python/translate-tree/translate-tree.py adt/[numTreeNodes]-Tree.txt TreeCPPReady.txt
    - creates TreeCPPReady.txt
 
-h2. Illustrate the generated tree:
-python ../csadt_python/illustrate-tree/illustrate-tree.py TreeCPPReady.txt CS_ADT_Tree.png
+#  Illustrate the generated tree:
+
+1. python ../csadt_python/illustrate-tree/illustrate-tree.py TreeCPPReady.txt CS_ADT_Tree.png
    - creates CS_ADT_Tree.png
 
-h2. Compute accuracy of generated tree
-python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt
+# Compute accuracy of generated tree
+
+1. python ../csadt_python/classification-accuracy/classification-accuracy.py ../csadt_python/ComparisonRecords.txt TreeCPPReady.txt
    - creates 2-Accuracy.txt,  2-Precision.txt, and  2-Recall.txt
